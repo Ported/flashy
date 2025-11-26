@@ -221,6 +221,41 @@ class TestGameController:
         assert result.points > 0
 
 
+class TestTimedLevels:
+    """Tests for timed level (boss battle) functionality."""
+
+    def test_regular_level_not_timed(self) -> None:
+        controller = GameController("test_player", 1)
+        assert controller.is_timed is False
+        assert controller.time_limit is None
+
+    def test_boss_level_is_timed(self) -> None:
+        controller = GameController("test_player", 10)  # Boss level
+        assert controller.is_timed is True
+        assert controller.time_limit == 90
+
+    def test_time_remaining_untimed(self) -> None:
+        controller = GameController("test_player", 1)
+        assert controller.time_remaining(50.0) == float("inf")
+
+    def test_time_remaining_timed(self) -> None:
+        controller = GameController("test_player", 10)
+        assert controller.time_remaining(0.0) == 90.0
+        assert controller.time_remaining(30.0) == 60.0
+        assert controller.time_remaining(90.0) == 0.0
+        assert controller.time_remaining(100.0) == 0.0  # Clamped to 0
+
+    def test_is_time_expired_untimed(self) -> None:
+        controller = GameController("test_player", 1)
+        assert controller.is_time_expired(1000.0) is False
+
+    def test_is_time_expired_timed(self) -> None:
+        controller = GameController("test_player", 10)
+        assert controller.is_time_expired(89.0) is False
+        assert controller.is_time_expired(90.0) is True
+        assert controller.is_time_expired(91.0) is True
+
+
 class TestAnswerFeedback:
     """Tests for AnswerFeedback dataclass."""
 

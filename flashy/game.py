@@ -79,6 +79,42 @@ class GameController:
         """Total number of problems in this level."""
         return len(self.level.problems)
 
+    @property
+    def time_limit(self) -> int | None:
+        """Time limit in seconds for this level, or None if untimed."""
+        return self.level.time_limit
+
+    @property
+    def is_timed(self) -> bool:
+        """Check if this level has a time limit (boss battle)."""
+        return self.level.time_limit is not None
+
+    def time_remaining(self, elapsed: float) -> float:
+        """Get remaining time given elapsed wall-clock seconds.
+
+        Args:
+            elapsed: Seconds since level started
+
+        Returns:
+            Remaining seconds, or float('inf') if untimed
+        """
+        if self.level.time_limit is None:
+            return float("inf")
+        return max(0.0, self.level.time_limit - elapsed)
+
+    def is_time_expired(self, elapsed: float) -> bool:
+        """Check if time has expired.
+
+        Args:
+            elapsed: Seconds since level started
+
+        Returns:
+            True if timed level and time has run out
+        """
+        if self.level.time_limit is None:
+            return False
+        return elapsed >= self.level.time_limit
+
     def submit_answer(self, answer: int | None, time_taken: float) -> AnswerFeedback:
         """Submit answer for current problem.
 

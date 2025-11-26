@@ -56,4 +56,6 @@ class WorldIntroScreen(StoryScreen):
         from flashy.ui.screens.world_map import WorldMapScreen
 
         self.app.pop_screen()
-        self.app.push_screen(WorldMapScreen(self.player_name))
+        self.app.push_screen(
+            WorldMapScreen(self.player_name, world_number=self.world_number)
+        )

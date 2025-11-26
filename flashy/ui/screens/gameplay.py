@@ -38,11 +38,30 @@ class GameplayScreen(Screen):
         border: double red;
     }
 
+    #game-box.boss-level {
+        border: double red;
+    }
+
     #level-title {
         text-align: center;
         text-style: bold;
         color: green;
         padding-bottom: 1;
+    }
+
+    #level-title.boss-title {
+        color: red;
+    }
+
+    #timer {
+        text-align: center;
+        color: yellow;
+        text-style: bold;
+        padding: 1;
+    }
+
+    #timer.time-low {
+        color: red;
     }
 
     #score-bar {
@@ -86,17 +105,27 @@ class GameplayScreen(Screen):
         self.player_name = player_name
         self.level_number = level_number
         self.controller = GameController(player_name, level_number)
-        self.start_time = 0.0
+        self.problem_start_time = 0.0  # When current problem started
+        self.level_start_time = 0.0  # When level started (for timed levels)
+        self._timer_interval = None  # Timer update interval
 
     def compose(self) -> ComposeResult:
+        level = self.controller.level
+        is_boss = self.controller.is_timed
+
         yield Header()
         with Center():
-            with Vertical(id="game-box"):
-                level = self.controller.level
-                yield Static(
-                    f"Level {level.number}: {level.name}",
-                    id="level-title",
-                )
+            box_classes = "boss-level" if is_boss else ""
+            with Vertical(id="game-box", classes=box_classes):
+                title_classes = "boss-title" if is_boss else ""
+                if is_boss:
+                    title_text = f"⚔️ BOSS: {level.name} ⚔️"
+                else:
+                    title_text = f"Level {level.number}: {level.name}"
+                yield Static(title_text, id="level-title", classes=title_classes)
+                # Timer only shown for timed levels
+                if is_boss:
+                    yield Static("", id="timer")
                 yield Static("Score: 0", id="score-bar")
                 yield Static("", id="progress")
                 yield Static("", id="problem")
@@ -107,7 +136,47 @@ class GameplayScreen(Screen):
 
     def on_mount(self) -> None:
         """Start the level."""
+        self.level_start_time = time.time()
+        # Start timer updates for timed levels
+        if self.controller.is_timed:
+            self._refresh_timer()
+            self._timer_interval = self.set_interval(1.0, self._refresh_timer)
         self._show_problem()
+
+    def _refresh_timer(self) -> None:
+        """Update the timer display and check for time expiry."""
+        if not self.controller.is_timed:
+            return
+
+        elapsed = time.time() - self.level_start_time
+        remaining = self.controller.time_remaining(elapsed)
+
+        # Check if time expired
+        if self.controller.is_time_expired(elapsed):
+            self._time_expired()
+            return
+
+        # Update timer display
+        timer = self.query_one("#timer", Static)
+        mins = int(remaining) // 60
+        secs = int(remaining) % 60
+        timer.update(f"⏱️ {mins}:{secs:02d}")
+
+        # Add warning style when low on time
+        if remaining <= 15:
+            timer.add_class("time-low")
+        else:
+            timer.remove_class("time-low")
+
+    def _time_expired(self) -> None:
+        """Handle time running out on a timed level."""
+        # Stop the timer interval
+        if self._timer_interval:
+            self._timer_interval.stop()
+            self._timer_interval = None
+
+        # Finish the level (will get 0 stars due to incomplete)
+        self._finish_level()
 
     def _show_problem(self) -> None:
         """Display the current problem."""
@@ -124,8 +193,8 @@ class GameplayScreen(Screen):
         problem_text = f"[bold]{problem.display()} = ?[/bold]"
         self.query_one("#problem", Static).update(problem_text)
 
-        # Start timing
-        self.start_time = time.time()
+        # Start timing for this problem
+        self.problem_start_time = time.time()
 
         # Mount fresh voice input for this problem
         container = self.query_one("#voice-container")
@@ -158,11 +227,11 @@ class GameplayScreen(Screen):
     @on(VoiceInput.AnswerReceived)
     def on_voice_answer(self, event: VoiceInput.AnswerReceived) -> None:
         """Handle voice input answer."""
-        # Calculate time taken
-        elapsed = time.time() - self.start_time
+        # Calculate time taken for this problem
+        problem_time = time.time() - self.problem_start_time
 
         # Submit to controller
-        feedback = self.controller.submit_answer(event.answer, elapsed)
+        feedback = self.controller.submit_answer(event.answer, problem_time)
 
         # Show feedback
         self._show_feedback(feedback)
@@ -209,6 +278,11 @@ class GameplayScreen(Screen):
     def _finish_level(self) -> None:
         """Finish the level and show results."""
         from flashy.ui.screens.result import ResultScreen
+
+        # Stop timer if running
+        if self._timer_interval:
+            self._timer_interval.stop()
+            self._timer_interval = None
 
         # Finish via controller (saves progress and history)
         stars, is_new_best = self.controller.finish()

@@ -67,8 +67,20 @@ class BossVictoryScreen(StoryScreen):
         yield Footer()
 
     def action_continue(self) -> None:
-        """Continue to world map."""
-        from flashy.ui.screens.world_map import WorldMapScreen
+        """Continue to next world intro or game complete."""
+        from flashy.ui.screens.game_complete import GameCompleteScreen
+        from flashy.ui.screens.world_intro import WorldIntroScreen
+        from flashy.worlds import get_world
 
         self.app.pop_screen()
-        self.app.push_screen(WorldMapScreen(self.player_name))
+
+        # Check if there's a next world
+        next_world = get_world(self.world_number + 1)
+        if next_world:
+            # Show next world intro
+            self.app.push_screen(
+                WorldIntroScreen(self.player_name, self.world_number + 1)
+            )
+        else:
+            # No more worlds - Flashy goes home!
+            self.app.push_screen(GameCompleteScreen(self.player_name))

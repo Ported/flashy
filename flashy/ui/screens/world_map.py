@@ -90,19 +90,48 @@ class WorldMapScreen(Screen):
     }
     """
 
-    def __init__(self, player_name: str, selected_level: int | None = None) -> None:
+    def __init__(
+        self,
+        player_name: str,
+        selected_level: int | None = None,
+        world_number: int | None = None,
+    ) -> None:
         super().__init__()
         self.player_name = player_name
         self.selected_level = selected_level  # Level to highlight on open
+        # Determine world from selected_level or default to highest unlocked
+        if world_number is not None:
+            self.world_number = world_number
+        elif selected_level is not None:
+            self.world_number = (selected_level - 1) // 10 + 1
+        else:
+            self.world_number = self._get_current_world()
+
+    def _get_current_world(self) -> int:
+        """Determine the current world based on progress."""
+        progress = load_progress(self.player_name)
+        # Find highest world where level 1 is unlocked
+        for world_num in range(4, 0, -1):
+            first_level = (world_num - 1) * 10 + 1
+            if progress.is_unlocked(first_level):
+                return world_num
+        return 1
 
     def compose(self) -> ComposeResult:
-        from flashy.worlds import WORLD_1
+        from flashy.worlds import get_world
+
+        world = get_world(self.world_number)
+        if not world:
+            yield Static("World not found!")
+            return
 
         yield Header()
 
         with Center():
             with Vertical(id="map-box"):
-                yield Static(f"🏔️  {WORLD_1.name.upper()}  🏔️", id="world-title")
+                emoji = world.theme_emoji
+                title = f"{emoji}  {world.name.upper()}  {emoji}"
+                yield Static(title, id="world-title")
                 yield Static(f"Player: {self.player_name}", id="player-info")
                 yield ListView(id="level-list")
                 yield Static("", id="error-msg")
@@ -121,11 +150,13 @@ class WorldMapScreen(Screen):
         list_view.clear()
 
         progress = load_progress(self.player_name)
-        levels = get_levels_for_world(1)
+        levels = get_levels_for_world(self.world_number)
 
-        # Find current playable level (for default selection)
-        current_level = 1
-        for i in range(1, 11):
+        # Find current playable level in this world (for default selection)
+        first_level = (self.world_number - 1) * 10 + 1
+        last_level = self.world_number * 10
+        current_level = first_level
+        for i in range(first_level, last_level + 1):
             if progress.is_unlocked(i) and progress.get_stars(i) < 3:
                 current_level = i
                 break
