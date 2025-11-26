@@ -5,15 +5,16 @@ description = "Math flash card game for kids"
 authors = [
     {name = "Greg"}
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.11,<4.0"
 dependencies = [
     "vosk (==0.3.44)",
-    "sounddevice (>=0.5.3,<0.6.0)"
+    "sounddevice (>=0.5.3,<0.6.0)",
+    "textual (>=6.6.0,<7.0.0)"
 ]
 
 
 [project.scripts]
-flashy = "flashy.main:main"
+flashy = "flashy.ui.app:run_app"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

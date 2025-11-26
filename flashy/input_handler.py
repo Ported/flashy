@@ -7,6 +7,7 @@ import queue
 import sys
 import urllib.request
 import zipfile
+from collections.abc import Callable
 from pathlib import Path
 from typing import TYPE_CHECKING, Protocol
 
@@ -124,7 +125,10 @@ class VoiceInputHandler:
         self._model = Model(str(model_path))
 
     def get_answer(
-        self, prompt: str = "> ", expected: int | None = None
+        self,
+        prompt: str = "> ",
+        expected: int | None = None,
+        on_partial: Callable[[str], None] | None = None,
     ) -> tuple[int | None, str]:
         """Get an answer via voice recognition.
 
@@ -137,6 +141,7 @@ class VoiceInputHandler:
         Args:
             prompt: The prompt to display (shown before listening)
             expected: Expected answer for instant matching
+            on_partial: Optional callback for partial recognition updates
 
         Returns:
             Tuple of (parsed_answer, raw_transcript)
@@ -159,13 +164,18 @@ class VoiceInputHandler:
         def update_display(text: str) -> None:
             """Update the display with current partial/final text."""
             nonlocal last_partial
-            # Clear previous and reprint prompt + new text
-            clear_len = len(prompt) + len(last_partial) + 5
-            print("\r" + " " * clear_len + "\r", end="", flush=True)
-            print(f"{prompt}{text}", end="", flush=True)
+            if on_partial:
+                # Use callback for TUI mode
+                on_partial(text)
+            else:
+                # Terminal mode - update in place
+                clear_len = len(prompt) + len(last_partial) + 5
+                print("\r" + " " * clear_len + "\r", end="", flush=True)
+                print(f"{prompt}{text}", end="", flush=True)
             last_partial = text
 
-        print(prompt, end="", flush=True)
+        if not on_partial:
+            print(prompt, end="", flush=True)
 
         try:
             with sd.RawInputStream(
@@ -185,8 +195,9 @@ class VoiceInputHandler:
 
                         if text:
                             # Show final result
-                            update_display(f'"{text}"')
-                            print()  # Newline after final
+                            update_display(text)
+                            if not on_partial:
+                                print()  # Newline after final
 
                             # Check for give up
                             if is_give_up(text):
@@ -199,27 +210,31 @@ class VoiceInputHandler:
 
                             # Reset for next attempt
                             last_partial = ""
-                            print(prompt, end="", flush=True)
+                            if not on_partial:
+                                print(prompt, end="", flush=True)
                     else:
                         # Partial result - show what we're hearing
                         partial = json.loads(recognizer.PartialResult())
                         text = partial.get("partial", "")
 
                         if text and text != last_partial:
-                            update_display(f'"{text}"')
+                            update_display(text)
 
                             # Check for early match with expected (fuzzy matching)
                             if expected is not None:
                                 number = parse_spoken_number(text)
                                 if is_fuzzy_match(number, expected):
-                                    print()  # Newline after partial
+                                    if not on_partial:
+                                        print()  # Newline after partial
                                     return number, text
 
                             # Check for give up in partial
                             if is_give_up(text):
-                                print()  # Newline after partial
+                                if not on_partial:
+                                    print()  # Newline after partial
                                 return None, text
 
         except KeyboardInterrupt:
-            print("\n")
+            if not on_partial:
+                print("\n")
             return None, ""

@@ -1,0 +1,69 @@
+/* Flashy TUI Styles */
+
+Screen {
+    background: $surface;
+}
+
+Header {
+    dock: top;
+    background: $primary;
+}
+
+Footer {
+    dock: bottom;
+}
+
+/* Player Selection */
+#welcome-box {
+    background: $surface;
+}
+
+#player-list {
+    background: $panel;
+}
+
+#player-list > ListItem {
+    padding: 0 1;
+}
+
+#player-list > ListItem:hover {
+    background: $primary 20%;
+}
+
+#player-list > ListItem.-selected {
+    background: $primary 40%;
+}
+
+/* General styling */
+Button {
+    margin: 0 1;
+}
+
+Input {
+    border: solid $primary;
+}
+
+Input:focus {
+    border: solid $secondary;
+}
+
+/* Feedback colors */
+.correct {
+    color: $success;
+}
+
+.incorrect {
+    color: $error;
+}
+
+.success {
+    color: $success;
+}
+
+.warning {
+    color: $warning;
+}
+
+.fail {
+    color: $error;
+}
