@@ -4,8 +4,10 @@ import sys
 
 from flashy.game import display_level_summary, run_boss_level, run_level
 from flashy.history import (
+    list_players,
     load_progress,
     log_session,
+    player_exists,
     save_progress,
 )
 from flashy.input_handler import InputHandler, TextInputHandler, VoiceInputHandler
@@ -21,6 +23,83 @@ from flashy.story import (
     display_world_intro,
 )
 from flashy.worlds import get_world
+
+# ANSI colors
+GREEN = "\033[92m"
+YELLOW = "\033[93m"
+CYAN = "\033[96m"
+DIM = "\033[2m"
+RESET = "\033[0m"
+
+
+def _select_player() -> str:
+    """Display player selection screen and return selected player name."""
+    print(f"\n{CYAN}{'═' * 44}{RESET}")
+    print(f"   🐕  {CYAN}FLASHY{RESET} - Math Adventure")
+    print(f"{CYAN}{'═' * 44}{RESET}\n")
+
+    players = list_players()
+
+    if players:
+        print("Who's playing today?\n")
+        for i, name in enumerate(players, 1):
+            # Show progress summary
+            progress = load_progress(name)
+            total_stars = sum(progress.stars.values())
+            highest = progress.get_highest_unlocked()
+            print(f"  {GREEN}{i}.{RESET} {name}")
+            print(f"     {DIM}⭐ {total_stars} stars | Level {highest}{RESET}")
+        print(f"\n  {YELLOW}N.{RESET} New player")
+        print()
+
+        while True:
+            choice = input("Choose (1-" + str(len(players)) + " or N) > ").strip()
+
+            if choice.lower() == "n":
+                return _create_new_player()
+
+            try:
+                idx = int(choice) - 1
+                if 0 <= idx < len(players):
+                    name = players[idx]
+                    print(f"\n{GREEN}Welcome back, {name}!{RESET}\n")
+                    return name
+            except ValueError:
+                pass
+
+            print("Invalid choice, try again.")
+    else:
+        print("Welcome to Flashy! Let's create your profile.\n")
+        return _create_new_player()
+
+
+def _create_new_player() -> str:
+    """Create a new player profile."""
+    print("\nWhat's your name?\n")
+
+    while True:
+        name = input("Name > ").strip()
+
+        if not name:
+            print("Please enter a name.")
+            continue
+
+        # Sanitize name (remove special chars that could cause file issues)
+        safe_name = "".join(c for c in name if c.isalnum() or c in " -_").strip()
+        if not safe_name:
+            print("Please use letters and numbers only.")
+            continue
+
+        if player_exists(safe_name):
+            print(f"'{safe_name}' already exists! Choose another name.")
+            continue
+
+        # Create empty progress file
+        from flashy.history import PlayerProgress
+
+        save_progress(safe_name, PlayerProgress())
+        print(f"\n{GREEN}Welcome, {safe_name}! Let's begin your adventure!{RESET}\n")
+        return safe_name
 
 
 def _create_input_handler() -> InputHandler:
@@ -41,8 +120,11 @@ def _create_input_handler() -> InputHandler:
 
 def main() -> None:
     """Run the Flashy game."""
+    # Select or create player
+    player_name = _select_player()
+
     # Load saved progress
-    progress = load_progress()
+    progress = load_progress(player_name)
 
     # Show intro on first play
     if not progress.stars:
@@ -122,7 +204,7 @@ def main() -> None:
 
             # Save progress
             progress.set_stars(level.number, stars)
-            save_progress(progress)
+            save_progress(player_name, progress)
 
             # Log the session
             log_session(result)
@@ -173,8 +255,8 @@ def main() -> None:
                 current_level_num = next_level.number
 
     except KeyboardInterrupt:
-        print("\n\nThanks for playing Flashy! Goodbye!\n")
-        save_progress(progress)
+        print(f"\n\nThanks for playing, {player_name}! Goodbye!\n")
+        save_progress(player_name, progress)
 
 
 if __name__ == "__main__":

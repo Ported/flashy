@@ -100,16 +100,26 @@ def log_session(result: LevelResult) -> None:
         f.write(json.dumps(entry) + "\n")
 
 
-def get_progress_path() -> Path:
-    """Get the path to the progress file."""
-    progress_dir = Path.home() / ".flashy"
-    progress_dir.mkdir(exist_ok=True)
-    return progress_dir / "progress.json"
+def get_players_dir() -> Path:
+    """Get the path to the players directory."""
+    players_dir = Path.home() / ".flashy" / "players"
+    players_dir.mkdir(parents=True, exist_ok=True)
+    return players_dir
 
 
-def load_progress() -> PlayerProgress:
+def list_players() -> list[str]:
+    """List all player names."""
+    players_dir = get_players_dir()
+    players = []
+    for path in players_dir.glob("*.json"):
+        players.append(path.stem)
+    return sorted(players)
+
+
+def load_progress(player_name: str) -> PlayerProgress:
     """Load player progress from disk."""
-    progress_path = get_progress_path()
+    players_dir = get_players_dir()
+    progress_path = players_dir / f"{player_name}.json"
 
     if not progress_path.exists():
         return PlayerProgress()
@@ -124,11 +134,18 @@ def load_progress() -> PlayerProgress:
         return PlayerProgress()
 
 
-def save_progress(progress: PlayerProgress) -> None:
+def save_progress(player_name: str, progress: PlayerProgress) -> None:
     """Save player progress to disk."""
-    progress_path = get_progress_path()
+    players_dir = get_players_dir()
+    progress_path = players_dir / f"{player_name}.json"
 
     data = {"stars": progress.stars}
 
     with open(progress_path, "w") as f:
         json.dump(data, f, indent=2)
+
+
+def player_exists(player_name: str) -> bool:
+    """Check if a player profile exists."""
+    players_dir = get_players_dir()
+    return (players_dir / f"{player_name}.json").exists()
