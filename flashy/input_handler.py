@@ -17,8 +17,8 @@ if TYPE_CHECKING:
     pass
 
 SAMPLE_RATE = 16000
-MODEL_URL = "https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip"
-MODEL_NAME = "vosk-model-small-en-us-0.15"
+VOSK_MODEL_NAME = "vosk-model-en-us-0.22-lgraph"
+VOSK_MODEL_URL = f"https://alphacephei.com/vosk/models/{VOSK_MODEL_NAME}.zip"
 
 # Grammar constraint - only recognize number words for better accuracy
 NUMBER_WORDS = json.dumps([
@@ -83,14 +83,14 @@ class TextInputHandler:
             return None, raw
 
 
-def _get_model_path() -> Path:
+def _get_vosk_model_path() -> Path:
     """Get the path to the Vosk model directory."""
-    return Path.home() / ".flashy" / "models" / MODEL_NAME
+    return Path.home() / ".flashy" / "models" / VOSK_MODEL_NAME
 
 
-def _ensure_model() -> Path:
+def _ensure_vosk_model() -> Path:
     """Download the Vosk model if not present."""
-    model_path = _get_model_path()
+    model_path = _get_vosk_model_path()
 
     if model_path.exists():
         return model_path
@@ -98,8 +98,8 @@ def _ensure_model() -> Path:
     model_path.parent.mkdir(parents=True, exist_ok=True)
     zip_path = model_path.parent / "model.zip"
 
-    print("Downloading speech model (~40MB)...")
-    urllib.request.urlretrieve(MODEL_URL, zip_path)
+    print("Downloading Vosk speech model...")
+    urllib.request.urlretrieve(VOSK_MODEL_URL, zip_path)
 
     print("Extracting model...")
     with zipfile.ZipFile(zip_path, "r") as zip_ref:
@@ -121,7 +121,7 @@ class VoiceInputHandler:
 
         SetLogLevel(-1)  # Suppress Vosk logs
 
-        model_path = _ensure_model()
+        model_path = _ensure_vosk_model()
         self._model = Model(str(model_path))
 
     def get_answer(
@@ -149,7 +149,13 @@ class VoiceInputHandler:
         import sounddevice as sd
         from vosk import KaldiRecognizer
 
-        recognizer = KaldiRecognizer(self._model, SAMPLE_RATE, NUMBER_WORDS)
+        # Use grammar constraint if model supports it (lgraph models do)
+        # Models without lgraph don't support grammar constraints
+        if "lgraph" in VOSK_MODEL_NAME or "small" in VOSK_MODEL_NAME:
+            recognizer = KaldiRecognizer(self._model, SAMPLE_RATE, NUMBER_WORDS)
+        else:
+            recognizer = KaldiRecognizer(self._model, SAMPLE_RATE)
+
         q: queue.Queue[bytes] = queue.Queue()
 
         def audio_callback(

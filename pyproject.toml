@@ -9,7 +9,7 @@ requires-python = ">=3.11,<4.0"
 dependencies = [
     "vosk (==0.3.44)",
     "sounddevice (>=0.5.3,<0.6.0)",
-    "textual (>=6.6.0,<7.0.0)"
+    "textual (>=6.6.0,<7.0.0)",
 ]
 
 
