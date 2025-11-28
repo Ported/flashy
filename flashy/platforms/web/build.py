@@ -30,6 +30,7 @@ def build():
         ("flashy/core/problems.py", "flashy.core.problems"),
         ("flashy/core/scoring.py", "flashy.core.scoring"),
         ("flashy/core/number_parser.py", "flashy.core.number_parser"),
+        ("flashy/core/i18n.py", "flashy.core.i18n"),
         ("flashy/core/worlds.py", "flashy.core.worlds"),
         ("flashy/core/levels.py", "flashy.core.levels"),
         ("flashy/core/flow.py", "flashy.core.flow"),

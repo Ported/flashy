@@ -199,4 +199,4 @@ def test_full_game_playthrough_to_completion(app_page: Page) -> None:
 
     # Final screen: Game Complete - Flashy goes home!
     app_page.wait_for_selector("#game-complete-screen.active")
-    expect(app_page.locator("#game-complete-screen")).to_contain_text("Flashy find the way home")
+    expect(app_page.locator("#game-complete-screen")).to_contain_text("HOME AT LAST")

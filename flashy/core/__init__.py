@@ -23,6 +23,12 @@ from flashy.core.flow import (
     ScreenRequest,
     WorldIntroDismissed,
 )
+from flashy.core.i18n import (
+    Language,
+    get_language,
+    set_language,
+    t,
+)
 from flashy.core.levels import (
     Level,
     get_level,
@@ -80,4 +86,9 @@ __all__ = [
     # worlds
     "World",
     "get_world",
+    # i18n
+    "Language",
+    "get_language",
+    "set_language",
+    "t",
 ]

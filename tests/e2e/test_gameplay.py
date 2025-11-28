@@ -165,14 +165,6 @@ def test_cheat_f10_fails_all_problems(app_page: Page) -> None:
     expect(stars).to_be_visible()
 
 
-def test_input_toggle_button_visible(app_page: Page) -> None:
-    """The input mode toggle button should be visible during gameplay."""
-    navigate_to_level(app_page)
-
-    toggle_btn = app_page.locator("#input-toggle")
-    expect(toggle_btn).to_be_visible()
-
-
 def test_score_bar_visible(app_page: Page) -> None:
     """Score bar should be visible during gameplay."""
     navigate_to_level(app_page)

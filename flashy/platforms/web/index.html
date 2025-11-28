@@ -5,6 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flashy - Math Adventure</title>
     <style>
+        /* Language toggle in header */
+        .language-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 100;
+            display: flex;
+            gap: 5px;
+        }
+
+        .lang-btn {
+            padding: 5px 10px;
+            border: 2px solid #0ff;
+            border-radius: 4px;
+            background: #1a1a2e;
+            color: #888;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .lang-btn.active {
+            background: #0ff;
+            color: #1a1a2e;
+            font-weight: bold;
+        }
+
+        .lang-btn:hover:not(.active) {
+            background: #0ff3;
+            color: #fff;
+        }
+
         * {
             box-sizing: border-box;
         }
@@ -432,7 +464,13 @@
     </style>
 </head>
 <body>
-    <h1>Flashy - Math Adventure</h1>
+    <!-- Language Toggle -->
+    <div class="language-toggle">
+        <button id="lang-en" class="lang-btn active" onclick="setLanguage('en')">EN</button>
+        <button id="lang-sv" class="lang-btn" onclick="setLanguage('sv')">SV</button>
+    </div>
+
+    <h1 id="app-title">Flashy - Math Adventure</h1>
 
     <!-- Loading Screen -->
     <div id="loading-screen" class="screen active loading-screen">
@@ -448,21 +486,21 @@
     > ^ <
    /|   |\
         </div>
-        <h2 style="text-align: center;">Who's playing today?</h2>
+        <h2 id="player-who-playing" style="text-align: center;">Who's playing today?</h2>
         <ul id="player-list" class="player-list"></ul>
         <div style="text-align: center;">
-            <button class="btn" onclick="showNewPlayerScreen()">New Player</button>
+            <button id="btn-new-player" class="btn" onclick="showNewPlayerScreen()">New Player</button>
         </div>
     </div>
 
     <!-- New Player Screen -->
     <div id="new-player-screen" class="screen">
-        <h2 style="text-align: center;">New Player</h2>
+        <h2 id="new-player-title" style="text-align: center;">New Player</h2>
         <input type="text" id="new-player-name" placeholder="Enter your name...">
         <p id="new-player-error" class="error-msg"></p>
         <div style="text-align: center;">
-            <button class="btn" onclick="createPlayer()">Create</button>
-            <button class="btn btn-danger" onclick="showScreen('player-select-screen')">Cancel</button>
+            <button id="btn-create" class="btn" onclick="createPlayer()">Create</button>
+            <button id="btn-cancel" class="btn btn-danger" onclick="showScreen('player-select-screen')">Cancel</button>
         </div>
     </div>
 
@@ -475,33 +513,29 @@
  /|   |\
         </div>
         <h2 style="text-align: center; color: #0ff;">FLASHY</h2>
-        <p class="story-text">
-            "Oh no! Where am I?"<br><br>
-            "I chased that butterfly too far..."<br><br>
-            "I need to find my way home!"
-        </p>
-        <p class="hint">Click anywhere to continue...</p>
+        <p id="intro-story" class="story-text"></p>
+        <p id="intro-hint" class="hint">Click anywhere to continue...</p>
     </div>
 
     <!-- World Intro Screen -->
     <div id="world-intro-screen" class="screen">
         <h2 id="world-intro-title" style="text-align: center; color: #0ff;"></h2>
         <p id="world-intro-text" class="story-text"></p>
-        <p class="hint">Click anywhere to continue...</p>
+        <p id="world-intro-hint" class="hint">Click anywhere to continue...</p>
     </div>
 
     <!-- Friend Meet Screen (before level 6) -->
     <div id="friend-meet-screen" class="screen">
         <h2 id="friend-meet-title" style="text-align: center; color: #ff0;"></h2>
         <p id="friend-meet-text" class="story-text"></p>
-        <p class="hint">Click anywhere to continue...</p>
+        <p id="friend-meet-hint" class="hint">Click anywhere to continue...</p>
     </div>
 
     <!-- Boss Intro Screen (before level 10) -->
     <div id="boss-intro-screen" class="screen">
         <h2 id="boss-intro-title" style="text-align: center; color: #f00;"></h2>
         <p id="boss-intro-text" class="story-text"></p>
-        <p class="hint">Click anywhere to continue...</p>
+        <p id="boss-intro-hint" class="hint">Click anywhere to continue...</p>
     </div>
 
     <!-- World Map Screen -->
@@ -524,7 +558,7 @@
         </div>
         <p id="world-map-error" class="error-msg"></p>
         <div class="mountain-path-footer">
-            <button class="btn btn-danger" onclick="backToPlayerSelect()">Back</button>
+            <button id="btn-back-world" class="btn btn-danger" onclick="backToPlayerSelect()">Back</button>
         </div>
     </div>
 
@@ -565,27 +599,24 @@
                 <button class="numpad-btn numpad-enter" onclick="numpadEnter()">Enter</button>
             </div>
         </div>
-        <div style="text-align: center; margin-top: 15px;">
-            <button id="input-toggle" class="btn" onclick="toggleInputMode()" style="font-size: 14px; padding: 8px 16px;"></button>
-        </div>
     </div>
 
     <!-- Result Screen -->
     <div id="result-screen" class="screen">
         <h2 id="result-title" style="text-align: center;"></h2>
         <div id="result-stars" class="stars"></div>
-        <p id="result-new-best" style="text-align: center; color: #0f0; display: none;">NEW BEST!</p>
+        <p id="result-new-best" style="text-align: center; color: #0f0; display: none;"></p>
         <p id="result-stats" style="text-align: center;"></p>
         <p id="result-score" style="text-align: center;"></p>
         <div style="text-align: center; margin-top: 20px;">
-            <button class="btn" onclick="resultContinue()">Continue</button>
-            <button class="btn" onclick="resultReplay()">Replay</button>
+            <button id="btn-continue" class="btn" onclick="resultContinue()">Continue</button>
+            <button id="btn-replay" class="btn" onclick="resultReplay()">Replay</button>
         </div>
     </div>
 
     <!-- Boss Victory Screen -->
     <div id="boss-victory-screen" class="screen">
-        <h2 style="text-align: center; color: #0f0;">VICTORY!</h2>
+        <h2 id="boss-victory-title" style="text-align: center; color: #0f0;"></h2>
         <div class="ascii-art">
     /\_/\
    ( ^.^ )
@@ -593,12 +624,12 @@
    /|   |\
         </div>
         <p id="boss-victory-text" class="story-text"></p>
-        <p class="hint">Click anywhere to continue...</p>
+        <p id="boss-victory-hint" class="hint">Click anywhere to continue...</p>
     </div>
 
     <!-- Game Complete Screen -->
     <div id="game-complete-screen" class="screen">
-        <h2 style="text-align: center; color: #f0f;">HOME AT LAST!</h2>
+        <h2 id="game-complete-title" style="text-align: center; color: #f0f;"></h2>
         <div class="ascii-art">
       /\_/\           /\_/\           /\_/\
      ( ^.^ )         ( o.o )         ( o.o )
@@ -606,16 +637,12 @@
      /|   |\   ~     /|   |\   ~     /|   |\
      FLASHY           MOM             DAD
         </div>
-        <p class="story-text">
-            Congratulations!<br>
-            You helped Flashy find the way home!
-        </p>
-        <p class="hint">Click anywhere to return to menu...</p>
+        <p id="game-complete-story" class="story-text"></p>
+        <p id="game-complete-hint" class="hint"></p>
     </div>
 
-    <!-- Pyodide and Vosk -->
+    <!-- Pyodide -->
     <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vosk-browser@0.0.8/dist/vosk.js"></script>
 
     <script type="module">
         // ============================================================
@@ -627,11 +654,6 @@
         let currentPlayer = null;
         let currentWorld = 1;
         let currentLevel = null;
-        let voskModel = null;
-        let recognizer = null;
-        let audioContext = null;
-        let mediaStream = null;
-        let inputMode = 'voice'; // 'voice' or 'keyboard'
 
         // Make functions available globally for onclick handlers
         window.showNewPlayerScreen = showNewPlayerScreen;
@@ -642,7 +664,75 @@
         window.backToPlayerSelect = backToPlayerSelect;
         window.resultContinue = resultContinue;
         window.resultReplay = resultReplay;
-        window.toggleInputMode = toggleInputMode;
+        window.setLanguage = setLanguage;
+
+        // ============================================================
+        // Internationalization (i18n)
+        // ============================================================
+        function t(key) {
+            // Get translation from Python's i18n module
+            if (!pyodide) return key;
+            try {
+                return pyodide.runPython(`
+                    from flashy.core.i18n import t
+                    t("${key}")
+                `);
+            } catch (e) {
+                return key;
+            }
+        }
+
+        function setLanguage(lang) {
+            if (!pyodide) return;
+            pyodide.runPython(`
+                from flashy.core.i18n import set_language
+                set_language("${lang}")
+            `);
+            localStorage.setItem('flashy_language', lang);
+            updateLanguageButtons(lang);
+            updateAllTranslations();
+        }
+
+        function updateLanguageButtons(lang) {
+            document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+            document.getElementById('lang-sv').classList.toggle('active', lang === 'sv');
+        }
+
+        function detectBrowserLanguage() {
+            // Check localStorage first
+            const saved = localStorage.getItem('flashy_language');
+            if (saved === 'en' || saved === 'sv') {
+                return saved;
+            }
+            // Check browser language
+            const browserLang = navigator.language || navigator.userLanguage || 'en';
+            return browserLang.startsWith('sv') ? 'sv' : 'en';
+        }
+
+        function updateAllTranslations() {
+            // Update all static UI elements with translations
+            document.getElementById('app-title').textContent = t('app.title');
+            document.getElementById('player-who-playing').textContent = t('player.who_playing');
+            document.getElementById('btn-new-player').textContent = t('player.new_player');
+            document.getElementById('new-player-title').textContent = t('player.new_title');
+            document.getElementById('new-player-name').placeholder = t('player.enter_name');
+            document.getElementById('btn-create').textContent = t('player.create');
+            document.getElementById('btn-cancel').textContent = t('player.cancel');
+            document.getElementById('intro-story').innerHTML = t('intro.story').replace(/\n/g, '<br>');
+            document.getElementById('intro-hint').textContent = t('intro.hint');
+            document.getElementById('world-intro-hint').textContent = t('intro.hint');
+            document.getElementById('friend-meet-hint').textContent = t('intro.hint');
+            document.getElementById('boss-intro-hint').textContent = t('intro.hint');
+            document.getElementById('boss-victory-hint').textContent = t('intro.hint');
+            document.getElementById('btn-back-world').textContent = t('nav.back');
+            document.getElementById('btn-continue').textContent = t('nav.continue');
+            document.getElementById('btn-replay').textContent = t('nav.replay');
+            document.getElementById('boss-victory-title').textContent = t('victory.title');
+            document.getElementById('game-complete-title').textContent = t('game_complete.title');
+            document.getElementById('game-complete-story').innerHTML = t('game_complete.story').replace(/\n/g, '<br>');
+            document.getElementById('game-complete-hint').textContent = t('game_complete.hint');
+            document.getElementById('result-new-best').textContent = t('result.new_best');
+        }
 
         // ============================================================
         // Initialization
@@ -655,10 +745,16 @@
                 updateLoadingStatus('Setting up Python environment...');
                 await setupPythonEnvironment();
 
-                updateLoadingStatus('Loading speech model...');
-                await initVosk();
+                // Initialize language from browser/localStorage
+                const detectedLang = detectBrowserLanguage();
+                pyodide.runPython(`
+                    from flashy.core.i18n import set_language
+                    set_language("${detectedLang}")
+                `);
+                updateLanguageButtons(detectedLang);
+                updateAllTranslations();
 
-                updateLoadingStatus('Ready!');
+                updateLoadingStatus(t('loading.ready'));
 
                 // Initialize GameFlow
                 gameFlow = pyodide.runPython(`
@@ -685,71 +781,6 @@
             const coreCode = await response.text();
 
             pyodide.runPython(coreCode);
-        }
-
-        async function initVosk() {
-            try {
-                // Load model from our CDN (39MB, cached after first load)
-                const MODEL_URL = 'https://cdn.flashycards.org/vosk-model-small-en-us-0.15.zip';
-
-                voskModel = await Vosk.createModel(MODEL_URL, (progress) => {
-                    const pct = Math.round(progress.loaded / progress.total * 100);
-                    updateLoadingStatus(`Loading speech model... ${pct}%`);
-                });
-
-                recognizer = new voskModel.KaldiRecognizer(16000);
-
-                // Handle final recognition results
-                recognizer.on('result', (message) => {
-                    const result = message.result;
-                    if (result && result.text) {
-                        handleSpeechResult(result.text);
-                    }
-                });
-
-                // Handle partial results (show what user is saying)
-                recognizer.on('partialresult', (message) => {
-                    const partial = message.result;
-                    if (partial && partial.partial) {
-                        // Update the answer box with partial result
-                        const text = partial.partial.trim();
-                        if (text) {
-                            currentAnswer = text;
-                            updateAnswerBox();
-                        }
-                    }
-                });
-
-                console.log('Vosk initialized successfully');
-
-            } catch (error) {
-                console.warn('Vosk init failed, using keyboard fallback:', error);
-                // Fallback to keyboard input if vosk fails
-            }
-        }
-
-        function handleSpeechResult(text) {
-            // Only process if on gameplay screen
-            if (!document.getElementById('gameplay-screen').classList.contains('active')) {
-                return;
-            }
-
-            // Parse the spoken text to a number using Python's number_parser
-            try {
-                const parsed = pyodide.runPython(`
-                    from flashy.core.number_parser import parse_spoken_number
-                    parse_spoken_number("${text.replace(/"/g, '\\"')}")
-                `);
-
-                if (parsed !== null) {
-                    console.log(`Speech: "${text}" -> ${parsed}`);
-                    submitAnswer(parsed);
-                    currentAnswer = '';
-                    updateAnswerBox();
-                }
-            } catch (err) {
-                console.warn('Number parse error:', err);
-            }
         }
 
         // ============================================================
@@ -827,7 +858,7 @@
             list.innerHTML = '';
 
             if (players.length === 0) {
-                list.innerHTML = '<li style="text-align: center; color: #888;">No players yet!</li>';
+                list.innerHTML = `<li style="text-align: center; color: #888;">${t('player.no_players')}</li>`;
             } else {
                 players.forEach(name => {
                     const progress = pyodide.runPython(`
@@ -839,7 +870,7 @@
                     const highest = progress.get_highest_unlocked();
 
                     const li = document.createElement('li');
-                    li.innerHTML = `${name} <span style="color: #888;">Level ${highest}</span>`;
+                    li.innerHTML = `${name} <span style="color: #888;">${t('player.level')} ${highest}</span>`;
                     li.onclick = () => selectPlayer(name);
                     list.appendChild(li);
                 });
@@ -879,14 +910,14 @@
             const errorEl = document.getElementById('new-player-error');
 
             if (!name) {
-                errorEl.textContent = 'Please enter a name';
+                errorEl.textContent = t('player.error_empty');
                 return;
             }
 
             // Sanitize and check
             const safeName = name.replace(/[^a-zA-Z0-9 \-_]/g, '').trim();
             if (!safeName) {
-                errorEl.textContent = 'Please use letters and numbers only';
+                errorEl.textContent = t('player.error_invalid');
                 return;
             }
 
@@ -896,7 +927,7 @@
             `);
 
             if (exists) {
-                errorEl.textContent = `'${safeName}' already exists!`;
+                errorEl.textContent = t('player.error_exists').replace('{name}', safeName);
                 return;
             }
 
@@ -945,9 +976,11 @@
                 get_world(${worldNumber})
             `);
 
+            const worldName = t(`world.${worldNumber}.name`);
+            const worldIntro = t(`world.${worldNumber}.intro`);
             document.getElementById('world-intro-title').textContent =
-                `${world.theme_emoji} ${world.name} ${world.theme_emoji}`;
-            document.getElementById('world-intro-text').textContent = world.intro_text;
+                `${world.theme_emoji} ${worldName} ${world.theme_emoji}`;
+            document.getElementById('world-intro-text').innerHTML = worldIntro.replace(/\n/g, '<br>');
 
             showScreen('world-intro-screen');
 
@@ -967,15 +1000,12 @@
             currentPlayer = playerName;
             currentWorld = worldNumber;
 
-            const world = pyodide.runPython(`
-                from flashy.core.worlds import get_world
-                get_world(${worldNumber})
-            `);
-
+            const friendName = t(`world.${worldNumber}.friend_name`);
+            const friendIntro = t(`world.${worldNumber}.friend_intro`);
             document.getElementById('friend-meet-title').textContent =
-                `Meet ${world.friend_name}!`;
-            document.getElementById('friend-meet-text').textContent =
-                world.friend_intro || `You found a new friend in ${world.name}!`;
+                `Meet ${friendName}!`;
+            document.getElementById('friend-meet-text').innerHTML =
+                friendIntro.replace(/\n/g, '<br>');
 
             showScreen('friend-meet-screen');
 
@@ -995,15 +1025,12 @@
             currentPlayer = playerName;
             currentWorld = worldNumber;
 
-            const world = pyodide.runPython(`
-                from flashy.core.worlds import get_world
-                get_world(${worldNumber})
-            `);
-
+            const bossName = t(`world.${worldNumber}.boss_name`);
+            const bossIntro = t(`world.${worldNumber}.boss_intro`);
             document.getElementById('boss-intro-title').textContent =
-                `⚔️ ${world.boss_name} Appears! ⚔️`;
-            document.getElementById('boss-intro-text').textContent =
-                world.boss_intro || `The boss of ${world.name} blocks your path!`;
+                `⚔️ ${bossName} Appears! ⚔️`;
+            document.getElementById('boss-intro-text').innerHTML =
+                bossIntro.replace(/\n/g, '<br>');
 
             showScreen('boss-intro-screen');
 
@@ -1044,9 +1071,10 @@
                 get_world(${currentWorld})
             `);
 
+            const worldName = t(`world.${currentWorld}.name`);
             document.getElementById('world-map-title').textContent =
-                `${world.theme_emoji} ${world.name} ${world.theme_emoji}`;
-            document.getElementById('world-map-player').textContent = `Player: ${playerName}`;
+                `${world.theme_emoji} ${worldName} ${world.theme_emoji}`;
+            document.getElementById('world-map-player').textContent = `${playerName}`;
 
             // Apply world-specific class for theming
             const mountainPath = document.getElementById('mountain-path');
@@ -1091,12 +1119,13 @@
                 node.style.left = `calc(${pos.x}% - 22px)`;
                 node.style.top = `calc(${pos.y}% - 22px)`;
 
-                // Node content
+                // Node content - use translated level name
                 const levelNum = level.level_in_world;
+                const levelName = t(`level.${level.number}.name`);
                 const icon = !unlocked ? '🔒' : levelNum;
                 node.innerHTML = `
                     <span>${icon}</span>
-                    <span class="level-name">${level.name}</span>
+                    <span class="level-name">${levelName}</span>
                     ${unlocked && stars > 0 ? `<span class="level-stars">${'⭐'.repeat(stars)}</span>` : ''}
                 `;
 
@@ -1142,9 +1171,10 @@
 
             const level = gameController.level;
             const isBoss = gameController.is_timed;
+            const levelName = t(`level.${levelNumber}.name`);
 
             document.getElementById('gameplay-title').textContent =
-                isBoss ? `BOSS: ${level.name}` : `Level ${level.number}: ${level.name}`;
+                isBoss ? `BOSS: ${levelName}` : `${t('player.level')} ${level.number}: ${levelName}`;
             document.getElementById('gameplay-title').style.color = isBoss ? '#f00' : '#0f0';
 
             // Timer for boss levels
@@ -1230,10 +1260,10 @@
 
             const feedbackEl = document.getElementById('feedback');
             if (feedback.is_correct) {
-                feedbackEl.textContent = `Correct! +${feedback.points_earned}`;
+                feedbackEl.textContent = `${t('gameplay.correct')} +${feedback.points_earned}`;
                 feedbackEl.className = 'feedback correct';
             } else {
-                feedbackEl.textContent = `Nope! Answer: ${feedback.correct_answer}`;
+                feedbackEl.textContent = t('gameplay.wrong').replace('{answer}', feedback.correct_answer);
                 feedbackEl.className = 'feedback incorrect';
             }
 
@@ -1279,7 +1309,7 @@
         function showResultScreen(params) {
             resultParams = params;
 
-            const title = params.stars >= 2 ? 'Level Complete!' : 'Keep Trying!';
+            const title = params.stars >= 2 ? t('result.complete') : t('result.failed');
             document.getElementById('result-title').textContent = title;
             document.getElementById('result-title').style.color = params.stars >= 2 ? '#0f0' : '#ff0';
 
@@ -1290,13 +1320,10 @@
                 params.is_new_best ? 'block' : 'none';
 
             document.getElementById('result-stats').textContent =
-                `Correct: ${params.correct}/${params.total}`;
+                t('result.correct').replace('{correct}', params.correct).replace('{total}', params.total);
 
-            let scoreText = `Score: ${params.score}`;
-            if (params.best_streak >= 2) {
-                scoreText += ` | Best streak: ${params.best_streak}`;
-            }
-            document.getElementById('result-score').textContent = scoreText;
+            document.getElementById('result-score').textContent =
+                t('result.score').replace('{score}', params.score);
 
             showScreen('result-screen');
         }
@@ -1325,13 +1352,11 @@
         // Boss Victory Screen
         // ============================================================
         function showBossVictoryScreen(playerName, worldNumber) {
-            const world = pyodide.runPython(`
-                from flashy.core.worlds import get_world
-                get_world(${worldNumber})
-            `);
+            const bossName = t(`world.${worldNumber}.boss_name`);
+            const bossDefeat = t(`world.${worldNumber}.boss_defeat`);
 
-            document.getElementById('boss-victory-text').textContent =
-                `You defeated ${world.boss_name}!\n\n${world.boss_defeat}`;
+            document.getElementById('boss-victory-text').innerHTML =
+                `You defeated ${bossName}!<br><br>${bossDefeat.replace(/\n/g, '<br>')}`;
 
             showScreen('boss-victory-screen');
 
@@ -1360,9 +1385,8 @@
         }
 
         // ============================================================
-        // Voice Recognition
+        // Input Handling
         // ============================================================
-        let isListening = false;
         let currentAnswer = '';
 
         function updateAnswerBox() {
@@ -1376,97 +1400,18 @@
             }
         }
 
-        function updateInputToggle() {
-            const btn = document.getElementById('input-toggle');
-            if (inputMode === 'voice') {
-                btn.textContent = 'Switch to Keyboard';
-                document.getElementById('voice-status').textContent = '🎤 Listening...';
-            } else {
-                btn.textContent = 'Switch to Voice';
-                document.getElementById('voice-status').textContent = 'Type answer + Enter';
-            }
-        }
-
-        function toggleInputMode() {
-            if (inputMode === 'voice') {
-                inputMode = 'keyboard';
-                stopVoiceListening();
-            } else {
-                inputMode = 'voice';
-                startVoiceListening();
-            }
-            updateInputToggle();
+        function startListening() {
             currentAnswer = '';
             updateAnswerBox();
-        }
+            document.getElementById('voice-status').textContent = t('gameplay.type_answer');
 
-        async function startVoiceListening() {
-            if (!recognizer || isListening) return;
-
-            try {
-                isListening = true;
-                document.getElementById('voice-status').textContent = 'Requesting microphone...';
-
-                mediaStream = await navigator.mediaDevices.getUserMedia({
-                    audio: {
-                        echoCancellation: true,
-                        noiseSuppression: true,
-                        sampleRate: 16000
-                    }
-                });
-                audioContext = new AudioContext({ sampleRate: 16000 });
-
-                const source = audioContext.createMediaStreamSource(mediaStream);
-                const processor = audioContext.createScriptProcessor(4096, 1, 1);
-
-                processor.onaudioprocess = (e) => {
-                    if (recognizer) {
-                        recognizer.acceptWaveform(e.inputBuffer);
-                    }
-                };
-
-                source.connect(processor);
-                processor.connect(audioContext.destination);
-
-                document.getElementById('voice-status').textContent = '🎤 Listening...';
-            } catch (err) {
-                console.warn('Microphone error:', err);
-                inputMode = 'keyboard';
-                updateInputToggle();
-                isListening = false;
-            }
-        }
-
-        function stopVoiceListening() {
-            isListening = false;
-            if (mediaStream) {
-                mediaStream.getTracks().forEach(track => track.stop());
-                mediaStream = null;
-            }
-            if (audioContext) {
-                audioContext.close();
-                audioContext = null;
-            }
-        }
-
-        async function startListening() {
-            currentAnswer = '';
-            updateAnswerBox();
-            updateInputToggle();
-
-            // Always enable keyboard input
+            // Enable keyboard input
             document.removeEventListener('keydown', handleKeyboardInput);
             document.addEventListener('keydown', handleKeyboardInput);
-
-            // Start voice if in voice mode and recognizer is available
-            if (inputMode === 'voice' && recognizer) {
-                await startVoiceListening();
-            }
         }
 
         function stopListening() {
             document.removeEventListener('keydown', handleKeyboardInput);
-            stopVoiceListening();
         }
 
         function handleKeyboardInput(event) {
