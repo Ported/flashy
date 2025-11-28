@@ -182,32 +182,162 @@
             text-align: center;
         }
 
-        .level-list {
-            max-height: 300px;
-            overflow-y: auto;
+        /* Mountain Path Layout */
+        .mountain-path {
+            position: relative;
+            width: 100%;
+            height: 420px;
+            overflow: hidden;
         }
 
-        .level-item {
-            padding: 10px;
-            margin: 5px 0;
-            background: #1a1a2e;
-            border-radius: 5px;
-            cursor: pointer;
+        .path-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+        }
+
+        /* World 1: Addition Alps - snowy mountain gradient */
+        .world-1 .path-background {
+            background: linear-gradient(180deg,
+                #1a1a3e 0%,      /* dark sky */
+                #2a3a5e 30%,     /* mountain top */
+                #4a5a7e 60%,     /* mid mountain */
+                #3a4a3e 100%);   /* forest base */
+        }
+
+        /* World 2: Subtraction Swamp - murky gradient */
+        .world-2 .path-background {
+            background: linear-gradient(180deg,
+                #1a2a1a 0%,
+                #2a3a2a 40%,
+                #1a3a2a 70%,
+                #0a2a1a 100%);
+        }
+
+        /* World 3: Multiplication Metropolis - city gradient */
+        .world-3 .path-background {
+            background: linear-gradient(180deg,
+                #0a0a1a 0%,
+                #1a1a3a 40%,
+                #2a2a4a 70%,
+                #1a1a2a 100%);
+        }
+
+        /* World 4: Division Desert - sandy gradient */
+        .world-4 .path-background {
+            background: linear-gradient(180deg,
+                #3a2a1a 0%,
+                #5a4a2a 40%,
+                #6a5a3a 70%,
+                #4a3a2a 100%);
+        }
+
+        /* The winding path SVG */
+        .path-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .world-1 .path-line path { stroke: #8899aa; }
+        .world-2 .path-line path { stroke: #556644; }
+        .world-3 .path-line path { stroke: #555566; }
+        .world-4 .path-line path { stroke: #aa9966; }
+
+        /* Level nodes on the path */
+        .level-node {
+            position: absolute;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
             display: flex;
-            justify-content: space-between;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 2;
+            transition: transform 0.15s, box-shadow 0.15s;
+            border: 3px solid;
         }
 
-        .level-item:hover {
-            background: #0ff3;
+        .level-node:hover:not(.locked) {
+            transform: scale(1.15);
+            box-shadow: 0 0 15px rgba(255,255,255,0.5);
         }
 
-        .level-item.locked {
-            opacity: 0.5;
+        .level-node:active:not(.locked) {
+            transform: scale(0.95);
+        }
+
+        /* Unlocked but not completed (use 'available' to avoid regex collision with 'locked') */
+        .level-node.available {
+            background: linear-gradient(135deg, #2a4a6a, #1a3a5a);
+            border-color: #0ff;
+            color: #fff;
+        }
+
+        /* Completed with stars */
+        .level-node.completed {
+            background: linear-gradient(135deg, #3a6a3a, #2a5a2a);
+            border-color: #0f0;
+            color: #fff;
+        }
+
+        .level-node.completed.perfect {
+            background: linear-gradient(135deg, #6a5a2a, #5a4a1a);
+            border-color: #ff0;
+            color: #fff;
+        }
+
+        /* Locked */
+        .level-node.locked {
+            background: linear-gradient(135deg, #3a3a3a, #2a2a2a);
+            border-color: #555;
+            color: #666;
             cursor: not-allowed;
         }
 
-        .level-item .stars-display {
-            color: #ff0;
+        /* Stars display below node */
+        .level-stars {
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        /* Level name tooltip on hover */
+        .level-node .level-name {
+            display: none;
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            white-space: nowrap;
+            color: #fff;
+            font-weight: normal;
+        }
+
+        .level-node:hover .level-name {
+            display: block;
+        }
+
+        /* Back button positioning */
+        .mountain-path-footer {
+            text-align: center;
+            margin-top: 10px;
         }
 
         input[type="text"] {
@@ -376,11 +506,24 @@
 
     <!-- World Map Screen -->
     <div id="world-map-screen" class="screen">
-        <h2 id="world-map-title" style="text-align: center;"></h2>
-        <p id="world-map-player" style="text-align: center; color: #888;"></p>
-        <div id="level-list" class="level-list"></div>
+        <h2 id="world-map-title" style="text-align: center; margin: 0 0 5px 0;"></h2>
+        <p id="world-map-player" style="text-align: center; color: #888; margin: 0 0 10px 0; font-size: 14px;"></p>
+        <div id="mountain-path" class="mountain-path">
+            <div class="path-background"></div>
+            <svg class="path-line" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <path d="M 50 95
+                         Q 25 85, 30 75
+                         Q 35 65, 70 60
+                         Q 80 55, 70 45
+                         Q 60 35, 30 35
+                         Q 20 35, 30 25
+                         Q 40 15, 50 10"
+                      fill="none" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+            <div id="level-nodes"></div>
+        </div>
         <p id="world-map-error" class="error-msg"></p>
-        <div style="text-align: center; margin-top: 10px;">
+        <div class="mountain-path-footer">
             <button class="btn btn-danger" onclick="backToPlayerSelect()">Back</button>
         </div>
     </div>
@@ -876,6 +1019,22 @@
         // ============================================================
         // World Map Screen
         // ============================================================
+
+        // Positions for the 10 level nodes along the winding path (percentages)
+        // Starts at bottom (level 1) and winds up to top (level 10)
+        const LEVEL_POSITIONS = [
+            { x: 50, y: 90 },   // Level 1 - base
+            { x: 32, y: 80 },   // Level 2
+            { x: 28, y: 70 },   // Level 3
+            { x: 45, y: 62 },   // Level 4
+            { x: 68, y: 55 },   // Level 5
+            { x: 72, y: 45 },   // Level 6 - friend meet
+            { x: 55, y: 38 },   // Level 7
+            { x: 32, y: 32 },   // Level 8
+            { x: 28, y: 22 },   // Level 9
+            { x: 50, y: 8 },    // Level 10 - boss/summit
+        ];
+
         function showWorldMapScreen(playerName, selectedLevel, worldNumber) {
             currentPlayer = playerName;
             currentWorld = worldNumber || currentWorld || 1;
@@ -889,6 +1048,10 @@
                 `${world.theme_emoji} ${world.name} ${world.theme_emoji}`;
             document.getElementById('world-map-player').textContent = `Player: ${playerName}`;
 
+            // Apply world-specific class for theming
+            const mountainPath = document.getElementById('mountain-path');
+            mountainPath.className = `mountain-path world-${currentWorld}`;
+
             const progress = pyodide.runPython(`
                 from flashy.platforms.web.storage import WebStorage
                 WebStorage().load_progress("${playerName}")
@@ -899,30 +1062,49 @@
                 get_levels_for_world(${currentWorld})
             `).toJs();
 
-            const list = document.getElementById('level-list');
-            list.innerHTML = '';
+            const nodesContainer = document.getElementById('level-nodes');
+            nodesContainer.innerHTML = '';
 
-            // Show levels from 10 to 1
-            [...levels].reverse().forEach(level => {
+            // Render level nodes at their positions (in reverse DOM order for test compatibility)
+            // Tests use .last to get level 1, so we render 10→1 in DOM but position visually 1→10
+            [...levels].reverse().forEach((level) => {
                 const stars = progress.get_stars(level.number);
                 const unlocked = progress.is_unlocked(level.number);
+                const index = level.level_in_world - 1; // 0-based index for position
+                const pos = LEVEL_POSITIONS[index];
 
-                const div = document.createElement('div');
-                div.className = 'level-item' + (unlocked ? '' : ' locked');
+                const node = document.createElement('div');
+                node.className = 'level-node level-item'; // Keep level-item for E2E test compatibility
 
-                const starsStr = unlocked ? '⭐'.repeat(stars) + '·'.repeat(3 - stars) : '···';
-                const icon = !unlocked ? '🔒' : (stars < 3 ? '▶' : '✓');
+                if (!unlocked) {
+                    node.classList.add('locked');
+                } else if (stars > 0) {
+                    node.classList.add('completed');
+                    if (stars === 3) {
+                        node.classList.add('perfect');
+                    }
+                } else {
+                    node.classList.add('available');
+                }
 
-                div.innerHTML = `
-                    <span>${icon} [${level.level_in_world}] ${level.name}</span>
-                    <span class="stars-display">${starsStr}</span>
+                // Position the node
+                node.style.left = `calc(${pos.x}% - 22px)`;
+                node.style.top = `calc(${pos.y}% - 22px)`;
+
+                // Node content
+                const levelNum = level.level_in_world;
+                const icon = !unlocked ? '🔒' : levelNum;
+                node.innerHTML = `
+                    <span>${icon}</span>
+                    <span class="level-name">${level.name}</span>
+                    ${unlocked && stars > 0 ? `<span class="level-stars">${'⭐'.repeat(stars)}</span>` : ''}
                 `;
 
                 if (unlocked) {
-                    div.onclick = () => selectLevel(level.number);
+                    node.onclick = () => selectLevel(level.number);
                 }
 
-                list.appendChild(div);
+                nodesContainer.appendChild(node);
             });
 
             showScreen('world-map-screen');

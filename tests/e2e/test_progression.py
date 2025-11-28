@@ -94,7 +94,7 @@ def test_stars_are_displayed_on_world_map(app_page: Page) -> None:
 
     # First level should show stars (last in DOM)
     first_level = app_page.locator(".level-item").last
-    stars_display = first_level.locator(".stars-display")
+    stars_display = first_level.locator(".level-stars")
     # Should have star characters (⭐ emoji, not ★)
     expect(stars_display).to_contain_text("⭐")
 
