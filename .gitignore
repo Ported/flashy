@@ -32,3 +32,6 @@ Thumbs.db
 spike
 .wrangler/
 node_modules/
+
+*.af~lock~
+*.af

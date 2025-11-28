@@ -190,6 +190,27 @@ class TestGameController:
         mock_storage.save_progress.assert_called_once()
         mock_storage.log_session.assert_called_once()
 
+    def test_finish_saves_best_score(self) -> None:
+        # Create a mock storage backend with mock progress
+        mock_progress = MagicMock()
+        mock_progress.get_stars.return_value = 0
+        mock_storage = MagicMock()
+        mock_storage.load_progress.return_value = mock_progress
+
+        controller = GameController("test_player", 1, storage=mock_storage)
+
+        # Answer all correctly
+        for _ in range(controller.total_problems):
+            problem = controller.current_problem
+            if problem is None:
+                break
+            controller.submit_answer(problem.answer, time_taken=2.0)
+
+        controller.finish()
+
+        # Verify set_best_score was called with level and score
+        mock_progress.set_best_score.assert_called_once_with(1, controller.total_score)
+
     def test_finish_returns_stars(self) -> None:
         # Create a mock storage backend
         mock_storage = MagicMock()

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <title>Flashy - Math Adventure</title>
     <style>
         /* Language toggle in header */
@@ -199,15 +200,8 @@
             margin-top: 5px;
         }
 
-        .feedback {
-            text-align: center;
-            font-size: 24px;
-            padding: 10px;
-            min-height: 40px;
-        }
-
-        .feedback.correct { color: #0f0; }
-        .feedback.incorrect { color: #f00; }
+        .problem-display.correct { color: #0f0; }
+        .problem-display.incorrect { color: #f00; }
 
         .stars {
             font-size: 36px;
@@ -461,6 +455,61 @@
         .numpad-enter:hover {
             background: #0c4;
         }
+
+        /* Leaderboard styles */
+        .leaderboard-entry {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            margin: 5px 0;
+            background: #1a1a2e;
+            border-radius: 5px;
+            border-left: 3px solid #0ff;
+        }
+
+        .leaderboard-entry.top-3 {
+            border-left-color: #ff0;
+            background: #2a2a1e;
+        }
+
+        .leaderboard-entry.current-player {
+            border-left-color: #0f0;
+            background: #1a2e1a;
+        }
+
+        .leaderboard-rank {
+            font-weight: bold;
+            color: #0ff;
+            min-width: 30px;
+        }
+
+        .leaderboard-entry.top-3 .leaderboard-rank {
+            color: #ff0;
+        }
+
+        .leaderboard-name {
+            flex: 1;
+            margin: 0 15px;
+        }
+
+        .leaderboard-score {
+            color: #888;
+        }
+
+        .btn-leaderboard {
+            background: #ff0;
+        }
+
+        .btn-leaderboard:hover {
+            background: #cc0;
+        }
+
+        #result-rank {
+            text-align: center;
+            color: #ff0;
+            font-size: 18px;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -558,6 +607,7 @@
         </div>
         <p id="world-map-error" class="error-msg"></p>
         <div class="mountain-path-footer">
+            <button id="btn-leaderboard" class="btn btn-leaderboard" onclick="showLeaderboard()">Leaderboard</button>
             <button id="btn-back-world" class="btn btn-danger" onclick="backToPlayerSelect()">Back</button>
         </div>
     </div>
@@ -573,7 +623,6 @@
             <div id="answer-box" class="answer-box">&nbsp;</div>
             <div id="voice-status" class="answer-hint">Type answer + Enter</div>
         </div>
-        <div id="feedback" class="feedback"></div>
         <div id="numpad" class="numpad">
             <div class="numpad-row">
                 <button class="numpad-btn" onclick="numpadInput('1')">1</button>
@@ -608,6 +657,7 @@
         <p id="result-new-best" style="text-align: center; color: #0f0; display: none;"></p>
         <p id="result-stats" style="text-align: center;"></p>
         <p id="result-score" style="text-align: center;"></p>
+        <p id="result-rank"></p>
         <div style="text-align: center; margin-top: 20px;">
             <button id="btn-continue" class="btn" onclick="resultContinue()">Continue</button>
             <button id="btn-replay" class="btn" onclick="resultReplay()">Replay</button>
@@ -641,6 +691,15 @@
         <p id="game-complete-hint" class="hint"></p>
     </div>
 
+    <!-- Leaderboard Screen -->
+    <div id="leaderboard-screen" class="screen">
+        <h2 id="leaderboard-title" style="text-align: center; color: #ff0;">Leaderboard</h2>
+        <div id="leaderboard-list" style="max-height: 400px; overflow-y: auto;"></div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button id="btn-leaderboard-back" class="btn" onclick="hideLeaderboard()">Back</button>
+        </div>
+    </div>
+
     <!-- Pyodide -->
     <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
 
@@ -665,6 +724,8 @@
         window.resultContinue = resultContinue;
         window.resultReplay = resultReplay;
         window.setLanguage = setLanguage;
+        window.showLeaderboard = showLeaderboard;
+        window.hideLeaderboard = hideLeaderboard;
 
         // ============================================================
         // Internationalization (i18n)
@@ -732,6 +793,9 @@
             document.getElementById('game-complete-story').innerHTML = t('game_complete.story').replace(/\n/g, '<br>');
             document.getElementById('game-complete-hint').textContent = t('game_complete.hint');
             document.getElementById('result-new-best').textContent = t('result.new_best');
+            document.getElementById('btn-leaderboard').textContent = t('leaderboard.title');
+            document.getElementById('leaderboard-title').textContent = t('leaderboard.title');
+            document.getElementById('btn-leaderboard-back').textContent = t('nav.back');
         }
 
         // ============================================================
@@ -905,7 +969,7 @@
             showScreen('new-player-screen');
         }
 
-        function createPlayer() {
+        async function createPlayer() {
             const name = document.getElementById('new-player-name').value.trim();
             const errorEl = document.getElementById('new-player-error');
 
@@ -921,17 +985,54 @@
                 return;
             }
 
-            const exists = pyodide.runPython(`
+            if (safeName.length > 20) {
+                errorEl.textContent = t('player.error_too_long');
+                return;
+            }
+
+            // Check if name exists locally
+            const existsLocally = pyodide.runPython(`
                 from flashy.platforms.web.storage import WebStorage
                 WebStorage().player_exists("${safeName}")
             `);
 
-            if (exists) {
+            if (existsLocally) {
                 errorEl.textContent = t('player.error_exists').replace('{name}', safeName);
                 return;
             }
 
-            // Create player
+            // Register name on leaderboard (reserves it and returns token)
+            let token;
+            try {
+                errorEl.textContent = t('player.registering');
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ player_name: safeName })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    if (response.status === 409) {
+                        errorEl.textContent = t('player.error_taken');
+                    } else {
+                        errorEl.textContent = result.error || t('player.error_registration');
+                    }
+                    return;
+                }
+
+                token = result.token;
+            } catch (err) {
+                console.error('Registration error:', err);
+                errorEl.textContent = t('player.error_connection');
+                return;
+            }
+
+            // Store token for this player
+            localStorage.setItem(`flashy_token_${safeName}`, token);
+
+            // Create player locally
             pyodide.runPython(`
                 from flashy.platforms.web.storage import WebStorage
                 from flashy.core.models import PlayerProgress
@@ -1216,9 +1317,9 @@
                 return;
             }
 
-            document.getElementById('problem-display').textContent = `${problem.display()} = ?`;
-            document.getElementById('feedback').textContent = '';
-            document.getElementById('feedback').className = 'feedback';
+            const problemEl = document.getElementById('problem-display');
+            problemEl.textContent = `${problem.display()} = ?`;
+            problemEl.className = 'problem-display';
 
             updateProgressDots();
             updateScoreBar();
@@ -1258,13 +1359,14 @@
             const timeTaken = (Date.now() - problemStartTime) / 1000;
             const feedback = gameController.submit_answer(answer, timeTaken);
 
-            const feedbackEl = document.getElementById('feedback');
+            // Show feedback in problem display area
+            const problemEl = document.getElementById('problem-display');
             if (feedback.is_correct) {
-                feedbackEl.textContent = `${t('gameplay.correct')} +${feedback.points_earned}`;
-                feedbackEl.className = 'feedback correct';
+                problemEl.textContent = `${t('gameplay.correct')} +${feedback.points_earned}`;
+                problemEl.className = 'problem-display correct';
             } else {
-                feedbackEl.textContent = t('gameplay.wrong').replace('{answer}', feedback.correct_answer);
-                feedbackEl.className = 'feedback incorrect';
+                problemEl.textContent = t('gameplay.wrong').replace('{answer}', feedback.correct_answer);
+                problemEl.className = 'problem-display incorrect';
             }
 
             updateProgressDots();
@@ -1302,11 +1404,116 @@
         }
 
         // ============================================================
+        // Leaderboard API
+        // ============================================================
+        async function syncScoreToLeaderboard() {
+            try {
+                // Get token for current player
+                const token = localStorage.getItem(`flashy_token_${currentPlayer}`);
+                if (!token) {
+                    console.warn('No token found for player:', currentPlayer);
+                    return null;
+                }
+
+                // Get player's total stats from Python (sum of best scores per level)
+                let totalStars, highestLevel, totalScore;
+                try {
+                    const stats = pyodide.runPython(`
+from flashy.platforms.web.storage import WebStorage
+storage = WebStorage()
+progress = storage.load_progress("${currentPlayer}")
+[sum(progress.stars.values()), progress.get_highest_unlocked(), progress.get_total_best_score()]
+`).toJs();
+                    totalStars = stats[0];
+                    highestLevel = stats[1];
+                    totalScore = stats[2];
+                } catch (pyErr) {
+                    console.error('Python stats error:', pyErr);
+                    return null;
+                }
+
+                const payload = {
+                    player_name: currentPlayer,
+                    token: token,
+                    total_score: totalScore,
+                    highest_level: highestLevel,
+                    total_stars: totalStars
+                };
+                console.log('Syncing score:', payload);
+
+                const response = await fetch('/api/leaderboard', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Score sync success:', result);
+                    return result.rank;
+                } else {
+                    const err = await response.json();
+                    console.error('Score sync API error:', response.status, err);
+                }
+            } catch (err) {
+                console.error('Score sync error:', err);
+            }
+            return null;
+        }
+
+        async function fetchLeaderboard() {
+            try {
+                const response = await fetch('/api/leaderboard');
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.leaderboard;
+                }
+            } catch (err) {
+                console.error('Leaderboard fetch error:', err);
+            }
+            return [];
+        }
+
+        async function showLeaderboard() {
+            const listEl = document.getElementById('leaderboard-list');
+            listEl.innerHTML = '<p style="text-align: center;">Loading...</p>';
+            showScreen('leaderboard-screen');
+
+            const leaderboard = await fetchLeaderboard();
+
+            if (leaderboard.length === 0) {
+                listEl.innerHTML = '<p style="text-align: center; color: #888;">No scores yet. Be the first!</p>';
+                return;
+            }
+
+            listEl.innerHTML = leaderboard.map(entry => {
+                const isTop3 = entry.rank <= 3;
+                const isCurrentPlayer = entry.player_name === currentPlayer;
+                const classes = ['leaderboard-entry'];
+                if (isTop3) classes.push('top-3');
+                if (isCurrentPlayer) classes.push('current-player');
+
+                return `
+                    <div class="${classes.join(' ')}">
+                        <span class="leaderboard-rank">#${entry.rank}</span>
+                        <span class="leaderboard-name">${entry.player_name}</span>
+                        <span class="leaderboard-score">${entry.total_score} pts</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function hideLeaderboard() {
+            showWorldMapScreen(currentPlayer, null, currentWorld);
+        }
+
+        // ============================================================
         // Result Screen
         // ============================================================
         let resultParams = {};
+        let currentRank = null;
 
-        function showResultScreen(params) {
+        async function showResultScreen(params) {
             resultParams = params;
 
             const title = params.stars >= 2 ? t('result.complete') : t('result.failed');
@@ -1325,7 +1532,19 @@
             document.getElementById('result-score').textContent =
                 t('result.score').replace('{score}', params.score);
 
+            // Show loading state for rank
+            const rankEl = document.getElementById('result-rank');
+            rankEl.textContent = t('result.updating');
+
             showScreen('result-screen');
+
+            // Sync score and get rank
+            currentRank = await syncScoreToLeaderboard();
+            if (currentRank) {
+                rankEl.textContent = `You're #${currentRank} on the leaderboard!`;
+            } else {
+                rankEl.textContent = '';
+            }
         }
 
         function resultContinue() {

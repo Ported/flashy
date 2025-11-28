@@ -2,14 +2,15 @@
 
 import re
 
+from conftest import generate_unique_name
 from playwright.sync_api import Page, expect
 
 
-def navigate_to_level(page: Page, player_name: str = "GameplayTest") -> None:
+def navigate_to_level(page: Page) -> None:
     """Helper to create player and navigate to level 1."""
-    # Create player
+    # Create player with unique name
     page.get_by_role("button", name="New Player").click()
-    page.locator("#new-player-name").fill(player_name)
+    page.locator("#new-player-name").fill(generate_unique_name("Gameplay"))
     page.get_by_role("button", name="Create").click()
 
     # Navigate through intro screens
@@ -78,9 +79,10 @@ def test_enter_submits_answer(app_page: Page) -> None:
     app_page.keyboard.press("5")
     app_page.keyboard.press("Enter")
 
-    # Feedback should appear (either correct or incorrect)
-    feedback = app_page.locator("#feedback")
-    expect(feedback).not_to_be_empty()
+    # Feedback should appear in problem display (either correct or incorrect class)
+    problem_display = app_page.locator("#problem-display")
+    # Should have either correct or incorrect class after submission
+    expect(problem_display).to_have_class(re.compile("correct|incorrect"))
 
 
 def test_correct_answer_shows_green_feedback(app_page: Page) -> None:
@@ -99,9 +101,9 @@ def test_correct_answer_shows_green_feedback(app_page: Page) -> None:
             app_page.keyboard.press(digit)
         app_page.keyboard.press("Enter")
 
-        # Feedback should show correct (green checkmark or similar)
-        feedback = app_page.locator("#feedback")
-        expect(feedback).to_have_class(re.compile("correct"))
+        # Feedback shown in problem display with correct class
+        problem_display = app_page.locator("#problem-display")
+        expect(problem_display).to_have_class(re.compile("correct"))
 
 
 def test_wrong_answer_shows_red_feedback(app_page: Page) -> None:
@@ -114,9 +116,9 @@ def test_wrong_answer_shows_red_feedback(app_page: Page) -> None:
     app_page.keyboard.press("9")
     app_page.keyboard.press("Enter")
 
-    # Feedback should show incorrect (red)
-    feedback = app_page.locator("#feedback")
-    expect(feedback).to_have_class(re.compile("incorrect"))
+    # Feedback shown in problem display with incorrect class
+    problem_display = app_page.locator("#problem-display")
+    expect(problem_display).to_have_class(re.compile("incorrect"))
 
 
 def test_progress_dots_update_after_answer(app_page: Page) -> None:

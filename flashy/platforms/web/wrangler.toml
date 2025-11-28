@@ -1,0 +1,10 @@
+name = "flashycards"
+compatibility_date = "2024-01-01"
+
+# D1 Database binding for leaderboard
+# After creating the database with `wrangler d1 create flashy-leaderboard`,
+# replace <DATABASE_ID> with the actual database ID from the output.
+[[d1_databases]]
+binding = "DB"
+database_name = "flashy-leaderboard"
+database_id = "<DATABASE_ID>"

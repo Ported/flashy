@@ -5,8 +5,11 @@
 Run these regularly, especially before committing:
 
 ```bash
-poetry run ruff check . && poetry run pyright && poetry run pytest
+poetry run python scripts/check.py        # Unit tests only (fast)
+poetry run python scripts/check.py --e2e  # Include E2E tests
 ```
+
+This runs: ruff, pyright, i18n check, web build, and pytest.
 
 ## Project Structure
 

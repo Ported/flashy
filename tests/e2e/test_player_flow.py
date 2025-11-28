@@ -2,6 +2,7 @@
 
 import re
 
+from conftest import generate_unique_name
 from playwright.sync_api import Page, expect
 
 
@@ -20,7 +21,7 @@ def test_create_new_player(app_page: Page) -> None:
     expect(app_page.locator("#new-player-screen")).to_have_class(re.compile("active"))
 
     # Enter player name
-    app_page.locator("#new-player-name").fill("TestPlayer")
+    app_page.locator("#new-player-name").fill(generate_unique_name("Test"))
 
     # Click Create
     app_page.get_by_role("button", name="Create").click()
@@ -45,13 +46,14 @@ def test_create_player_empty_name_shows_error(app_page: Page) -> None:
 
 def test_create_duplicate_player_shows_error(app_page: Page) -> None:
     """Creating a player with a name that already exists should show an error."""
-    # Create first player
+    # Create first player with a unique name we'll reuse
+    player_name = generate_unique_name("Dupe")
     app_page.get_by_role("button", name="New Player").click()
-    app_page.locator("#new-player-name").fill("DuplicateTest")
+    app_page.locator("#new-player-name").fill(player_name)
     app_page.get_by_role("button", name="Create").click()
 
     # Wait for intro, then go back to player select
-    expect(app_page.locator("#intro-screen")).to_have_class(re.compile("active"))
+    app_page.wait_for_selector("#intro-screen.active")
 
     # Navigate through intro to world map, then back to player select
     # (clicking advances the intro)
@@ -66,7 +68,7 @@ def test_create_duplicate_player_shows_error(app_page: Page) -> None:
 
     # Try to create player with same name
     app_page.get_by_role("button", name="New Player").click()
-    app_page.locator("#new-player-name").fill("DuplicateTest")
+    app_page.locator("#new-player-name").fill(player_name)
     app_page.get_by_role("button", name="Create").click()
 
     # Should show error
@@ -78,11 +80,13 @@ def test_create_duplicate_player_shows_error(app_page: Page) -> None:
 def test_select_existing_player(app_page: Page) -> None:
     """Selecting a returning player (with progress) should go directly to world map."""
     # First create a player
+    player_name = generate_unique_name("Existing")
     app_page.get_by_role("button", name="New Player").click()
-    app_page.locator("#new-player-name").fill("ExistingPlayer")
+    app_page.locator("#new-player-name").fill(player_name)
     app_page.get_by_role("button", name="Create").click()
 
     # Navigate through intro screens
+    app_page.wait_for_selector("#intro-screen.active")
     app_page.locator("#intro-screen").click()
     app_page.wait_for_selector("#world-intro-screen.active")
     app_page.locator("#world-intro-screen").click()
@@ -102,7 +106,7 @@ def test_select_existing_player(app_page: Page) -> None:
     app_page.wait_for_selector("#player-select-screen.active")
 
     # Now select the player - should go directly to world map (no intro)
-    app_page.locator("#player-list li").filter(has_text="ExistingPlayer").click()
+    app_page.locator("#player-list li").filter(has_text=player_name).click()
 
     # Should go directly to world map since they have progress
     app_page.wait_for_selector("#world-map-screen.active", timeout=5000)

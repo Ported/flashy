@@ -1,58 +1,113 @@
 """E2E test fixtures for Playwright testing."""
 
+import shutil
+import signal
 import subprocess
 import sys
-import threading
 import time
+import uuid
 from collections.abc import Generator
-from http.server import SimpleHTTPRequestHandler
 from pathlib import Path
-from socketserver import TCPServer
 
 import pytest
 from playwright.sync_api import BrowserContext, Page
+
+
+def generate_unique_name(base: str = "Player") -> str:
+    """Generate a unique player name using UUID suffix."""
+    return f"{base}_{uuid.uuid4().hex[:8]}"
 
 # Path to web platform files
 WEB_DIR = Path(__file__).parent.parent.parent / "flashy" / "platforms" / "web"
 BUILD_SCRIPT = WEB_DIR / "build.py"
 
 
-class QuietHandler(SimpleHTTPRequestHandler):
-    """HTTP handler that suppresses request logging."""
+def find_free_port() -> int:
+    """Find a free port to use."""
+    import socket
 
-    def log_message(self, format: str, *args: object) -> None:
-        pass  # Suppress logging
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("", 0))
+        return s.getsockname()[1]
 
 
 @pytest.fixture(scope="session")
 def web_server() -> Generator[str, None, None]:
-    """Start a local HTTP server serving the web platform files.
+    """Start wrangler pages dev to serve the app with D1 database.
 
     Rebuilds flashy_core.py before starting the server.
     """
     # Run build script to ensure flashy_core.py is up to date
     subprocess.run([sys.executable, str(BUILD_SCRIPT)], check=True, cwd=WEB_DIR.parent)
 
-    # Create server
-    class Handler(QuietHandler):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, directory=str(WEB_DIR), **kwargs)
+    # Find wrangler
+    wrangler = shutil.which("wrangler")
+    if not wrangler:
+        # Try npx
+        wrangler = "npx"
+        wrangler_args = ["wrangler"]
+    else:
+        wrangler_args = []
 
-    # Use port 0 to get a random available port
-    server = TCPServer(("", 0), Handler)
-    port = server.server_address[1]
+    port = find_free_port()
 
-    # Start server in background thread
-    thread = threading.Thread(target=server.serve_forever, daemon=True)
-    thread.start()
+    # Clear any existing test database for a fresh start
+    e2e_state_dir = WEB_DIR / ".wrangler" / "state" / "e2e"
+    if e2e_state_dir.exists():
+        shutil.rmtree(e2e_state_dir)
 
-    # Give server time to start
-    time.sleep(0.5)
+    # Start wrangler pages dev with local D1
+    # --local runs everything locally without needing Cloudflare auth
+    # --persist keeps the D1 data in .wrangler/state
+    process = subprocess.Popen(
+        [
+            wrangler,
+            *wrangler_args,
+            "pages",
+            "dev",
+            str(WEB_DIR),
+            "--port",
+            str(port),
+            "--d1=DB",
+            "--local",
+            "--persist-to",
+            str(e2e_state_dir),
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        cwd=WEB_DIR,
+    )
 
-    yield f"http://localhost:{port}"
+    # Wait for server to be ready
+    url = f"http://localhost:{port}"
+    max_wait = 30
+    start = time.time()
+    while time.time() - start < max_wait:
+        try:
+            import urllib.request
+
+            urllib.request.urlopen(url, timeout=1)
+            break
+        except Exception:
+            time.sleep(0.5)
+    else:
+        process.terminate()
+        raise RuntimeError(f"Wrangler did not start within {max_wait}s")
+
+    # Initialize the database schema via the init endpoint
+    import urllib.request
+
+    try:
+        req = urllib.request.Request(f"{url}/api/init", method="POST")
+        urllib.request.urlopen(req, timeout=5)
+    except Exception as e:
+        print(f"Schema init warning: {e}")
+
+    yield url
 
     # Cleanup
-    server.shutdown()
+    process.send_signal(signal.SIGTERM)
+    process.wait(timeout=5)
 
 
 @pytest.fixture(scope="session")
@@ -68,6 +123,17 @@ def browser_context_args(browser_context_args: dict) -> dict:
     }
 
 
+def pytest_configure(config: pytest.Config) -> None:
+    """Set default Playwright timeouts to be much faster.
+
+    The app is fast, so we don't need to wait 30 seconds for failures.
+    """
+    from playwright.sync_api import expect
+
+    # Set default expect timeout to 2 seconds (instead of 5s)
+    expect.set_options(timeout=2000)
+
+
 @pytest.fixture(scope="session")
 def shared_context(
     browser: "Browser", web_server: str  # type: ignore[name-defined]  # noqa: F821
@@ -77,6 +143,8 @@ def shared_context(
     This allows the browser cache (Pyodide, models) to be reused.
     """
     context = browser.new_context()
+    # Set faster default timeout for actions (5s instead of 30s)
+    context.set_default_timeout(5000)
 
     # Warm up the cache by loading the app once
     page = context.new_page()

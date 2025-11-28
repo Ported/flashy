@@ -44,7 +44,8 @@ class WebStorage:
         try:
             data = json.loads(data_str)
             stars = {int(k): v for k, v in data.get("stars", {}).items()}
-            return PlayerProgress(stars=stars)
+            best_scores = {int(k): v for k, v in data.get("best_scores", {}).items()}
+            return PlayerProgress(stars=stars, best_scores=best_scores)
         except (json.JSONDecodeError, KeyError):
             return PlayerProgress()
 
@@ -57,7 +58,7 @@ class WebStorage:
             self._set("flashy_players", json.dumps(players))
 
         # Save progress
-        data = {"stars": progress.stars}
+        data = {"stars": progress.stars, "best_scores": progress.best_scores}
         self._set(f"flashy_player_{player_name}", json.dumps(data))
 
     def log_session(self, result: LevelResult) -> None:
@@ -82,6 +83,14 @@ class WebStorage:
 
         history.append(entry)
         self._set("flashy_history", json.dumps(history))
+
+    def load_history(self) -> list[dict]:
+        """Load session history from localStorage."""
+        history_str = self._get("flashy_history") or "[]"
+        try:
+            return json.loads(history_str)
+        except json.JSONDecodeError:
+            return []
 
     def log_speech_recognition(
         self,

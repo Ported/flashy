@@ -195,6 +195,7 @@ class GameController:
         progress = self.storage.load_progress(self.player_name)
         old_stars = progress.get_stars(self.level_number)
         progress.set_stars(self.level_number, stars)
+        progress.set_best_score(self.level_number, self.total_score)
         self.storage.save_progress(self.player_name, progress)
 
         # Log session history via storage backend

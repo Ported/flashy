@@ -45,19 +45,34 @@ from dataclasses import dataclass, field
 
 @dataclass
 class PlayerProgress:
-    \"\"\"Player's game progress - stars and unlocked levels.\"\"\"
+    \"\"\"Player's game progress - stars, best scores, and unlocked levels.\"\"\"
 
     stars: dict[int, int] = field(default_factory=dict)  # level_number -> stars (1-3)
+    best_scores: dict[int, int] = field(default_factory=dict)  # level_number -> score
 
     def get_stars(self, level: int) -> int:
         \"\"\"Get stars for a level (0 if not completed).\"\"\"
         return self.stars.get(level, 0)
 
     def set_stars(self, level: int, stars: int) -> None:
-        \"\"\"Set stars for a level, keeping the best score.\"\"\"
+        \"\"\"Set stars for a level, keeping the best.\"\"\"
         current = self.stars.get(level, 0)
         if stars > current:
             self.stars[level] = stars
+
+    def get_best_score(self, level: int) -> int:
+        \"\"\"Get best score for a level (0 if not completed).\"\"\"
+        return self.best_scores.get(level, 0)
+
+    def set_best_score(self, level: int, score: int) -> None:
+        \"\"\"Set best score for a level, keeping the best.\"\"\"
+        current = self.best_scores.get(level, 0)
+        if score > current:
+            self.best_scores[level] = score
+
+    def get_total_best_score(self) -> int:
+        \"\"\"Get sum of best scores across all levels.\"\"\"
+        return sum(self.best_scores.values())
 
     def get_highest_unlocked(self) -> int:
         \"\"\"Get the highest level that has been unlocked.\"\"\"
@@ -659,6 +674,11 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "player.error_empty": "Please enter a name",
         "player.error_invalid": "Please use letters and numbers only",
         "player.error_exists": "'{name}' already exists!",
+        "player.error_too_long": "Name too long (max 20 characters)",
+        "player.error_taken": "Name already taken on leaderboard. Choose another!",
+        "player.error_registration": "Registration failed",
+        "player.error_connection": "Could not connect to leaderboard. Try again.",
+        "player.registering": "Registering...",
         # Navigation
         "nav.back": "Back",
         "nav.continue": "Continue",
@@ -678,6 +698,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "result.correct": "{correct}/{total} correct",
         "result.score": "Score: {score}",
         "result.time": "Time: {time}",
+        "result.updating": "Updating leaderboard...",
+        # Leaderboard
+        "leaderboard.title": "Leaderboard",
         # Boss/Victory
         "victory.title": "VICTORY!",
         "game_complete.title": "HOME AT LAST!",
@@ -867,6 +890,11 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "player.error_empty": "Skriv ett namn",
         "player.error_invalid": "Använd bara bokstäver och siffror",
         "player.error_exists": "'{name}' finns redan!",
+        "player.error_too_long": "Namnet är för långt (max 20 tecken)",
+        "player.error_taken": "Namnet är redan taget. Välj ett annat!",
+        "player.error_registration": "Registrering misslyckades",
+        "player.error_connection": "Kunde inte ansluta. Försök igen.",
+        "player.registering": "Registrerar...",
         # Navigation
         "nav.back": "Tillbaka",
         "nav.continue": "Fortsätt",
@@ -886,6 +914,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "result.correct": "{correct}/{total} rätt",
         "result.score": "Poäng: {score}",
         "result.time": "Tid: {time}",
+        "result.updating": "Uppdaterar topplistan...",
+        # Leaderboard
+        "leaderboard.title": "Topplista",
         # Boss/Victory
         "victory.title": "SEGER!",
         "game_complete.title": "ÄNTLIGEN HEMMA!",
@@ -2739,6 +2770,7 @@ class GameController:
         progress = self.storage.load_progress(self.player_name)
         old_stars = progress.get_stars(self.level_number)
         progress.set_stars(self.level_number, stars)
+        progress.set_best_score(self.level_number, self.total_score)
         self.storage.save_progress(self.player_name, progress)
 
         # Log session history via storage backend
@@ -2835,7 +2867,8 @@ class WebStorage:
         try:
             data = json.loads(data_str)
             stars = {int(k): v for k, v in data.get("stars", {}).items()}
-            return PlayerProgress(stars=stars)
+            best_scores = {int(k): v for k, v in data.get("best_scores", {}).items()}
+            return PlayerProgress(stars=stars, best_scores=best_scores)
         except (json.JSONDecodeError, KeyError):
             return PlayerProgress()
 
@@ -2848,7 +2881,7 @@ class WebStorage:
             self._set("flashy_players", json.dumps(players))
 
         # Save progress
-        data = {"stars": progress.stars}
+        data = {"stars": progress.stars, "best_scores": progress.best_scores}
         self._set(f"flashy_player_{player_name}", json.dumps(data))
 
     def log_session(self, result: LevelResult) -> None:
@@ -2873,6 +2906,14 @@ class WebStorage:
 
         history.append(entry)
         self._set("flashy_history", json.dumps(history))
+
+    def load_history(self) -> list[dict]:
+        \"\"\"Load session history from localStorage.\"\"\"
+        history_str = self._get("flashy_history") or "[]"
+        try:
+            return json.loads(history_str)
+        except json.JSONDecodeError:
+            return []
 
     def log_speech_recognition(
         self,

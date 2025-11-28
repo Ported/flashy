@@ -63,6 +63,11 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "player.error_empty": "Please enter a name",
         "player.error_invalid": "Please use letters and numbers only",
         "player.error_exists": "'{name}' already exists!",
+        "player.error_too_long": "Name too long (max 20 characters)",
+        "player.error_taken": "Name already taken on leaderboard. Choose another!",
+        "player.error_registration": "Registration failed",
+        "player.error_connection": "Could not connect to leaderboard. Try again.",
+        "player.registering": "Registering...",
         # Navigation
         "nav.back": "Back",
         "nav.continue": "Continue",
@@ -82,6 +87,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "result.correct": "{correct}/{total} correct",
         "result.score": "Score: {score}",
         "result.time": "Time: {time}",
+        "result.updating": "Updating leaderboard...",
+        # Leaderboard
+        "leaderboard.title": "Leaderboard",
         # Boss/Victory
         "victory.title": "VICTORY!",
         "game_complete.title": "HOME AT LAST!",
@@ -271,6 +279,11 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "player.error_empty": "Skriv ett namn",
         "player.error_invalid": "Använd bara bokstäver och siffror",
         "player.error_exists": "'{name}' finns redan!",
+        "player.error_too_long": "Namnet är för långt (max 20 tecken)",
+        "player.error_taken": "Namnet är redan taget. Välj ett annat!",
+        "player.error_registration": "Registrering misslyckades",
+        "player.error_connection": "Kunde inte ansluta. Försök igen.",
+        "player.registering": "Registrerar...",
         # Navigation
         "nav.back": "Tillbaka",
         "nav.continue": "Fortsätt",
@@ -290,6 +303,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "result.correct": "{correct}/{total} rätt",
         "result.score": "Poäng: {score}",
         "result.time": "Tid: {time}",
+        "result.updating": "Uppdaterar topplistan...",
+        # Leaderboard
+        "leaderboard.title": "Topplista",
         # Boss/Victory
         "victory.title": "SEGER!",
         "game_complete.title": "ÄNTLIGEN HEMMA!",

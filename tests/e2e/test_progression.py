@@ -2,11 +2,16 @@
 
 import re
 
+from conftest import generate_unique_name
 from playwright.sync_api import Page, expect
 
 
-def create_player_and_go_to_world_map(page: Page, player_name: str) -> None:
-    """Helper to create player and navigate to world map."""
+def create_player_and_go_to_world_map(
+    page: Page, player_name: str | None = None
+) -> str:
+    """Helper to create player and navigate to world map. Returns the player name."""
+    if player_name is None:
+        player_name = generate_unique_name("Progress")
     page.get_by_role("button", name="New Player").click()
     page.locator("#new-player-name").fill(player_name)
     page.get_by_role("button", name="Create").click()
@@ -16,11 +21,12 @@ def create_player_and_go_to_world_map(page: Page, player_name: str) -> None:
     page.wait_for_selector("#world-intro-screen.active")
     page.locator("#world-intro-screen").click()
     page.wait_for_selector("#world-map-screen.active")
+    return player_name
 
 
 def test_level_1_is_unlocked_for_new_player(app_page: Page) -> None:
     """Level 1 should be unlocked for a new player."""
-    create_player_and_go_to_world_map(app_page, "NewPlayer1")
+    create_player_and_go_to_world_map(app_page)
 
     # First level should be clickable (not locked)
     # Note: levels are displayed 10 to 1, so level 1 is last in the DOM
@@ -30,7 +36,7 @@ def test_level_1_is_unlocked_for_new_player(app_page: Page) -> None:
 
 def test_level_2_is_locked_for_new_player(app_page: Page) -> None:
     """Level 2 should be locked until level 1 is completed."""
-    create_player_and_go_to_world_map(app_page, "NewPlayer2")
+    create_player_and_go_to_world_map(app_page)
 
     # Second level should be locked
     # Note: levels are displayed 10 to 1, so level 2 is second-to-last
@@ -40,7 +46,7 @@ def test_level_2_is_locked_for_new_player(app_page: Page) -> None:
 
 def test_completing_level_unlocks_next(app_page: Page) -> None:
     """Completing a level with 2+ stars should unlock the next level."""
-    create_player_and_go_to_world_map(app_page, "ProgressPlayer")
+    create_player_and_go_to_world_map(app_page)
 
     # Start level 1 (last in list since levels are displayed 10 to 1)
     app_page.locator(".level-item").last.click()

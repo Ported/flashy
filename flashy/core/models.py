@@ -5,19 +5,34 @@ from dataclasses import dataclass, field
 
 @dataclass
 class PlayerProgress:
-    """Player's game progress - stars and unlocked levels."""
+    """Player's game progress - stars, best scores, and unlocked levels."""
 
     stars: dict[int, int] = field(default_factory=dict)  # level_number -> stars (1-3)
+    best_scores: dict[int, int] = field(default_factory=dict)  # level_number -> score
 
     def get_stars(self, level: int) -> int:
         """Get stars for a level (0 if not completed)."""
         return self.stars.get(level, 0)
 
     def set_stars(self, level: int, stars: int) -> None:
-        """Set stars for a level, keeping the best score."""
+        """Set stars for a level, keeping the best."""
         current = self.stars.get(level, 0)
         if stars > current:
             self.stars[level] = stars
+
+    def get_best_score(self, level: int) -> int:
+        """Get best score for a level (0 if not completed)."""
+        return self.best_scores.get(level, 0)
+
+    def set_best_score(self, level: int, score: int) -> None:
+        """Set best score for a level, keeping the best."""
+        current = self.best_scores.get(level, 0)
+        if score > current:
+            self.best_scores[level] = score
+
+    def get_total_best_score(self) -> int:
+        """Get sum of best scores across all levels."""
+        return sum(self.best_scores.values())
 
     def get_highest_unlocked(self) -> int:
         """Get the highest level that has been unlocked."""

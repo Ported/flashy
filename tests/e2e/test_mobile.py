@@ -2,6 +2,7 @@
 
 import re
 
+from conftest import generate_unique_name
 from playwright.sync_api import Page, expect
 
 
@@ -28,10 +29,11 @@ def test_new_player_form_usable_on_mobile(mobile_page: Page) -> None:
     expect(create_btn).to_be_in_viewport()
 
     # Should be able to type and create
-    name_input.fill("MobilePlayer")
+    name_input.fill(generate_unique_name("Mobile"))
     create_btn.click()
 
     # Should navigate to intro
+    mobile_page.wait_for_selector("#intro-screen.active")
     expect(mobile_page.locator("#intro-screen")).to_have_class(re.compile("active"))
 
 
@@ -39,8 +41,9 @@ def test_gameplay_screen_elements_visible_on_mobile(mobile_page: Page) -> None:
     """All gameplay elements should be visible on mobile without scrolling."""
     # Create player and navigate to level
     mobile_page.get_by_role("button", name="New Player").click()
-    mobile_page.locator("#new-player-name").fill("MobileGameplay")
+    mobile_page.locator("#new-player-name").fill(generate_unique_name("MobGame"))
     mobile_page.get_by_role("button", name="Create").click()
+    mobile_page.wait_for_selector("#intro-screen.active")
     mobile_page.locator("#intro-screen").click()
     mobile_page.wait_for_selector("#world-intro-screen.active")
     mobile_page.locator("#world-intro-screen").click()
@@ -73,8 +76,9 @@ def test_world_map_levels_tappable_on_mobile(mobile_page: Page) -> None:
     """Level buttons should be large enough to tap on mobile."""
     # Create player and navigate to world map
     mobile_page.get_by_role("button", name="New Player").click()
-    mobile_page.locator("#new-player-name").fill("MobileTap")
+    mobile_page.locator("#new-player-name").fill(generate_unique_name("MobTap"))
     mobile_page.get_by_role("button", name="Create").click()
+    mobile_page.wait_for_selector("#intro-screen.active")
     mobile_page.locator("#intro-screen").click()
     mobile_page.wait_for_selector("#world-intro-screen.active")
     mobile_page.locator("#world-intro-screen").click()
@@ -98,8 +102,9 @@ def test_result_screen_buttons_visible_on_mobile(mobile_page: Page) -> None:
     """Result screen buttons should be visible on mobile."""
     # Create player and complete a level
     mobile_page.get_by_role("button", name="New Player").click()
-    mobile_page.locator("#new-player-name").fill("MobileResult")
+    mobile_page.locator("#new-player-name").fill(generate_unique_name("MobResult"))
     mobile_page.get_by_role("button", name="Create").click()
+    mobile_page.wait_for_selector("#intro-screen.active")
     mobile_page.locator("#intro-screen").click()
     mobile_page.wait_for_selector("#world-intro-screen.active")
     mobile_page.locator("#world-intro-screen").click()
@@ -139,8 +144,9 @@ def test_numpad_visible_on_mobile(mobile_page: Page) -> None:
     """Numpad should be visible during gameplay on mobile."""
     # Create player and navigate to level
     mobile_page.get_by_role("button", name="New Player").click()
-    mobile_page.locator("#new-player-name").fill("NumpadTest")
+    mobile_page.locator("#new-player-name").fill(generate_unique_name("Numpad"))
     mobile_page.get_by_role("button", name="Create").click()
+    mobile_page.wait_for_selector("#intro-screen.active")
     mobile_page.locator("#intro-screen").click()
     mobile_page.wait_for_selector("#world-intro-screen.active")
     mobile_page.locator("#world-intro-screen").click()
@@ -165,8 +171,9 @@ def test_numpad_input_works_on_mobile(mobile_page: Page) -> None:
     """Tapping numpad buttons should input digits."""
     # Create player and navigate to level
     mobile_page.get_by_role("button", name="New Player").click()
-    mobile_page.locator("#new-player-name").fill("NumpadInput")
+    mobile_page.locator("#new-player-name").fill(generate_unique_name("NumIn"))
     mobile_page.get_by_role("button", name="Create").click()
+    mobile_page.wait_for_selector("#intro-screen.active")
     mobile_page.locator("#intro-screen").click()
     mobile_page.wait_for_selector("#world-intro-screen.active")
     mobile_page.locator("#world-intro-screen").click()
@@ -194,6 +201,6 @@ def test_numpad_input_works_on_mobile(mobile_page: Page) -> None:
     mobile_page.locator("#numpad .numpad-btn", has_text=re.compile("^0$")).click()
     mobile_page.locator("#numpad .numpad-enter").click()
 
-    # Feedback should appear (we submitted an answer)
-    feedback = mobile_page.locator("#feedback")
-    expect(feedback).not_to_be_empty()
+    # Feedback should appear in problem display (we submitted an answer)
+    problem_display = mobile_page.locator("#problem-display")
+    expect(problem_display).to_have_class(re.compile("correct|incorrect"))
