@@ -7,13 +7,17 @@ ONES = {
     "zero": 0,
     "one": 1,
     "two": 2,
+    "to": 2,  # speech recognition often outputs "to" for "two"
+    "too": 2,  # speech recognition often outputs "too" for "two"
     "three": 3,
     "free": 3,  # often misheard as "three"
     "four": 4,
+    "for": 4,  # speech recognition often outputs "for" for "four"
     "five": 5,
     "six": 6,
     "seven": 7,
     "eight": 8,
+    "ate": 8,  # speech recognition often outputs "ate" for "eight"
     "nine": 9,
     "ten": 10,
     "eleven": 11,
