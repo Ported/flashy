@@ -9,29 +9,16 @@ from flashy.platforms.tui.base import STORY_CSS, StoryScreen
 # ASCII art for friends
 FRIEND_ART = {
     "Carry": (  # Owl
-        "   ,___,\n"
-        "   (O,O)\n"
-        "   /)_)\n"
-        '    ""'
+        '   ,___,\n   (O,O)\n   /)_)\n    ""'
     ),
     "Borrow": (  # Turtle
-        "    ___\n"
-        " .-'   '-.\n"
-        "/  .   .  \\\n"
-        "| (o) (o) |\n"
-        " \\   <   /\n"
-        "  '-----'"
+        "    ___\n .-'   '-.\n/  .   .  \\\n| (o) (o) |\n \\   <   /\n  '-----'"
     ),
     "Remainder": (  # Camel
-        "   //\n"
-        "  (o>\n"
-        " //\\\\\n"
-        "//  \\\\"
+        "   //\n  (o>\n //\\\\\n//  \\\\"
     ),
     "Times": (  # Rabbit
-        " (\\_/)\n"
-        " (O.O)\n"
-        " (> <)"
+        " (\\_/)\n (O.O)\n (> <)"
     ),
 }
 
@@ -80,9 +67,7 @@ class FriendMeetScreen(StoryScreen):
                 )
                 yield Static(f"Meet {world.friend_name}!", classes="story-title")
                 yield Static(world.friend_text, classes="story-text")
-                yield Static(
-                    "Press any key to continue...", classes="continue-hint"
-                )
+                yield Static("Press any key to continue...", classes="continue-hint")
         yield Footer()
 
     def action_continue(self) -> None:

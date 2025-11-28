@@ -46,9 +46,7 @@ class WorldIntroScreen(StoryScreen):
                 )
                 yield Static(world.name.upper(), classes="story-title")
                 yield Static(world.intro_text, classes="story-text")
-                yield Static(
-                    "Press any key to continue...", classes="continue-hint"
-                )
+                yield Static("Press any key to continue...", classes="continue-hint")
         yield Footer()
 
     def action_continue(self) -> None:

@@ -50,20 +50,13 @@ class BossVictoryScreen(StoryScreen):
         with Center():
             with Vertical(classes="story-box"):
                 yield Static("🎉  VICTORY!  🎉", classes="victory-emoji")
+                yield Static(f"You defeated {world.boss_name}!", classes="story-title")
                 yield Static(
-                    f"You defeated {world.boss_name}!", classes="story-title"
-                )
-                yield Static(
-                    "    /\\_/\\\n"
-                    "   ( ^.^ )\n"
-                    "    > ^ <\n"
-                    "   /|   |\\",
+                    "    /\\_/\\\n   ( ^.^ )\n    > ^ <\n   /|   |\\",
                     classes="ascii-art",
                 )
                 yield Static(world.boss_defeat, classes="story-text")
-                yield Static(
-                    "Press any key to continue...", classes="continue-hint"
-                )
+                yield Static("Press any key to continue...", classes="continue-hint")
         yield Footer()
 
     def action_continue(self) -> None:

@@ -72,7 +72,7 @@ WORLD_2 = World(
     ),
     friend_text=(
         '"Slow down there, young pup!"\n'
-        '"I\'m Borrow the Turtle. I\'ve lived here for centuries."\n'
+        "\"I'm Borrow the Turtle. I've lived here for centuries.\"\n"
         '"When you need to take away more than you have,"\n'
         '"just borrow from your neighbor. Works every time!"'
     ),

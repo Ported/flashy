@@ -43,15 +43,17 @@ TENS = {
 }
 
 # Commonly confused number pairs (teens vs tens)
-FUZZY_PAIRS = frozenset([
-    (13, 30),  # thirteen / thirty
-    (14, 40),  # fourteen / forty
-    (15, 50),  # fifteen / fifty
-    (16, 60),  # sixteen / sixty
-    (17, 70),  # seventeen / seventy
-    (18, 80),  # eighteen / eighty
-    (19, 90),  # nineteen / ninety
-])
+FUZZY_PAIRS = frozenset(
+    [
+        (13, 30),  # thirteen / thirty
+        (14, 40),  # fourteen / forty
+        (15, 50),  # fifteen / fifty
+        (16, 60),  # sixteen / sixty
+        (17, 70),  # seventeen / seventy
+        (18, 80),  # eighteen / eighty
+        (19, 90),  # nineteen / ninety
+    ]
+)
 
 # Digits that are commonly confused by speech recognition
 # three (3) is often heard as four (4)

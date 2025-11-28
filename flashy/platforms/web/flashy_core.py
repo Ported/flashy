@@ -373,15 +373,17 @@ TENS = {
 }
 
 # Commonly confused number pairs (teens vs tens)
-FUZZY_PAIRS = frozenset([
-    (13, 30),  # thirteen / thirty
-    (14, 40),  # fourteen / forty
-    (15, 50),  # fifteen / fifty
-    (16, 60),  # sixteen / sixty
-    (17, 70),  # seventeen / seventy
-    (18, 80),  # eighteen / eighty
-    (19, 90),  # nineteen / ninety
-])
+FUZZY_PAIRS = frozenset(
+    [
+        (13, 30),  # thirteen / thirty
+        (14, 40),  # fourteen / forty
+        (15, 50),  # fifteen / fifty
+        (16, 60),  # sixteen / sixty
+        (17, 70),  # seventeen / seventy
+        (18, 80),  # eighteen / eighty
+        (19, 90),  # nineteen / ninety
+    ]
+)
 
 # Digits that are commonly confused by speech recognition
 # three (3) is often heard as four (4)
@@ -639,19 +641,16 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     "en": {
         # App title
         "app.title": "Flashy's Math Adventure",
-
         # Loading
         "loading.pyodide": "Loading Pyodide...",
         "loading.python": "Setting up Python environment...",
         "loading.speech": "Loading speech model...",
         "loading.ready": "Ready!",
-
         # Player select screen
         "player.who_playing": "Who's playing today?",
         "player.no_players": "No players yet!",
         "player.new_player": "New Player",
         "player.level": "Level",
-
         # New player screen
         "player.new_title": "New Player",
         "player.enter_name": "Enter your name...",
@@ -660,12 +659,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "player.error_empty": "Please enter a name",
         "player.error_invalid": "Please use letters and numbers only",
         "player.error_exists": "'{name}' already exists!",
-
         # Navigation
         "nav.back": "Back",
         "nav.continue": "Continue",
         "nav.replay": "Replay",
-
         # Gameplay
         "gameplay.score": "Score: {score}",
         "gameplay.type_answer": "Type answer + Enter",
@@ -674,7 +671,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "gameplay.correct": "Correct!",
         "gameplay.wrong": "Wrong! Answer: {answer}",
         "gameplay.enter": "Enter",
-
         # Result screen
         "result.complete": "Level Complete!",
         "result.failed": "Keep Practicing!",
@@ -682,12 +678,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "result.correct": "{correct}/{total} correct",
         "result.score": "Score: {score}",
         "result.time": "Time: {time}",
-
         # Boss/Victory
         "victory.title": "VICTORY!",
         "game_complete.title": "HOME AT LAST!",
         "game_complete.hint": "Click anywhere to return to menu...",
-
         # Intro screen
         "intro.flashy": "FLASHY",
         "intro.story": (
@@ -696,17 +690,14 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             '"I need to find my way home!"'
         ),
         "intro.hint": "Click anywhere to continue...",
-
         # Input toggle
         "input.voice": "Voice",
         "input.keyboard": "Keyboard",
-
         # World names
         "world.1.name": "Addition Alps",
         "world.2.name": "Subtraction Swamp",
         "world.3.name": "Division Desert",
         "world.4.name": "Multiplication Meadows",
-
         # World intros
         "world.1.intro": (
             "Flashy woke up alone in the cold mountains.\\n"
@@ -728,7 +719,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             '"I can almost smell home! It must be close!"\\n'
             "The Multiplication Meadows bloomed with possibility..."
         ),
-
         # Friends
         "world.1.friend_name": "Carry",
         "world.1.friend_intro": (
@@ -740,7 +730,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "world.2.friend_name": "Borrow",
         "world.2.friend_intro": (
             '"Slow down there, young pup!"\\n'
-            '"I\\'m Borrow the Turtle. I\\'ve lived here for centuries."\\n'
+            "\\"I'm Borrow the Turtle. I've lived here for centuries.\\"\\n"
             '"When you need to take away more than you have,"\\n'
             '"just borrow from your neighbor. Works every time!"'
         ),
@@ -758,7 +748,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             '"One carrot becomes two, two become four!"\\n'
             '"Multiplication is just fast addition, you know!"'
         ),
-
         # Bosses
         "world.1.boss_name": "Summit",
         "world.1.boss_intro": (
@@ -804,16 +793,14 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             '"Look there, beyond the meadow..."\\n'
             '"Is that... your HOME?"'
         ),
-
         # Game complete
         "game_complete.story": (
-            '"I\\'m home! I\\'m finally home!"\\n\\n'
+            "\\"I'm home! I'm finally home!\\"\\n\\n"
             "Flashy's family rushed out to greet the little pup.\\n\\n"
             '"We were so worried! Where did you go?"\\n\\n'
             '"I went on the most amazing adventure..."\\n\\n'
             '"And I learned SO much math along the way!"'
         ),
-
         # Level names - World 1
         "level.1.name": "Trailhead",
         "level.2.name": "Foothills",
@@ -825,7 +812,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "level.8.name": "Steep Cliffs",
         "level.9.name": "Final Ascent",
         "level.10.name": "Summit's Challenge",
-
         # Level names - World 2
         "level.11.name": "Marsh Edge",
         "level.12.name": "Muddy Waters",
@@ -837,7 +823,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "level.18.name": "Tangled Vines",
         "level.19.name": "Swamp's Heart",
         "level.20.name": "Minus's Throne",
-
         # Level names - World 3
         "level.21.name": "Oasis Gate",
         "level.22.name": "Sandy Trail",
@@ -849,7 +834,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "level.28.name": "Sunscorch",
         "level.29.name": "Pyramid's Shadow",
         "level.30.name": "Sphinx's Riddles",
-
         # Level names - World 4
         "level.31.name": "Flower Field",
         "level.32.name": "Butterfly Path",
@@ -862,23 +846,19 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "level.39.name": "Final Bloom",
         "level.40.name": "Calculata's Garden",
     },
-
     "sv": {
         # App title
         "app.title": "Flashy's Matematikäventyr",
-
         # Loading
         "loading.pyodide": "Laddar Pyodide...",
         "loading.python": "Förbereder Python...",
         "loading.speech": "Laddar röstmodell...",
         "loading.ready": "Redo!",
-
         # Player select screen
         "player.who_playing": "Vem spelar idag?",
         "player.no_players": "Inga spelare ännu!",
         "player.new_player": "Ny spelare",
         "player.level": "Nivå",
-
         # New player screen
         "player.new_title": "Ny spelare",
         "player.enter_name": "Skriv ditt namn...",
@@ -887,12 +867,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "player.error_empty": "Skriv ett namn",
         "player.error_invalid": "Använd bara bokstäver och siffror",
         "player.error_exists": "'{name}' finns redan!",
-
         # Navigation
         "nav.back": "Tillbaka",
         "nav.continue": "Fortsätt",
         "nav.replay": "Spela igen",
-
         # Gameplay
         "gameplay.score": "Poäng: {score}",
         "gameplay.type_answer": "Skriv svar + Enter",
@@ -901,7 +879,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "gameplay.correct": "Rätt!",
         "gameplay.wrong": "Fel! Svaret är: {answer}",
         "gameplay.enter": "Enter",
-
         # Result screen
         "result.complete": "Nivå klar!",
         "result.failed": "Fortsätt träna!",
@@ -909,12 +886,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "result.correct": "{correct}/{total} rätt",
         "result.score": "Poäng: {score}",
         "result.time": "Tid: {time}",
-
         # Boss/Victory
         "victory.title": "SEGER!",
         "game_complete.title": "ÄNTLIGEN HEMMA!",
         "game_complete.hint": "Klicka för att gå till menyn...",
-
         # Intro screen
         "intro.flashy": "FLASHY",
         "intro.story": (
@@ -923,17 +898,14 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             '"Jag måste hitta hem!"'
         ),
         "intro.hint": "Klicka för att fortsätta...",
-
         # Input toggle
         "input.voice": "Röst",
         "input.keyboard": "Tangentbord",
-
         # World names
         "world.1.name": "Additions-Alperna",
         "world.2.name": "Subtraktions-Träsket",
         "world.3.name": "Divisions-Öknen",
         "world.4.name": "Multiplikations-Ängarna",
-
         # World intros
         "world.1.intro": (
             "Flashy vaknade ensam i de kalla bergen.\\n"
@@ -955,7 +927,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             '"Jag kan nästan lukta hemmet! Det måste vara nära!"\\n'
             "Multiplikations-Ängarna blommade med möjligheter..."
         ),
-
         # Friends
         "world.1.friend_name": "Carry",
         "world.1.friend_intro": (
@@ -985,7 +956,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             '"En morot blir två, två blir fyra!"\\n'
             '"Multiplikation är bara snabb addition!"'
         ),
-
         # Bosses
         "world.1.boss_name": "Toppen",
         "world.1.boss_intro": (
@@ -1031,7 +1001,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             '"Titta där, bortom ängen..."\\n'
             '"Är det... ditt HEM?"'
         ),
-
         # Game complete
         "game_complete.story": (
             '"Jag är hemma! Jag är äntligen hemma!"\\n\\n'
@@ -1040,7 +1009,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             '"Jag var på det mest fantastiska äventyret..."\\n\\n'
             '"Och jag lärde mig SÅ mycket matte på vägen!"'
         ),
-
         # Level names - World 1
         "level.1.name": "Startpunkten",
         "level.2.name": "Kullarna",
@@ -1052,7 +1020,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "level.8.name": "Branta Klippor",
         "level.9.name": "Sista Stigningen",
         "level.10.name": "Toppens Utmaning",
-
         # Level names - World 2
         "level.11.name": "Träskkanten",
         "level.12.name": "Leriga Vatten",
@@ -1064,7 +1031,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "level.18.name": "Trassliga Rankor",
         "level.19.name": "Träskets Hjärta",
         "level.20.name": "Minus Tron",
-
         # Level names - World 3
         "level.21.name": "Oasporten",
         "level.22.name": "Sandstigen",
@@ -1076,7 +1042,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "level.28.name": "Solbrännan",
         "level.29.name": "Pyramidens Skugga",
         "level.30.name": "Sfinxens Gåtor",
-
         # Level names - World 4
         "level.31.name": "Blomsterfältet",
         "level.32.name": "Fjärilsstigen",
@@ -1177,7 +1142,7 @@ WORLD_2 = World(
     ),
     friend_text=(
         '"Slow down there, young pup!"\\n'
-        '"I\\'m Borrow the Turtle. I\\'ve lived here for centuries."\\n'
+        "\\"I'm Borrow the Turtle. I've lived here for centuries.\\"\\n"
         '"When you need to take away more than you have,"\\n'
         '"just borrow from your neighbor. Works every time!"'
     ),
@@ -1492,7 +1457,7 @@ LEVEL_8 = Level(
         add(163, 21),
         add(72, 764),
         add(400, 550),
-        add(121, 212)
+        add(121, 212),
     ),
 )
 

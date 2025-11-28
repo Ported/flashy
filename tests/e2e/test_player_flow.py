@@ -115,4 +115,6 @@ def test_cancel_new_player_returns_to_select(app_page: Page) -> None:
     expect(app_page.locator("#new-player-screen")).to_have_class(re.compile("active"))
 
     app_page.get_by_role("button", name="Cancel").click()
-    expect(app_page.locator("#player-select-screen")).to_have_class(re.compile("active"))
+    expect(app_page.locator("#player-select-screen")).to_have_class(
+        re.compile("active")
+    )

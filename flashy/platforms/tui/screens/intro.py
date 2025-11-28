@@ -28,10 +28,7 @@ class IntroScreen(StoryScreen):
         with Center():
             with Vertical(classes="story-box"):
                 yield Static(
-                    " /\\_/\\\n"
-                    " ( o.o )\n"
-                    " > ^ <\n"
-                    " /|   |\\",
+                    " /\\_/\\\n ( o.o )\n > ^ <\n /|   |\\",
                     classes="ascii-art",
                 )
                 yield Static("FLASHY", classes="story-title")

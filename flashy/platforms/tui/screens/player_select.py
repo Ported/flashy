@@ -75,10 +75,7 @@ class PlayerSelectScreen(Screen):
         with Center():
             with Vertical(id="welcome-box"):
                 yield Static(
-                    "    /\\_/\\\n"
-                    "   ( o.o )\n"
-                    "    > ^ <\n"
-                    "   /|   |\\",
+                    "    /\\_/\\\n   ( o.o )\n    > ^ <\n   /|   |\\",
                     id="dog-art",
                 )
                 yield Static("🐕 FLASHY", id="title")

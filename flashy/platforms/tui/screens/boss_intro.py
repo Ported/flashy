@@ -9,31 +9,16 @@ from flashy.platforms.tui.base import STORY_CSS, StoryScreen
 # ASCII art for bosses
 BOSS_ART = {
     "Summit": (  # Mountain Goat
-        "    /|\n"
-        "   / |\n"
-        "  /  |--\\\n"
-        " /  (o  o)\n"
-        "/____\\__/"
+        "    /|\n   / |\n  /  |--\\\n /  (o  o)\n/____\\__/"
     ),
     "Minus": (  # Frog King
-        "  @..@\n"
-        " (----)\n"
-        "( >__< )\n"
-        ' ^^^"^^^'
+        '  @..@\n (----)\n( >__< )\n ^^^"^^^'
     ),
     "The Sphinx of Splits": (  # Sphinx
-        "    /\\  /\\\n"
-        "   /  \\/  \\\n"
-        "  | (o)(o) |\n"
-        "   \\  --  /\n"
-        "    \\____/"
+        "    /\\  /\\\n   /  \\/  \\\n  | (o)(o) |\n   \\  --  /\n    \\____/"
     ),
     "Countess Calculata": (  # Fox
-        "  /\\   /\\\n"
-        " /  \\_/  \\\n"
-        " | (o o) |\n"
-        "  \\  ^  /\n"
-        "   \\___/"
+        "  /\\   /\\\n /  \\_/  \\\n | (o o) |\n  \\  ^  /\n   \\___/"
     ),
 }
 

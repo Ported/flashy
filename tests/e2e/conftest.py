@@ -69,7 +69,9 @@ def browser_context_args(browser_context_args: dict) -> dict:
 
 
 @pytest.fixture(scope="session")
-def shared_context(browser: "Browser", web_server: str) -> Generator[BrowserContext, None, None]:  # type: ignore[name-defined]  # noqa: F821
+def shared_context(
+    browser: "Browser", web_server: str  # type: ignore[name-defined]  # noqa: F821
+) -> Generator[BrowserContext, None, None]:
     """Create a shared browser context that persists across all tests.
 
     This allows the browser cache (Pyodide, models) to be reused.
@@ -88,7 +90,9 @@ def shared_context(browser: "Browser", web_server: str) -> Generator[BrowserCont
 
 
 @pytest.fixture
-def app_page(shared_context: BrowserContext, web_server: str) -> Generator[Page, None, None]:
+def app_page(
+    shared_context: BrowserContext, web_server: str
+) -> Generator[Page, None, None]:
     """Navigate to the app and wait for it to load.
 
     Uses shared context for cache, but clears localStorage for test isolation.
@@ -110,7 +114,9 @@ def app_page(shared_context: BrowserContext, web_server: str) -> Generator[Page,
 
 
 @pytest.fixture
-def mobile_page(shared_context: BrowserContext, web_server: str) -> Generator[Page, None, None]:
+def mobile_page(
+    shared_context: BrowserContext, web_server: str
+) -> Generator[Page, None, None]:
     """Navigate to the app with mobile viewport (iPhone SE size)."""
     page = shared_context.new_page()
     page.set_viewport_size({"width": 375, "height": 667})

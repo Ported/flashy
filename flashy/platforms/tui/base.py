@@ -19,6 +19,7 @@ def get_app(screen: Screen) -> "FlashyApp":
 
     return cast(FlashyApp, screen.app)
 
+
 # Common CSS for story-style screens
 STORY_CSS = """
 .story-box {

@@ -158,7 +158,7 @@ def test_progress_persists_after_returning_to_player_select(app_page: Page) -> N
 
 
 def test_full_game_playthrough_to_completion(app_page: Page) -> None:
-    """Play through all 40 levels (4 worlds x 10 levels) to reach the game complete screen."""
+    """Play through all 40 levels (4 worlds x 10 levels) to complete."""
     create_player_and_go_to_world_map(app_page, "FullPlaythrough")
 
     # Play through all 4 worlds

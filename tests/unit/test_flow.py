@@ -36,17 +36,13 @@ class TestGameFlow:
 
     def test_existing_player_no_progress_goes_to_intro(self) -> None:
         progress = PlayerProgress()  # No stars
-        result = self.flow.handle(
-            PlayerSelected("test", is_new_player=False), progress
-        )
+        result = self.flow.handle(PlayerSelected("test", is_new_player=False), progress)
         assert result.screen == Screen.INTRO
         assert result.params["player_name"] == "test"
 
     def test_existing_player_with_progress_goes_to_world_map(self) -> None:
         progress = PlayerProgress(stars={1: 3, 2: 2})  # Has played
-        result = self.flow.handle(
-            PlayerSelected("test", is_new_player=False), progress
-        )
+        result = self.flow.handle(PlayerSelected("test", is_new_player=False), progress)
         assert result.screen == Screen.WORLD_MAP
         assert result.params["player_name"] == "test"
 
@@ -157,9 +153,7 @@ class TestLevelCompletion:
         assert result.screen == Screen.WORLD_MAP
 
     def test_result_replay_goes_to_gameplay(self) -> None:
-        result = self.flow.handle(
-            ResultReplay(player_name="test", level_number=5)
-        )
+        result = self.flow.handle(ResultReplay(player_name="test", level_number=5))
         assert result.screen == Screen.GAMEPLAY
         assert result.params["level_number"] == 5
 

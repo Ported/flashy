@@ -22,16 +22,48 @@ VOSK_MODEL_NAME = "vosk-model-en-us-0.22-lgraph"
 VOSK_MODEL_URL = f"https://alphacephei.com/vosk/models/{VOSK_MODEL_NAME}.zip"
 
 # Grammar constraint - only recognize number words for better accuracy
-NUMBER_WORDS = json.dumps([
-    "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
-    "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
-    "seventeen", "eighteen", "nineteen", "twenty", "thirty", "forty", "fifty",
-    "sixty", "seventy", "eighty", "ninety", "hundred", "and",
-    "free",  # often misheard as "three"
-    "minus", "negative",  # for negative numbers
-    "skip", "give up", "pass", "next",
-    "[unk]",
-])
+NUMBER_WORDS = json.dumps(
+    [
+        "zero",
+        "one",
+        "two",
+        "three",
+        "four",
+        "five",
+        "six",
+        "seven",
+        "eight",
+        "nine",
+        "ten",
+        "eleven",
+        "twelve",
+        "thirteen",
+        "fourteen",
+        "fifteen",
+        "sixteen",
+        "seventeen",
+        "eighteen",
+        "nineteen",
+        "twenty",
+        "thirty",
+        "forty",
+        "fifty",
+        "sixty",
+        "seventy",
+        "eighty",
+        "ninety",
+        "hundred",
+        "and",
+        "free",  # often misheard as "three"
+        "minus",
+        "negative",  # for negative numbers
+        "skip",
+        "give up",
+        "pass",
+        "next",
+        "[unk]",
+    ]
+)
 
 
 class InputHandler(Protocol):
@@ -57,7 +89,9 @@ class TextInputHandler:
     """Read answers from stdin."""
 
     def get_answer(
-        self, prompt: str = "> ", expected: int | None = None  # noqa: ARG002
+        self,
+        prompt: str = "> ",
+        expected: int | None = None,  # noqa: ARG002
     ) -> tuple[int | None, str]:
         """Get an answer from stdin.
 
@@ -162,7 +196,10 @@ class VoiceInputHandler:
         q: queue.Queue[bytes] = queue.Queue()
 
         def audio_callback(
-            indata: bytes, frames: int, time: object, status: object  # noqa: ARG001
+            indata: bytes,
+            frames: int,
+            time: object,
+            status: object,  # noqa: ARG001
         ) -> None:
             if status:
                 print(f"Audio status: {status}", file=sys.stderr)
