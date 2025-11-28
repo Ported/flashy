@@ -10,7 +10,7 @@ def main():
     # Handle Ctrl+C gracefully
     signal.signal(signal.SIGINT, lambda *_: sys.exit(0))
 
-    from flashy.input_handler import VoiceInputHandler
+    from flashy.platforms.tui.input_handler import VoiceInputHandler
 
     print("Loading Vosk model...")
     handler = VoiceInputHandler()

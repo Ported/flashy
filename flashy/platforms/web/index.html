@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashy - Math Adventure</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #0ff;
+            text-align: center;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            border: 2px solid #0ff;
+            border-radius: 10px;
+            background: #16213e;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .loading-screen {
+            text-align: center;
+        }
+
+        .loading-screen .spinner {
+            font-size: 48px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .ascii-art {
+            font-family: monospace;
+            white-space: pre;
+            text-align: center;
+            color: #ff0;
+            font-size: 14px;
+            line-height: 1.2;
+        }
+
+        .player-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .player-list li {
+            padding: 10px;
+            margin: 5px 0;
+            background: #1a1a2e;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .player-list li:hover {
+            background: #0ff3;
+        }
+
+        .btn {
+            background: #0ff;
+            color: #1a1a2e;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: transform 0.1s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-danger {
+            background: #f66;
+        }
+
+        .problem-display {
+            font-size: 48px;
+            text-align: center;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .score-bar {
+            text-align: center;
+            color: #ff0;
+            padding: 10px;
+        }
+
+        .progress-dots {
+            text-align: center;
+            font-size: 20px;
+            padding: 10px;
+        }
+
+        .progress-dots .correct { color: #0f0; }
+        .progress-dots .incorrect { color: #f00; }
+        .progress-dots .current { color: #ff0; }
+        .progress-dots .pending { color: #666; }
+
+        .voice-status {
+            text-align: center;
+            padding: 10px;
+            color: #0f0;
+        }
+
+        .voice-partial {
+            text-align: center;
+            font-style: italic;
+            color: #0ff;
+            min-height: 24px;
+        }
+
+        .answer-box {
+            background: #1a1a2e;
+            border: 2px solid #0ff;
+            border-radius: 8px;
+            padding: 15px 30px;
+            font-size: 32px;
+            text-align: center;
+            color: #fff;
+            min-width: 120px;
+            min-height: 50px;
+            margin: 10px auto;
+            display: inline-block;
+        }
+
+        .answer-box.has-input {
+            border-color: #0f0;
+            background: #1a2e1a;
+        }
+
+        .answer-hint {
+            font-size: 14px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .feedback {
+            text-align: center;
+            font-size: 24px;
+            padding: 10px;
+            min-height: 40px;
+        }
+
+        .feedback.correct { color: #0f0; }
+        .feedback.incorrect { color: #f00; }
+
+        .stars {
+            font-size: 36px;
+            text-align: center;
+        }
+
+        .level-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .level-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: #1a1a2e;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .level-item:hover {
+            background: #0ff3;
+        }
+
+        .level-item.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .level-item .stars-display {
+            color: #ff0;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #0ff;
+            border-radius: 5px;
+            background: #1a1a2e;
+            color: #fff;
+            margin: 10px 0;
+        }
+
+        .error-msg {
+            color: #f66;
+            text-align: center;
+        }
+
+        .story-text {
+            text-align: center;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .hint {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            padding: 10px;
+        }
+
+        .timer {
+            text-align: center;
+            font-size: 24px;
+            color: #ff0;
+            padding: 10px;
+        }
+
+        .timer.low {
+            color: #f00;
+            animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Flashy - Math Adventure</h1>
+
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="screen active loading-screen">
+        <div class="spinner">*</div>
+        <p id="loading-status">Loading Pyodide...</p>
+    </div>
+
+    <!-- Player Select Screen -->
+    <div id="player-select-screen" class="screen">
+        <div class="ascii-art">
+    /\_/\
+   ( o.o )
+    > ^ <
+   /|   |\
+        </div>
+        <h2 style="text-align: center;">Who's playing today?</h2>
+        <ul id="player-list" class="player-list"></ul>
+        <div style="text-align: center;">
+            <button class="btn" onclick="showNewPlayerScreen()">New Player</button>
+        </div>
+    </div>
+
+    <!-- New Player Screen -->
+    <div id="new-player-screen" class="screen">
+        <h2 style="text-align: center;">New Player</h2>
+        <input type="text" id="new-player-name" placeholder="Enter your name...">
+        <p id="new-player-error" class="error-msg"></p>
+        <div style="text-align: center;">
+            <button class="btn" onclick="createPlayer()">Create</button>
+            <button class="btn btn-danger" onclick="showScreen('player-select-screen')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Intro Screen -->
+    <div id="intro-screen" class="screen">
+        <div class="ascii-art">
+ /\_/\
+ ( o.o )
+ > ^ <
+ /|   |\
+        </div>
+        <h2 style="text-align: center; color: #0ff;">FLASHY</h2>
+        <p class="story-text">
+            "Oh no! Where am I?"<br><br>
+            "I chased that butterfly too far..."<br><br>
+            "I need to find my way home!"
+        </p>
+        <p class="hint">Click anywhere to continue...</p>
+    </div>
+
+    <!-- World Intro Screen -->
+    <div id="world-intro-screen" class="screen">
+        <h2 id="world-intro-title" style="text-align: center; color: #0ff;"></h2>
+        <p id="world-intro-text" class="story-text"></p>
+        <p class="hint">Click anywhere to continue...</p>
+    </div>
+
+    <!-- World Map Screen -->
+    <div id="world-map-screen" class="screen">
+        <h2 id="world-map-title" style="text-align: center;"></h2>
+        <p id="world-map-player" style="text-align: center; color: #888;"></p>
+        <div id="level-list" class="level-list"></div>
+        <p id="world-map-error" class="error-msg"></p>
+        <div style="text-align: center; margin-top: 10px;">
+            <button class="btn btn-danger" onclick="backToPlayerSelect()">Back</button>
+        </div>
+    </div>
+
+    <!-- Gameplay Screen -->
+    <div id="gameplay-screen" class="screen">
+        <h3 id="gameplay-title" style="text-align: center; color: #0f0;"></h3>
+        <div id="gameplay-timer" class="timer" style="display: none;"></div>
+        <div id="score-bar" class="score-bar">Score: 0</div>
+        <div id="progress-dots" class="progress-dots"></div>
+        <div id="problem-display" class="problem-display"></div>
+        <div style="text-align: center;">
+            <div id="answer-box" class="answer-box">&nbsp;</div>
+            <div id="voice-status" class="answer-hint">Type answer + Enter</div>
+        </div>
+        <div id="feedback" class="feedback"></div>
+        <div style="text-align: center; margin-top: 15px;">
+            <button id="input-toggle" class="btn" onclick="toggleInputMode()" style="font-size: 14px; padding: 8px 16px;"></button>
+        </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="result-screen" class="screen">
+        <h2 id="result-title" style="text-align: center;"></h2>
+        <div id="result-stars" class="stars"></div>
+        <p id="result-new-best" style="text-align: center; color: #0f0; display: none;">NEW BEST!</p>
+        <p id="result-stats" style="text-align: center;"></p>
+        <p id="result-score" style="text-align: center;"></p>
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn" onclick="resultContinue()">Continue</button>
+            <button class="btn" onclick="resultReplay()">Replay</button>
+        </div>
+    </div>
+
+    <!-- Boss Victory Screen -->
+    <div id="boss-victory-screen" class="screen">
+        <h2 style="text-align: center; color: #0f0;">VICTORY!</h2>
+        <div class="ascii-art">
+    /\_/\
+   ( ^.^ )
+    > ^ <
+   /|   |\
+        </div>
+        <p id="boss-victory-text" class="story-text"></p>
+        <p class="hint">Click anywhere to continue...</p>
+    </div>
+
+    <!-- Game Complete Screen -->
+    <div id="game-complete-screen" class="screen">
+        <h2 style="text-align: center; color: #f0f;">HOME AT LAST!</h2>
+        <div class="ascii-art">
+      /\_/\           /\_/\           /\_/\
+     ( ^.^ )         ( o.o )         ( o.o )
+      > ^ <           > ^ <           > ^ <
+     /|   |\   ~     /|   |\   ~     /|   |\
+     FLASHY           MOM             DAD
+        </div>
+        <p class="story-text">
+            Congratulations!<br>
+            You helped Flashy find the way home!
+        </p>
+        <p class="hint">Click anywhere to return to menu...</p>
+    </div>
+
+    <!-- Pyodide and Vosk -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vosk-browser@0.0.8/dist/vosk.js"></script>
+
+    <script type="module">
+        // ============================================================
+        // Global State
+        // ============================================================
+        let pyodide = null;
+        let gameFlow = null;
+        let gameController = null;
+        let currentPlayer = null;
+        let currentWorld = 1;
+        let currentLevel = null;
+        let voskModel = null;
+        let recognizer = null;
+        let audioContext = null;
+        let mediaStream = null;
+        let inputMode = 'voice'; // 'voice' or 'keyboard'
+
+        // Make functions available globally for onclick handlers
+        window.showNewPlayerScreen = showNewPlayerScreen;
+        window.createPlayer = createPlayer;
+        window.showScreen = showScreen;
+        window.selectPlayer = selectPlayer;
+        window.selectLevel = selectLevel;
+        window.backToPlayerSelect = backToPlayerSelect;
+        window.resultContinue = resultContinue;
+        window.resultReplay = resultReplay;
+        window.toggleInputMode = toggleInputMode;
+
+        // ============================================================
+        // Initialization
+        // ============================================================
+        async function init() {
+            try {
+                updateLoadingStatus('Loading Pyodide...');
+                pyodide = await loadPyodide();
+
+                updateLoadingStatus('Setting up Python environment...');
+                await setupPythonEnvironment();
+
+                updateLoadingStatus('Loading speech model...');
+                await initVosk();
+
+                updateLoadingStatus('Ready!');
+
+                // Initialize GameFlow
+                gameFlow = pyodide.runPython(`
+                    from flashy.core.flow import GameFlow
+                    GameFlow()
+                `);
+
+                // Show player select
+                showPlayerSelectScreen();
+
+            } catch (error) {
+                console.error('Init error:', error);
+                updateLoadingStatus(`Error: ${error.message}`);
+            }
+        }
+
+        function updateLoadingStatus(msg) {
+            document.getElementById('loading-status').textContent = msg;
+        }
+
+        async function setupPythonEnvironment() {
+            // Create the flashy package structure in Pyodide's filesystem
+            const response = await fetch('flashy_core.py');
+            const coreCode = await response.text();
+
+            pyodide.runPython(coreCode);
+        }
+
+        async function initVosk() {
+            try {
+                // Load model from our CDN (39MB, cached after first load)
+                const MODEL_URL = 'https://cdn.flashycards.org/vosk-model-small-en-us-0.15.zip';
+
+                voskModel = await Vosk.createModel(MODEL_URL, (progress) => {
+                    const pct = Math.round(progress.loaded / progress.total * 100);
+                    updateLoadingStatus(`Loading speech model... ${pct}%`);
+                });
+
+                recognizer = new voskModel.KaldiRecognizer(16000);
+
+                // Handle final recognition results
+                recognizer.on('result', (message) => {
+                    const result = message.result;
+                    if (result && result.text) {
+                        handleSpeechResult(result.text);
+                    }
+                });
+
+                // Handle partial results (show what user is saying)
+                recognizer.on('partialresult', (message) => {
+                    const partial = message.result;
+                    if (partial && partial.partial) {
+                        // Update the answer box with partial result
+                        const text = partial.partial.trim();
+                        if (text) {
+                            currentAnswer = text;
+                            updateAnswerBox();
+                        }
+                    }
+                });
+
+                console.log('Vosk initialized successfully');
+
+            } catch (error) {
+                console.warn('Vosk init failed, using keyboard fallback:', error);
+                // Fallback to keyboard input if vosk fails
+            }
+        }
+
+        function handleSpeechResult(text) {
+            // Only process if on gameplay screen
+            if (!document.getElementById('gameplay-screen').classList.contains('active')) {
+                return;
+            }
+
+            // Parse the spoken text to a number using Python's number_parser
+            try {
+                const parsed = pyodide.runPython(`
+                    from flashy.core.number_parser import parse_number
+                    parse_number("${text.replace(/"/g, '\\"')}")
+                `);
+
+                if (parsed !== null) {
+                    console.log(`Speech: "${text}" -> ${parsed}`);
+                    submitAnswer(parsed);
+                    currentAnswer = '';
+                    updateAnswerBox();
+                }
+            } catch (err) {
+                console.warn('Number parse error:', err);
+            }
+        }
+
+        // ============================================================
+        // Screen Management
+        // ============================================================
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function navigate(event, progress = null) {
+            // Use GameFlow to determine next screen
+            const request = progress
+                ? gameFlow.handle(event, progress)
+                : gameFlow.handle(event);
+
+            const screen = request.screen.name;
+            // Convert Python dict to JS object - toJs() returns a Map, convert to object
+            const paramsMap = request.params.toJs ? request.params.toJs() : new Map();
+            const params = Object.fromEntries(paramsMap);
+
+            console.log('Navigate to:', screen, params);
+
+            switch (screen) {
+                case 'PLAYER_SELECT':
+                    showPlayerSelectScreen();
+                    break;
+                case 'NEW_PLAYER':
+                    showNewPlayerScreen();
+                    break;
+                case 'INTRO':
+                    showIntroScreen(params.player_name);
+                    break;
+                case 'WORLD_INTRO':
+                    showWorldIntroScreen(params.player_name, params.world_number);
+                    break;
+                case 'WORLD_MAP':
+                    showWorldMapScreen(params.player_name, params.selected_level, params.world_number);
+                    break;
+                case 'GAMEPLAY':
+                    showGameplayScreen(params.player_name, params.level_number);
+                    break;
+                case 'RESULT':
+                    showResultScreen(params);
+                    break;
+                case 'BOSS_VICTORY':
+                    showBossVictoryScreen(params.player_name, params.world_number);
+                    break;
+                case 'GAME_COMPLETE':
+                    showGameCompleteScreen();
+                    break;
+                default:
+                    console.warn('Unknown screen:', screen);
+                    showPlayerSelectScreen();
+            }
+        }
+
+        // ============================================================
+        // Player Select Screen
+        // ============================================================
+        function showPlayerSelectScreen() {
+            const players = pyodide.runPython(`
+                from flashy.platforms.web.storage import WebStorage
+                storage = WebStorage()
+                storage.list_players()
+            `).toJs();
+
+            const list = document.getElementById('player-list');
+            list.innerHTML = '';
+
+            if (players.length === 0) {
+                list.innerHTML = '<li style="text-align: center; color: #888;">No players yet!</li>';
+            } else {
+                players.forEach(name => {
+                    const progress = pyodide.runPython(`
+                        storage.load_progress("${name}")
+                    `);
+                    const totalStars = pyodide.runPython(`
+                        sum(storage.load_progress("${name}").stars.values())
+                    `);
+                    const highest = progress.get_highest_unlocked();
+
+                    const li = document.createElement('li');
+                    li.innerHTML = `${name} <span style="color: #888;">Level ${highest}</span>`;
+                    li.onclick = () => selectPlayer(name);
+                    list.appendChild(li);
+                });
+            }
+
+            showScreen('player-select-screen');
+        }
+
+        function selectPlayer(name) {
+            currentPlayer = name;
+
+            const progress = pyodide.runPython(`
+                from flashy.platforms.web.storage import WebStorage
+                storage = WebStorage()
+                storage.load_progress("${name}")
+            `);
+
+            const event = pyodide.runPython(`
+                from flashy.core.flow import PlayerSelected
+                PlayerSelected("${name}", is_new_player=False)
+            `);
+
+            navigate(event, progress);
+        }
+
+        // ============================================================
+        // New Player Screen
+        // ============================================================
+        function showNewPlayerScreen() {
+            document.getElementById('new-player-name').value = '';
+            document.getElementById('new-player-error').textContent = '';
+            showScreen('new-player-screen');
+        }
+
+        function createPlayer() {
+            const name = document.getElementById('new-player-name').value.trim();
+            const errorEl = document.getElementById('new-player-error');
+
+            if (!name) {
+                errorEl.textContent = 'Please enter a name';
+                return;
+            }
+
+            // Sanitize and check
+            const safeName = name.replace(/[^a-zA-Z0-9 \-_]/g, '').trim();
+            if (!safeName) {
+                errorEl.textContent = 'Please use letters and numbers only';
+                return;
+            }
+
+            const exists = pyodide.runPython(`
+                from flashy.platforms.web.storage import WebStorage
+                WebStorage().player_exists("${safeName}")
+            `);
+
+            if (exists) {
+                errorEl.textContent = `'${safeName}' already exists!`;
+                return;
+            }
+
+            // Create player
+            pyodide.runPython(`
+                from flashy.platforms.web.storage import WebStorage
+                from flashy.core.models import PlayerProgress
+                WebStorage().save_progress("${safeName}", PlayerProgress())
+            `);
+
+            currentPlayer = safeName;
+
+            const event = pyodide.runPython(`
+                from flashy.core.flow import NewPlayerCreated
+                NewPlayerCreated("${safeName}")
+            `);
+
+            navigate(event);
+        }
+
+        // ============================================================
+        // Intro Screen
+        // ============================================================
+        function showIntroScreen(playerName) {
+            currentPlayer = playerName;
+            showScreen('intro-screen');
+
+            document.getElementById('intro-screen').onclick = () => {
+                const event = pyodide.runPython(`
+                    from flashy.core.flow import IntroDismissed
+                    IntroDismissed("${currentPlayer}")
+                `);
+                navigate(event);
+            };
+        }
+
+        // ============================================================
+        // World Intro Screen
+        // ============================================================
+        function showWorldIntroScreen(playerName, worldNumber) {
+            currentPlayer = playerName;
+            currentWorld = worldNumber;
+
+            const world = pyodide.runPython(`
+                from flashy.core.worlds import get_world
+                get_world(${worldNumber})
+            `);
+
+            document.getElementById('world-intro-title').textContent =
+                `${world.theme_emoji} ${world.name} ${world.theme_emoji}`;
+            document.getElementById('world-intro-text').textContent = world.intro_text;
+
+            showScreen('world-intro-screen');
+
+            document.getElementById('world-intro-screen').onclick = () => {
+                const event = pyodide.runPython(`
+                    from flashy.core.flow import WorldIntroDismissed
+                    WorldIntroDismissed("${currentPlayer}", world_number=${currentWorld})
+                `);
+                navigate(event);
+            };
+        }
+
+        // ============================================================
+        // World Map Screen
+        // ============================================================
+        function showWorldMapScreen(playerName, selectedLevel, worldNumber) {
+            currentPlayer = playerName;
+            currentWorld = worldNumber || currentWorld || 1;
+
+            const world = pyodide.runPython(`
+                from flashy.core.worlds import get_world
+                get_world(${currentWorld})
+            `);
+
+            document.getElementById('world-map-title').textContent =
+                `${world.theme_emoji} ${world.name} ${world.theme_emoji}`;
+            document.getElementById('world-map-player').textContent = `Player: ${playerName}`;
+
+            const progress = pyodide.runPython(`
+                from flashy.platforms.web.storage import WebStorage
+                WebStorage().load_progress("${playerName}")
+            `);
+
+            const levels = pyodide.runPython(`
+                from flashy.core.levels import get_levels_for_world
+                get_levels_for_world(${currentWorld})
+            `).toJs();
+
+            const list = document.getElementById('level-list');
+            list.innerHTML = '';
+
+            // Show levels from 10 to 1
+            [...levels].reverse().forEach(level => {
+                const stars = progress.get_stars(level.number);
+                const unlocked = progress.is_unlocked(level.number);
+
+                const div = document.createElement('div');
+                div.className = 'level-item' + (unlocked ? '' : ' locked');
+
+                const starsStr = unlocked ? '⭐'.repeat(stars) + '·'.repeat(3 - stars) : '···';
+                const icon = !unlocked ? '🔒' : (stars < 3 ? '▶' : '✓');
+
+                div.innerHTML = `
+                    <span>${icon} [${level.level_in_world}] ${level.name}</span>
+                    <span class="stars-display">${starsStr}</span>
+                `;
+
+                if (unlocked) {
+                    div.onclick = () => selectLevel(level.number);
+                }
+
+                list.appendChild(div);
+            });
+
+            showScreen('world-map-screen');
+        }
+
+        function selectLevel(levelNumber) {
+            const event = pyodide.runPython(`
+                from flashy.core.flow import LevelSelected
+                LevelSelected("${currentPlayer}", level_number=${levelNumber})
+            `);
+            navigate(event);
+        }
+
+        function backToPlayerSelect() {
+            showPlayerSelectScreen();
+        }
+
+        // ============================================================
+        // Gameplay Screen
+        // ============================================================
+        let problemStartTime = 0;
+        let timerInterval = null;
+        let levelStartTime = 0;
+
+        function showGameplayScreen(playerName, levelNumber) {
+            currentPlayer = playerName;
+            currentLevel = levelNumber;
+
+            // Create GameController
+            gameController = pyodide.runPython(`
+                from flashy.game import GameController
+                from flashy.platforms.web.storage import WebStorage
+                GameController("${playerName}", ${levelNumber}, storage=WebStorage())
+            `);
+
+            const level = gameController.level;
+            const isBoss = gameController.is_timed;
+
+            document.getElementById('gameplay-title').textContent =
+                isBoss ? `BOSS: ${level.name}` : `Level ${level.number}: ${level.name}`;
+            document.getElementById('gameplay-title').style.color = isBoss ? '#f00' : '#0f0';
+
+            // Timer for boss levels
+            const timerEl = document.getElementById('gameplay-timer');
+            if (isBoss) {
+                timerEl.style.display = 'block';
+                levelStartTime = Date.now();
+                timerInterval = setInterval(updateTimer, 1000);
+            } else {
+                timerEl.style.display = 'none';
+            }
+
+            showScreen('gameplay-screen');
+            showProblem();
+            startListening();
+        }
+
+        function updateTimer() {
+            const elapsed = (Date.now() - levelStartTime) / 1000;
+            const remaining = gameController.time_remaining(elapsed);
+
+            if (gameController.is_time_expired(elapsed)) {
+                clearInterval(timerInterval);
+                finishLevel();
+                return;
+            }
+
+            const mins = Math.floor(remaining / 60);
+            const secs = Math.floor(remaining % 60);
+            const timerEl = document.getElementById('gameplay-timer');
+            timerEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+            timerEl.className = remaining <= 15 ? 'timer low' : 'timer';
+        }
+
+        function showProblem() {
+            const problem = gameController.current_problem;
+            if (!problem) {
+                finishLevel();
+                return;
+            }
+
+            document.getElementById('problem-display').textContent = `${problem.display()} = ?`;
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('feedback').className = 'feedback';
+
+            updateProgressDots();
+            updateScoreBar();
+
+            problemStartTime = Date.now();
+        }
+
+        function updateProgressDots() {
+            const total = gameController.total_problems;
+            const results = gameController.results.toJs();
+            const current = gameController.problem_index;
+
+            let dots = '';
+            for (let i = 0; i < total; i++) {
+                if (i < results.length) {
+                    dots += results[i].is_correct
+                        ? '<span class="correct">●</span> '
+                        : '<span class="incorrect">●</span> ';
+                } else if (i === current) {
+                    dots += '<span class="current">◉</span> ';
+                } else {
+                    dots += '<span class="pending">○</span> ';
+                }
+            }
+            document.getElementById('progress-dots').innerHTML = dots;
+        }
+
+        function updateScoreBar() {
+            let text = `Score: ${gameController.total_score}`;
+            if (gameController.streak >= 2) {
+                text += ` | ${gameController.streak} streak!`;
+            }
+            document.getElementById('score-bar').textContent = text;
+        }
+
+        function submitAnswer(answer) {
+            const timeTaken = (Date.now() - problemStartTime) / 1000;
+            const feedback = gameController.submit_answer(answer, timeTaken);
+
+            const feedbackEl = document.getElementById('feedback');
+            if (feedback.is_correct) {
+                feedbackEl.textContent = `Correct! +${feedback.points_earned}`;
+                feedbackEl.className = 'feedback correct';
+            } else {
+                feedbackEl.textContent = `Nope! Answer: ${feedback.correct_answer}`;
+                feedbackEl.className = 'feedback incorrect';
+            }
+
+            updateProgressDots();
+            updateScoreBar();
+
+            setTimeout(() => {
+                showProblem();
+            }, 500);
+        }
+
+        function finishLevel() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            stopListening();
+
+            const [stars, isNewBest] = gameController.finish().toJs();
+
+            const event = pyodide.runPython(`
+                from flashy.core.flow import LevelCompleted
+                LevelCompleted(
+                    player_name="${currentPlayer}",
+                    level_number=${currentLevel},
+                    stars=${stars},
+                    is_new_best=${isNewBest ? 'True' : 'False'},
+                    correct=${gameController.correct_count},
+                    total=${gameController.total_problems},
+                    score=${gameController.total_score},
+                    best_streak=${gameController.best_streak},
+                )
+            `);
+
+            navigate(event);
+        }
+
+        // ============================================================
+        // Result Screen
+        // ============================================================
+        let resultParams = {};
+
+        function showResultScreen(params) {
+            resultParams = params;
+
+            const title = params.stars >= 2 ? 'Level Complete!' : 'Keep Trying!';
+            document.getElementById('result-title').textContent = title;
+            document.getElementById('result-title').style.color = params.stars >= 2 ? '#0f0' : '#ff0';
+
+            document.getElementById('result-stars').textContent =
+                '⭐'.repeat(params.stars) + '·'.repeat(3 - params.stars);
+
+            document.getElementById('result-new-best').style.display =
+                params.is_new_best ? 'block' : 'none';
+
+            document.getElementById('result-stats').textContent =
+                `Correct: ${params.correct}/${params.total}`;
+
+            let scoreText = `Score: ${params.score}`;
+            if (params.best_streak >= 2) {
+                scoreText += ` | Best streak: ${params.best_streak}`;
+            }
+            document.getElementById('result-score').textContent = scoreText;
+
+            showScreen('result-screen');
+        }
+
+        function resultContinue() {
+            const event = pyodide.runPython(`
+                from flashy.core.flow import ResultContinue
+                ResultContinue(
+                    player_name="${currentPlayer}",
+                    level_number=${resultParams.level_number},
+                    stars=${resultParams.stars}
+                )
+            `);
+            navigate(event);
+        }
+
+        function resultReplay() {
+            const event = pyodide.runPython(`
+                from flashy.core.flow import ResultReplay
+                ResultReplay(player_name="${currentPlayer}", level_number=${resultParams.level_number})
+            `);
+            navigate(event);
+        }
+
+        // ============================================================
+        // Boss Victory Screen
+        // ============================================================
+        function showBossVictoryScreen(playerName, worldNumber) {
+            const world = pyodide.runPython(`
+                from flashy.core.worlds import get_world
+                get_world(${worldNumber})
+            `);
+
+            document.getElementById('boss-victory-text').textContent =
+                `You defeated ${world.boss_name}!\n\n${world.boss_defeat}`;
+
+            showScreen('boss-victory-screen');
+
+            document.getElementById('boss-victory-screen').onclick = () => {
+                const event = pyodide.runPython(`
+                    from flashy.core.flow import BossVictoryDismissed
+                    BossVictoryDismissed(player_name="${currentPlayer}", world_number=${worldNumber})
+                `);
+                navigate(event);
+            };
+        }
+
+        // ============================================================
+        // Game Complete Screen
+        // ============================================================
+        function showGameCompleteScreen() {
+            showScreen('game-complete-screen');
+
+            document.getElementById('game-complete-screen').onclick = () => {
+                const event = pyodide.runPython(`
+                    from flashy.core.flow import GameCompleteDismissed
+                    GameCompleteDismissed()
+                `);
+                navigate(event);
+            };
+        }
+
+        // ============================================================
+        // Voice Recognition
+        // ============================================================
+        let isListening = false;
+        let currentAnswer = '';
+
+        function updateAnswerBox() {
+            const box = document.getElementById('answer-box');
+            if (currentAnswer === '') {
+                box.textContent = '\u00A0';  // nbsp
+                box.classList.remove('has-input');
+            } else {
+                box.textContent = currentAnswer;
+                box.classList.add('has-input');
+            }
+        }
+
+        function updateInputToggle() {
+            const btn = document.getElementById('input-toggle');
+            if (inputMode === 'voice') {
+                btn.textContent = 'Switch to Keyboard';
+                document.getElementById('voice-status').textContent = '🎤 Listening...';
+            } else {
+                btn.textContent = 'Switch to Voice';
+                document.getElementById('voice-status').textContent = 'Type answer + Enter';
+            }
+        }
+
+        function toggleInputMode() {
+            if (inputMode === 'voice') {
+                inputMode = 'keyboard';
+                stopVoiceListening();
+            } else {
+                inputMode = 'voice';
+                startVoiceListening();
+            }
+            updateInputToggle();
+            currentAnswer = '';
+            updateAnswerBox();
+        }
+
+        async function startVoiceListening() {
+            if (!recognizer || isListening) return;
+
+            try {
+                isListening = true;
+                document.getElementById('voice-status').textContent = 'Requesting microphone...';
+
+                mediaStream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        sampleRate: 16000
+                    }
+                });
+                audioContext = new AudioContext({ sampleRate: 16000 });
+
+                const source = audioContext.createMediaStreamSource(mediaStream);
+                const processor = audioContext.createScriptProcessor(4096, 1, 1);
+
+                processor.onaudioprocess = (e) => {
+                    if (recognizer) {
+                        recognizer.acceptWaveform(e.inputBuffer);
+                    }
+                };
+
+                source.connect(processor);
+                processor.connect(audioContext.destination);
+
+                document.getElementById('voice-status').textContent = '🎤 Listening...';
+            } catch (err) {
+                console.warn('Microphone error:', err);
+                inputMode = 'keyboard';
+                updateInputToggle();
+                isListening = false;
+            }
+        }
+
+        function stopVoiceListening() {
+            isListening = false;
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+            }
+            if (audioContext) {
+                audioContext.close();
+                audioContext = null;
+            }
+        }
+
+        async function startListening() {
+            currentAnswer = '';
+            updateAnswerBox();
+            updateInputToggle();
+
+            // Always enable keyboard input
+            document.removeEventListener('keydown', handleKeyboardInput);
+            document.addEventListener('keydown', handleKeyboardInput);
+
+            // Start voice if in voice mode and recognizer is available
+            if (inputMode === 'voice' && recognizer) {
+                await startVoiceListening();
+            }
+        }
+
+        function stopListening() {
+            document.removeEventListener('keydown', handleKeyboardInput);
+            stopVoiceListening();
+        }
+
+        function handleKeyboardInput(event) {
+            // Ignore if not on gameplay screen
+            if (!document.getElementById('gameplay-screen').classList.contains('active')) {
+                return;
+            }
+
+            // Number keys (0-9)
+            if (event.key >= '0' && event.key <= '9') {
+                currentAnswer += event.key;
+                updateAnswerBox();
+            }
+
+            // Negative numbers with minus
+            if (event.key === '-' && currentAnswer === '') {
+                currentAnswer = '-';
+                updateAnswerBox();
+            }
+
+            // Backspace
+            if (event.key === 'Backspace') {
+                currentAnswer = currentAnswer.slice(0, -1);
+                updateAnswerBox();
+            }
+
+            // Enter to submit
+            if (event.key === 'Enter' && currentAnswer !== '' && currentAnswer !== '-') {
+                submitAnswer(parseInt(currentAnswer));
+                currentAnswer = '';
+                updateAnswerBox();
+            }
+
+            // Cheat codes
+            if (event.key === 'F9') {
+                event.preventDefault();
+                gameController.cheat_pass_all();
+                finishLevel();
+            }
+            if (event.key === 'F10') {
+                event.preventDefault();
+                gameController.cheat_fail_all();
+                finishLevel();
+            }
+        }
+
+        // ============================================================
+        // Start
+        // ============================================================
+        init();
+    </script>
+</body>
+</html>

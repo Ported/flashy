@@ -4,7 +4,7 @@ from textual.app import ComposeResult
 from textual.containers import Center, Vertical
 from textual.widgets import Footer, Header, Static
 
-from flashy.ui.base import STORY_CSS, StoryScreen
+from flashy.platforms.tui.base import STORY_CSS, StoryScreen
 
 
 class IntroScreen(StoryScreen):
@@ -48,8 +48,8 @@ class IntroScreen(StoryScreen):
 
     def action_continue(self) -> None:
         """Continue to the world intro."""
-        from flashy.ui.screens.world_intro import WorldIntroScreen
+        from flashy.core.flow import IntroDismissed
+        from flashy.platforms.tui.base import get_app
 
         self.app.pop_screen()
-        # Show world intro before the map
-        self.app.push_screen(WorldIntroScreen(self.player_name, world_number=1))
+        get_app(self).navigate(IntroDismissed(self.player_name))

@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 
-from flashy.problems import Operation
+from flashy.core.problems import Operation
 
 
 @dataclass(frozen=True)

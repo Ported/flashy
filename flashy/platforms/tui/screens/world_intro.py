@@ -4,7 +4,7 @@ from textual.app import ComposeResult
 from textual.containers import Center, Vertical
 from textual.widgets import Footer, Header, Static
 
-from flashy.ui.base import STORY_CSS, StoryScreen
+from flashy.platforms.tui.base import STORY_CSS, StoryScreen
 
 
 class WorldIntroScreen(StoryScreen):
@@ -30,7 +30,7 @@ class WorldIntroScreen(StoryScreen):
         self.world_number = world_number
 
     def compose(self) -> ComposeResult:
-        from flashy.worlds import get_world
+        from flashy.core.worlds import get_world
 
         world = get_world(self.world_number)
         if not world:
@@ -53,9 +53,10 @@ class WorldIntroScreen(StoryScreen):
 
     def action_continue(self) -> None:
         """Continue to the world map."""
-        from flashy.ui.screens.world_map import WorldMapScreen
+        from flashy.core.flow import WorldIntroDismissed
+        from flashy.platforms.tui.base import get_app
 
         self.app.pop_screen()
-        self.app.push_screen(
-            WorldMapScreen(self.player_name, world_number=self.world_number)
+        get_app(self).navigate(
+            WorldIntroDismissed(self.player_name, world_number=self.world_number)
         )

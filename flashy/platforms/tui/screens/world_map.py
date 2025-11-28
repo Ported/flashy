@@ -118,7 +118,7 @@ class WorldMapScreen(Screen):
         return 1
 
     def compose(self) -> ComposeResult:
-        from flashy.worlds import get_world
+        from flashy.core.worlds import get_world
 
         world = get_world(self.world_number)
         if not world:
@@ -144,7 +144,7 @@ class WorldMapScreen(Screen):
 
     def _refresh_levels(self) -> None:
         """Refresh the level list."""
-        from flashy.levels import get_levels_for_world
+        from flashy.core.levels import get_levels_for_world
 
         list_view = self.query_one("#level-list", ListView)
         list_view.clear()
@@ -212,10 +212,7 @@ class WorldMapScreen(Screen):
     @on(ListView.Selected)
     def level_selected(self, event: ListView.Selected) -> None:
         """Handle level selection."""
-        from flashy.levels import get_level
-        from flashy.ui.screens.boss_intro import BossIntroScreen
-        from flashy.ui.screens.friend_meet import FriendMeetScreen
-        from flashy.ui.screens.gameplay import GameplayScreen
+        from flashy.core.flow import LevelSelected
 
         item_id = event.item.id
         if not item_id or not item_id.startswith("level-"):
@@ -233,22 +230,10 @@ class WorldMapScreen(Screen):
         # Clear error
         error_msg.update("")
 
-        # Get level info to check type
-        level = get_level(level_num)
-        if not level:
-            return
+        # Use GameFlow to determine where to go (gameplay, friend meet, or boss intro)
+        from flashy.platforms.tui.base import get_app
 
-        # Show story screens for special levels
-        if level.level_in_world == 6:  # Friend level
-            self.app.push_screen(
-                FriendMeetScreen(self.player_name, level.world_number, level_num)
-            )
-        elif level.level_in_world == 10:  # Boss level
-            self.app.push_screen(
-                BossIntroScreen(self.player_name, level.world_number, level_num)
-            )
-        else:
-            self.app.push_screen(GameplayScreen(self.player_name, level_num))
+        get_app(self).navigate(LevelSelected(self.player_name, level_number=level_num))
 
     def action_quit(self) -> None:
         """Quit to player select."""

@@ -8,6 +8,7 @@ ONES = {
     "one": 1,
     "two": 2,
     "three": 3,
+    "free": 3,  # often misheard as "three"
     "four": 4,
     "five": 5,
     "six": 6,
@@ -47,6 +48,17 @@ FUZZY_PAIRS = frozenset([
     (18, 80),  # eighteen / eighty
     (19, 90),  # nineteen / ninety
 ])
+
+# Digits that are commonly confused by speech recognition
+# three (3) is often heard as four (4)
+CONFUSED_DIGITS = {3: 4, 4: 3}
+
+# Word-level confusions that cause structural changes
+# "three" is often heard as "forty" (e.g., "three hundred" -> "forty hundred")
+# This maps (recognized, expected) pairs that should be considered equivalent
+CONFUSED_WORD_REPLACEMENTS = [
+    (40, 3),  # "forty" misheard for "three"
+]
 
 # Give up phrases (include variants without apostrophes)
 GIVE_UP_PHRASES = frozenset(
@@ -110,12 +122,15 @@ def _parse_number_words(words: list[str]) -> int | None:
     total = 0
     current = 0
     found_number = False
+    is_negative = False
 
     i = 0
     while i < len(words):
         word = words[i]
 
-        if word in ONES:
+        if word in ("minus", "negative") and not found_number:
+            is_negative = True
+        elif word in ONES:
             current += ONES[word]
             found_number = True
         elif word in TENS:
@@ -139,7 +154,8 @@ def _parse_number_words(words: list[str]) -> int | None:
         i += 1
 
     if found_number:
-        return total + current
+        result = total + current
+        return -result if is_negative else result
     return None
 
 
@@ -155,10 +171,62 @@ def is_give_up(text: str) -> bool:
     return text in GIVE_UP_PHRASES
 
 
+def _differs_by_confused_digit(recognized: int, expected: int) -> bool:
+    """Check if two numbers differ only by a single confused digit swap.
+
+    For example, 43 vs 44 (three heard as four), or 73 vs 74.
+    """
+    rec_str = str(recognized)
+    exp_str = str(expected)
+
+    if len(rec_str) != len(exp_str):
+        return False
+
+    diff_count = 0
+    for r, e in zip(rec_str, exp_str, strict=True):
+        if r != e:
+            diff_count += 1
+            if diff_count > 1:
+                return False
+            # Check if this is a confused digit pair
+            r_digit, e_digit = int(r), int(e)
+            if CONFUSED_DIGITS.get(e_digit) != r_digit:
+                return False
+
+    return diff_count == 1
+
+
+def _matches_with_word_replacement(recognized: int, expected: int) -> bool:
+    """Check if recognized matches expected after applying word-level replacements.
+
+    Handles cases like "three hundred forty two" -> "forty hundred forty two"
+    where "three" (3) was heard as "forty" (40).
+    """
+    for confused_val, correct_val in CONFUSED_WORD_REPLACEMENTS:
+        # Try replacing the confused value with the correct value in recognized
+        # e.g., 4042 with (40->3) replacement: 4042 -> 342
+        rec_str = str(recognized)
+        confused_str = str(confused_val)
+        correct_str = str(correct_val)
+
+        # Try replacing first occurrence
+        if confused_str in rec_str:
+            fixed = rec_str.replace(confused_str, correct_str, 1)
+            try:
+                if int(fixed) == expected:
+                    return True
+            except ValueError:
+                pass
+
+    return False
+
+
 def is_fuzzy_match(recognized: int | None, expected: int) -> bool:
     """Check if recognized number is a fuzzy match for expected.
 
-    Accepts commonly confused pairs like fifteen/fifty.
+    Accepts commonly confused pairs like fifteen/fifty,
+    numbers that differ by confused digits (e.g., 43 vs 44 for three/four),
+    and word-level confusions (e.g., 4042 vs 342 for "forty" misheard as "three").
     """
     if recognized is None:
         return False
@@ -166,6 +234,14 @@ def is_fuzzy_match(recognized: int | None, expected: int) -> bool:
     if recognized == expected:
         return True
 
-    # Check if they're a confused pair
+    # Check if they're a confused pair (teens vs tens)
     pair = (min(recognized, expected), max(recognized, expected))
-    return pair in FUZZY_PAIRS
+    if pair in FUZZY_PAIRS:
+        return True
+
+    # Check if they differ by a confused digit (e.g., three/four)
+    if _differs_by_confused_digit(recognized, expected):
+        return True
+
+    # Check for word-level replacements (e.g., "three" -> "forty")
+    return _matches_with_word_replacement(recognized, expected)

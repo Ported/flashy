@@ -1,6 +1,6 @@
 """Tests for spoken number parsing."""
 
-from flashy.number_parser import is_fuzzy_match, is_give_up, parse_spoken_number
+from flashy.core.number_parser import is_fuzzy_match, is_give_up, parse_spoken_number
 
 
 class TestParseSpokenNumber:

@@ -69,7 +69,7 @@ class VoiceInput(Widget):
     def _init_and_listen(self) -> None:
         """Initialize handler and get one answer (runs in worker thread)."""
         try:
-            from flashy.input_handler import VoiceInputHandler
+            from flashy.platforms.tui.input_handler import VoiceInputHandler
 
             self._call_ui(self._set_status, "🎤 Loading model...")
             self._handler = VoiceInputHandler()

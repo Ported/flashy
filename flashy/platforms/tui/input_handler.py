@@ -11,7 +11,8 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import TYPE_CHECKING, Protocol
 
-from flashy.number_parser import is_fuzzy_match, is_give_up, parse_spoken_number
+from flashy.core.number_parser import is_fuzzy_match, is_give_up, parse_spoken_number
+from flashy.history import log_speech_recognition
 
 if TYPE_CHECKING:
     pass
@@ -26,6 +27,8 @@ NUMBER_WORDS = json.dumps([
     "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
     "seventeen", "eighteen", "nineteen", "twenty", "thirty", "forty", "fifty",
     "sixty", "seventy", "eighty", "ninety", "hundred", "and",
+    "free",  # often misheard as "three"
+    "minus", "negative",  # for negative numbers
     "skip", "give up", "pass", "next",
     "[unk]",
 ])
@@ -212,6 +215,10 @@ class VoiceInputHandler:
                             # Parse number
                             number = parse_spoken_number(text)
                             if number is not None:
+                                matched = expected is None or is_fuzzy_match(
+                                    number, expected
+                                )
+                                log_speech_recognition(text, number, expected, matched)
                                 return number, text
 
                             # Reset for next attempt
@@ -229,7 +236,9 @@ class VoiceInputHandler:
                             # Check for early match with expected (fuzzy matching)
                             if expected is not None:
                                 number = parse_spoken_number(text)
-                                if is_fuzzy_match(number, expected):
+                                matched = is_fuzzy_match(number, expected)
+                                log_speech_recognition(text, number, expected, matched)
+                                if matched:
                                     if not on_partial:
                                         print()  # Newline after partial
                                     return number, text

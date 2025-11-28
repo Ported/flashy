@@ -111,31 +111,24 @@ class ResultScreen(Screen):
 
     def action_continue(self) -> None:
         """Continue to map (or boss victory if applicable)."""
-        from flashy.levels import get_level
-        from flashy.ui.screens.boss_victory import BossVictoryScreen
-        from flashy.ui.screens.world_map import WorldMapScreen
+        from flashy.core.flow import ResultContinue
+        from flashy.platforms.tui.base import get_app
 
         self.app.pop_screen()
-
-        # Check if this was a boss level with 2+ stars
-        level = get_level(self.level_number)
-        if level and level.level_in_world == 10 and self.stars >= 2:
-            # Show boss victory screen
-            self.app.push_screen(
-                BossVictoryScreen(self.player_name, level.world_number)
+        get_app(self).navigate(
+            ResultContinue(
+                player_name=self.player_name,
+                level_number=self.level_number,
+                stars=self.stars,
             )
-        else:
-            # If passed (2+ stars), highlight next level; otherwise current level
-            if self.stars >= 2:
-                next_level = get_level(self.level_number + 1)
-                highlight = next_level.number if next_level else self.level_number
-            else:
-                highlight = self.level_number
-            self.app.push_screen(WorldMapScreen(self.player_name, highlight))
+        )
 
     def action_replay(self) -> None:
         """Replay the level."""
-        from flashy.ui.screens.gameplay import GameplayScreen
+        from flashy.core.flow import ResultReplay
+        from flashy.platforms.tui.base import get_app
 
         self.app.pop_screen()
-        self.app.push_screen(GameplayScreen(self.player_name, self.level_number))
+        get_app(self).navigate(
+            ResultReplay(player_name=self.player_name, level_number=self.level_number)
+        )

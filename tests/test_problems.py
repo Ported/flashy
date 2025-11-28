@@ -1,6 +1,6 @@
 """Tests for problem generation."""
 
-from flashy.problems import Operation, Problem, generate_problem
+from flashy.core.problems import Operation, Problem, generate_problem
 
 
 class TestProblem:

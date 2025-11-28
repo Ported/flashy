@@ -1,7 +1,7 @@
 """Tests for GameController."""
 
 from typing import Any
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -168,12 +168,14 @@ class TestGameController:
         with pytest.raises(ValueError, match="No current problem"):
             controller.submit_answer(5, time_taken=1.0)
 
-    @patch("flashy.game.save_progress")
-    @patch("flashy.game.log_session")
-    def test_finish_saves_progress(
-        self, mock_log: MagicMock, mock_save: MagicMock
-    ) -> None:
-        controller = GameController("test_player", 1)
+    def test_finish_saves_progress(self) -> None:
+        # Create a mock storage backend
+        mock_storage = MagicMock()
+        mock_storage.load_progress.return_value = MagicMock(
+            get_stars=MagicMock(return_value=0)
+        )
+
+        controller = GameController("test_player", 1, storage=mock_storage)
 
         # Answer all correctly
         for _ in range(controller.total_problems):
@@ -185,15 +187,17 @@ class TestGameController:
         stars, is_new_best = controller.finish()
 
         assert stars >= 0
-        mock_save.assert_called_once()
-        mock_log.assert_called_once()
+        mock_storage.save_progress.assert_called_once()
+        mock_storage.log_session.assert_called_once()
 
-    @patch("flashy.game.save_progress")
-    @patch("flashy.game.log_session")
-    def test_finish_returns_stars(
-        self, mock_log: MagicMock, mock_save: MagicMock
-    ) -> None:
-        controller = GameController("test_player", 1)
+    def test_finish_returns_stars(self) -> None:
+        # Create a mock storage backend
+        mock_storage = MagicMock()
+        mock_storage.load_progress.return_value = MagicMock(
+            get_stars=MagicMock(return_value=0)
+        )
+
+        controller = GameController("test_player", 1, storage=mock_storage)
 
         # Answer all correctly and fast for 3 stars
         for _ in range(controller.total_problems):

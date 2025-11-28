@@ -1,18 +1,18 @@
 """Game controller - manages game lifecycle for a level attempt."""
 
-from dataclasses import dataclass
+from __future__ import annotations
 
-from flashy.history import (
-    LevelResult,
-    ProblemResult,
-    load_progress,
-    log_session,
-    save_progress,
-)
-from flashy.levels import Level, get_level
-from flashy.number_parser import is_fuzzy_match
-from flashy.problems import Problem
-from flashy.scoring import calculate_score, calculate_stars, get_streak_multiplier
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+from flashy.core.levels import Level, get_level
+from flashy.core.models import LevelResult, ProblemResult
+from flashy.core.number_parser import is_fuzzy_match
+from flashy.core.problems import Problem
+from flashy.core.scoring import calculate_score, calculate_stars, get_streak_multiplier
+
+if TYPE_CHECKING:
+    from flashy.storage.protocol import StorageBackend
 
 
 @dataclass
@@ -38,9 +38,15 @@ class GameController:
     The UI should just display controller state and route input.
     """
 
-    def __init__(self, player_name: str, level_number: int) -> None:
+    def __init__(
+        self,
+        player_name: str,
+        level_number: int,
+        storage: StorageBackend | None = None,
+    ) -> None:
         self.player_name = player_name
         self.level_number = level_number
+        self._storage = storage  # Lazy load if None
         level = get_level(level_number)
         if level is None:
             raise ValueError(f"Level {level_number} not found")
@@ -51,6 +57,15 @@ class GameController:
         self.streak = 0
         self.best_streak = 0
         self.total_time = 0.0
+
+    @property
+    def storage(self) -> StorageBackend:
+        """Get the storage backend, using default if not provided."""
+        if self._storage is None:
+            from flashy.storage import get_default_storage
+
+            self._storage = get_default_storage()
+        return self._storage
 
     @property
     def current_problem(self) -> Problem | None:
@@ -176,14 +191,14 @@ class GameController:
             self.correct_count, self.total_problems, self.total_time
         )
 
-        # Save progress
-        progress = load_progress(self.player_name)
+        # Save progress via storage backend
+        progress = self.storage.load_progress(self.player_name)
         old_stars = progress.get_stars(self.level_number)
         progress.set_stars(self.level_number, stars)
-        save_progress(self.player_name, progress)
+        self.storage.save_progress(self.player_name, progress)
 
-        # Log session history
-        log_session(
+        # Log session history via storage backend
+        self.storage.log_session(
             LevelResult(
                 level_number=self.level_number,
                 level_name=self.level.name,
@@ -197,3 +212,23 @@ class GameController:
         )
 
         return stars, stars > old_stars
+
+    # --- Cheat methods for dev/testing ---
+
+    def cheat_pass_all(self) -> None:
+        """Complete all remaining problems with correct answers.
+
+        Useful for testing progression without playing through levels.
+        """
+        while not self.is_complete:
+            if problem := self.current_problem:
+                self.submit_answer(problem.answer, time_taken=1.0)
+
+    def cheat_fail_all(self) -> None:
+        """Complete all remaining problems with wrong answers.
+
+        Useful for testing failure states.
+        """
+        while not self.is_complete:
+            if problem := self.current_problem:
+                self.submit_answer(problem.answer + 999, time_taken=1.0)

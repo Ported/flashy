@@ -1,6 +1,6 @@
 """Tests for score calculation."""
 
-from flashy.scoring import (
+from flashy.core.scoring import (
     BASE_POINTS,
     FAST_BONUS,
     FAST_THRESHOLD,

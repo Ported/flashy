@@ -9,7 +9,7 @@ from textual.screen import Screen
 from textual.widgets import Footer, Header, Static
 
 from flashy.game import AnswerFeedback, GameController
-from flashy.ui.voice import VoiceInput
+from flashy.platforms.tui.voice import VoiceInput
 
 
 class GameplayScreen(Screen):
@@ -17,6 +17,11 @@ class GameplayScreen(Screen):
 
     Uses GameController to manage game logic - this screen just displays.
     """
+
+    BINDINGS = [
+        ("f9", "cheat_pass", ""),  # Secret: pass all remaining
+        ("f10", "cheat_fail", ""),  # Secret: fail all remaining
+    ]
 
     CSS = """
     GameplayScreen {
@@ -277,7 +282,7 @@ class GameplayScreen(Screen):
 
     def _finish_level(self) -> None:
         """Finish the level and show results."""
-        from flashy.ui.screens.result import ResultScreen
+        from flashy.platforms.tui.screens.result import ResultScreen
 
         # Stop timer if running
         if self._timer_interval:
@@ -301,3 +306,13 @@ class GameplayScreen(Screen):
                 self.controller.best_streak,
             )
         )
+
+    def action_cheat_pass(self) -> None:
+        """Secret cheat: answer all remaining problems correctly."""
+        self.controller.cheat_pass_all()
+        self._finish_level()
+
+    def action_cheat_fail(self) -> None:
+        """Secret cheat: answer all remaining problems wrong."""
+        self.controller.cheat_fail_all()
+        self._finish_level()

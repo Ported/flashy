@@ -4,7 +4,7 @@ from textual.app import ComposeResult
 from textual.containers import Center, Vertical
 from textual.widgets import Footer, Header, Static
 
-from flashy.ui.base import STORY_CSS, StoryScreen
+from flashy.platforms.tui.base import STORY_CSS, StoryScreen
 
 
 class GameCompleteScreen(StoryScreen):
@@ -84,7 +84,8 @@ class GameCompleteScreen(StoryScreen):
 
     def action_continue(self) -> None:
         """Return to player select screen."""
-        from flashy.ui.screens.player_select import PlayerSelectScreen
+        from flashy.core.flow import GameCompleteDismissed
+        from flashy.platforms.tui.base import get_app
 
         self.app.pop_screen()
-        self.app.push_screen(PlayerSelectScreen())
+        get_app(self).navigate(GameCompleteDismissed())

@@ -90,7 +90,7 @@ class NewPlayerScreen(Screen):
 
     def _try_create(self) -> None:
         """Try to create the player."""
-        from flashy.ui.screens.intro import IntroScreen
+        from flashy.core.flow import NewPlayerCreated
 
         name_input = self.query_one("#name-input", Input)
         error_label = self.query_one("#error-msg", Static)
@@ -113,6 +113,8 @@ class NewPlayerScreen(Screen):
         # Create player
         save_progress(safe_name, PlayerProgress())
 
-        # Go back and refresh, then start intro
+        # Go back and use GameFlow for next screen
+        from flashy.platforms.tui.base import get_app
+
         self.app.pop_screen()
-        self.app.push_screen(IntroScreen(safe_name))
+        get_app(self).navigate(NewPlayerCreated(safe_name))

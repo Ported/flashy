@@ -1,6 +1,6 @@
 """Tests for level definitions."""
 
-from flashy.levels import (
+from flashy.core.levels import (
     LEVELS,
     LevelType,
     get_level,
@@ -8,7 +8,7 @@ from flashy.levels import (
     get_next_level,
     get_total_levels,
 )
-from flashy.problems import Operation
+from flashy.core.problems import Operation
 
 
 class TestLevels:

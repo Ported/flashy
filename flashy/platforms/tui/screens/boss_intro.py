@@ -4,7 +4,7 @@ from textual.app import ComposeResult
 from textual.containers import Center, Vertical
 from textual.widgets import Footer, Header, Static
 
-from flashy.ui.base import STORY_CSS, StoryScreen
+from flashy.platforms.tui.base import STORY_CSS, StoryScreen
 
 # ASCII art for bosses
 BOSS_ART = {
@@ -71,7 +71,7 @@ class BossIntroScreen(StoryScreen):
         self.level_number = level_number
 
     def compose(self) -> ComposeResult:
-        from flashy.worlds import get_world
+        from flashy.core.worlds import get_world
 
         world = get_world(self.world_number)
         if not world:
@@ -98,7 +98,10 @@ class BossIntroScreen(StoryScreen):
 
     def action_continue(self) -> None:
         """Continue to boss battle."""
-        from flashy.ui.screens.gameplay import GameplayScreen
+        from flashy.core.flow import BossIntroDismissed
+        from flashy.platforms.tui.base import get_app
 
         self.app.pop_screen()
-        self.app.push_screen(GameplayScreen(self.player_name, self.level_number))
+        get_app(self).navigate(
+            BossIntroDismissed(self.player_name, level_number=self.level_number)
+        )

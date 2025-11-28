@@ -4,7 +4,7 @@ from textual.app import ComposeResult
 from textual.containers import Center, Vertical
 from textual.widgets import Footer, Header, Static
 
-from flashy.ui.base import STORY_CSS, StoryScreen
+from flashy.platforms.tui.base import STORY_CSS, StoryScreen
 
 
 class BossVictoryScreen(StoryScreen):
@@ -39,7 +39,7 @@ class BossVictoryScreen(StoryScreen):
         self.world_number = world_number
 
     def compose(self) -> ComposeResult:
-        from flashy.worlds import get_world
+        from flashy.core.worlds import get_world
 
         world = get_world(self.world_number)
         if not world:
@@ -68,19 +68,13 @@ class BossVictoryScreen(StoryScreen):
 
     def action_continue(self) -> None:
         """Continue to next world intro or game complete."""
-        from flashy.ui.screens.game_complete import GameCompleteScreen
-        from flashy.ui.screens.world_intro import WorldIntroScreen
-        from flashy.worlds import get_world
+        from flashy.core.flow import BossVictoryDismissed
+        from flashy.platforms.tui.base import get_app
 
         self.app.pop_screen()
-
-        # Check if there's a next world
-        next_world = get_world(self.world_number + 1)
-        if next_world:
-            # Show next world intro
-            self.app.push_screen(
-                WorldIntroScreen(self.player_name, self.world_number + 1)
+        get_app(self).navigate(
+            BossVictoryDismissed(
+                player_name=self.player_name,
+                world_number=self.world_number,
             )
-        else:
-            # No more worlds - Flashy goes home!
-            self.app.push_screen(GameCompleteScreen(self.player_name))
+        )

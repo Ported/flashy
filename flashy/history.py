@@ -1,73 +1,31 @@
-"""Session history logging and progress tracking."""
+"""Session history logging and progress tracking.
+
+This module handles file I/O for player progress and session logging.
+Data models are imported from flashy.core.models.
+"""
 
 import json
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
 
+from flashy.core.models import LevelResult, PlayerProgress, ProblemResult
 
-@dataclass
-class PlayerProgress:
-    """Player's game progress - stars and unlocked levels."""
-
-    stars: dict[int, int] = field(default_factory=dict)  # level_number -> stars (1-3)
-
-    def get_stars(self, level: int) -> int:
-        """Get stars for a level (0 if not completed)."""
-        return self.stars.get(level, 0)
-
-    def set_stars(self, level: int, stars: int) -> None:
-        """Set stars for a level, keeping the best score."""
-        current = self.stars.get(level, 0)
-        if stars > current:
-            self.stars[level] = stars
-
-    def get_highest_unlocked(self) -> int:
-        """Get the highest level that has been unlocked."""
-        if not self.stars:
-            return 1  # Start with level 1 unlocked
-
-        # Find highest completed level with 2+ stars
-        highest = 0
-        for level_num, star_count in self.stars.items():
-            if star_count >= 2:
-                highest = max(highest, level_num)
-
-        # Next level after highest completed is unlocked
-        return highest + 1
-
-    def is_unlocked(self, level: int) -> bool:
-        """Check if a level is unlocked (playable)."""
-        if level == 1:
-            return True
-        # Level is unlocked if previous level has 2+ stars
-        return self.get_stars(level - 1) >= 2
-
-
-@dataclass
-class ProblemResult:
-    """Result of a single problem attempt."""
-
-    problem: str
-    correct_answer: int
-    given_answer: int | None
-    is_correct: bool
-    time_seconds: float
-    points: int
-
-
-@dataclass
-class LevelResult:
-    """Result of completing a level."""
-
-    level_number: int
-    level_name: str
-    total_score: int
-    correct_count: int
-    total_problems: int
-    best_streak: int
-    total_time_seconds: float
-    problems: list[ProblemResult]
+# Re-export models for backward compatibility
+__all__ = [
+    "LevelResult",
+    "PlayerProgress",
+    "ProblemResult",
+    "get_history_path",
+    "get_players_dir",
+    "get_speech_log_path",
+    "list_players",
+    "load_progress",
+    "log_session",
+    "log_speech_recognition",
+    "player_exists",
+    "save_progress",
+]
 
 
 def get_history_path() -> Path:
@@ -75,6 +33,41 @@ def get_history_path() -> Path:
     history_dir = Path.home() / ".flashy"
     history_dir.mkdir(exist_ok=True)
     return history_dir / "history.log"
+
+
+def get_speech_log_path() -> Path:
+    """Get the path to the speech recognition log file."""
+    history_dir = Path.home() / ".flashy"
+    history_dir.mkdir(exist_ok=True)
+    return history_dir / "speech.log"
+
+
+def log_speech_recognition(
+    raw_transcript: str,
+    parsed_number: int | None,
+    expected: int | None,
+    matched: bool,
+) -> None:
+    """Log a speech recognition result for debugging.
+
+    Args:
+        raw_transcript: The raw text from the speech recognizer
+        parsed_number: The number parsed from the transcript (None if unparseable)
+        expected: The expected answer (None if not provided)
+        matched: Whether it was considered a match
+    """
+    log_path = get_speech_log_path()
+
+    entry = {
+        "timestamp": datetime.now().isoformat(),
+        "transcript": raw_transcript,
+        "parsed": parsed_number,
+        "expected": expected,
+        "matched": matched,
+    }
+
+    with open(log_path, "a") as f:
+        f.write(json.dumps(entry) + "\n")
 
 
 def log_session(result: LevelResult) -> None:

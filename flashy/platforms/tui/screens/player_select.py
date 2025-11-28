@@ -132,13 +132,13 @@ class PlayerSelectScreen(Screen):
     @on(Button.Pressed, "#new-player-btn")
     def new_player_pressed(self) -> None:
         """Handle new player button press."""
-        from flashy.ui.screens.new_player import NewPlayerScreen
+        from flashy.platforms.tui.screens.new_player import NewPlayerScreen
 
         self.app.push_screen(NewPlayerScreen())
 
     def action_new_player(self) -> None:
         """Action to create new player."""
-        from flashy.ui.screens.new_player import NewPlayerScreen
+        from flashy.platforms.tui.screens.new_player import NewPlayerScreen
 
         self.app.push_screen(NewPlayerScreen())
 
@@ -148,14 +148,12 @@ class PlayerSelectScreen(Screen):
 
     def _start_game(self, player_name: str) -> None:
         """Start the game with selected player."""
-        from flashy.ui.screens.intro import IntroScreen
-        from flashy.ui.screens.world_map import WorldMapScreen
+        from flashy.core.flow import PlayerSelected
+        from flashy.platforms.tui.base import get_app
 
-        # Load progress and check if new player
         progress = load_progress(player_name)
-        if not progress.stars:
-            # New player - show intro
-            self.app.push_screen(IntroScreen(player_name))
-        else:
-            # Returning player - go to map
-            self.app.push_screen(WorldMapScreen(player_name))
+        # Use GameFlow to determine where to go
+        get_app(self).navigate(
+            PlayerSelected(player_name, is_new_player=False),
+            progress,
+        )

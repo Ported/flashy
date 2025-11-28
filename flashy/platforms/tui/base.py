@@ -1,9 +1,23 @@
 """Shared base classes and utilities for Flashy UI screens."""
 
 from abc import abstractmethod
+from typing import TYPE_CHECKING, cast
 
 from textual.binding import Binding
 from textual.screen import Screen
+
+if TYPE_CHECKING:
+    from flashy.platforms.tui.app import FlashyApp
+
+
+def get_app(screen: Screen) -> "FlashyApp":
+    """Get the typed FlashyApp from a screen.
+
+    This is a helper to provide proper typing for the app.
+    """
+    from flashy.platforms.tui.app import FlashyApp
+
+    return cast(FlashyApp, screen.app)
 
 # Common CSS for story-style screens
 STORY_CSS = """
