@@ -1,0 +1,14 @@
+# Wrangler local state and cache
+.wrangler/
+node_modules/
+
+# Python source files (flashy_core.py is needed, but build.py and storage.py are not)
+build.py
+storage.py
+__init__.py
+__pycache__/
+
+# Development files
+schema.sql
+wrangler.toml
+deploy.sh
