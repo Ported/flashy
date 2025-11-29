@@ -10,12 +10,13 @@ from collections.abc import Generator
 from pathlib import Path
 
 import pytest
-from playwright.sync_api import BrowserContext, Page
+from playwright.sync_api import Browser, BrowserContext, Page
 
 
 def generate_unique_name(base: str = "Player") -> str:
     """Generate a unique player name using UUID suffix."""
     return f"{base}_{uuid.uuid4().hex[:8]}"
+
 
 # Path to web platform files
 WEB_DIR = Path(__file__).parent.parent.parent / "flashy" / "platforms" / "web"
@@ -137,7 +138,8 @@ def pytest_configure(config: pytest.Config) -> None:
 
 @pytest.fixture(scope="session")
 def shared_context(
-    browser: "Browser", web_server: str  # type: ignore[name-defined]  # noqa: F821
+    browser: Browser,
+    web_server: str,  # type: ignore[name-defined]  # noqa: F821
 ) -> Generator[BrowserContext, None, None]:
     """Create a shared browser context that persists across all tests.
 

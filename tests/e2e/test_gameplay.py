@@ -75,16 +75,16 @@ def test_enter_submits_answer(app_page: Page) -> None:
     """Pressing Enter should submit the answer and show feedback."""
     navigate_to_level(app_page)
 
-    # Set up observer to catch the brief feedback class (feedback is only 2ms in tests)
-    app_page.evaluate("window.sawFeedback = false")
+    # Set up observer to catch brief feedback class (only 2ms in tests)
     app_page.evaluate("""
-        const observer = new MutationObserver(() => {
-            const el = document.getElementById('problem-display');
-            if (el.classList.contains('correct') || el.classList.contains('incorrect')) {
+        window.sawFeedback = false;
+        const el = document.getElementById('problem-display');
+        new MutationObserver(() => {
+            if (el.classList.contains('correct') ||
+                el.classList.contains('incorrect')) {
                 window.sawFeedback = true;
             }
-        });
-        observer.observe(document.getElementById('problem-display'), {attributes: true});
+        }).observe(el, {attributes: true});
     """)
 
     # Type an answer and submit
@@ -96,7 +96,7 @@ def test_enter_submits_answer(app_page: Page) -> None:
 
     # Verify the observer caught some feedback
     saw_feedback = app_page.evaluate("window.sawFeedback")
-    assert saw_feedback, "Expected 'correct' or 'incorrect' class to appear on problem-display"
+    assert saw_feedback, "Expected feedback class on problem-display"
 
 
 def test_correct_answer_shows_green_feedback(app_page: Page) -> None:
@@ -111,15 +111,16 @@ def test_correct_answer_shows_green_feedback(app_page: Page) -> None:
     if match:
         correct = int(match.group(1)) + int(match.group(2))
 
-        # Set up observer to catch the brief "correct" class (feedback is only 2ms in tests)
+        # Set up observer to catch the brief "correct" class
+        # (feedback is only 2ms in tests)
         app_page.evaluate("window.sawCorrectFeedback = false")
         app_page.evaluate("""
-            const observer = new MutationObserver(() => {
-                if (document.getElementById('problem-display').classList.contains('correct')) {
+            const el = document.getElementById('problem-display');
+            new MutationObserver(() => {
+                if (el.classList.contains('correct')) {
                     window.sawCorrectFeedback = true;
                 }
-            });
-            observer.observe(document.getElementById('problem-display'), {attributes: true});
+            }).observe(el, {attributes: true});
         """)
 
         # Type the correct answer
@@ -139,15 +140,16 @@ def test_wrong_answer_shows_red_feedback(app_page: Page) -> None:
     """Wrong answer should show red feedback."""
     navigate_to_level(app_page)
 
-    # Set up observer to catch the brief "incorrect" class (feedback is only 2ms in tests)
+    # Set up observer to catch the brief "incorrect" class
+    # (feedback is only 2ms in tests)
     app_page.evaluate("window.sawIncorrectFeedback = false")
     app_page.evaluate("""
-        const observer = new MutationObserver(() => {
-            if (document.getElementById('problem-display').classList.contains('incorrect')) {
+        const el = document.getElementById('problem-display');
+        new MutationObserver(() => {
+            if (el.classList.contains('incorrect')) {
                 window.sawIncorrectFeedback = true;
             }
-        });
-        observer.observe(document.getElementById('problem-display'), {attributes: true});
+        }).observe(el, {attributes: true});
     """)
 
     # Type obviously wrong answer (999)
