@@ -347,16 +347,16 @@ LEVEL_15 = Level(
     name="Cypress Grove",
     level_type=LevelType.BUILD,
     problems=(
-        sub(10, 4),
-        sub(11, 5),
-        sub(12, 6),
-        sub(13, 7),
-        sub(14, 8),
-        sub(15, 7),
-        sub(12, 5),
-        sub(14, 6),
-        sub(16, 8),
-        sub(17, 9),
+        sub(200, 100),
+        sub(500, 250),
+        sub(120, 50),
+        sub(750, 500),
+        sub(500, 800),
+        sub(30, 70),
+        sub(900, 901),
+        sub(250, 260),
+        sub(600, 900),
+        sub(80, 80),
     ),
 )
 
@@ -367,16 +367,16 @@ LEVEL_16 = Level(
     name="Borrow's Hollow",
     level_type=LevelType.FRIEND,
     problems=(
-        sub(10, 5),
-        sub(11, 6),
-        sub(12, 7),
-        sub(13, 8),
-        sub(11, 4),
-        sub(14, 7),
-        sub(12, 6),
-        sub(15, 8),
-        sub(13, 6),
-        sub(16, 8),
+        sub(50, 15),
+        sub(40, 24),
+        sub(17, 8),
+        sub(8, 17),
+        sub(0, 867),
+        sub(0, 42),
+        sub(25, 25),
+        sub(100, 234),
+        sub(764, 523),
+        sub(834, 398),
     ),
 )
 
@@ -387,16 +387,16 @@ LEVEL_17 = Level(
     name="Murky Depths",
     level_type=LevelType.CHALLENGE,
     problems=(
-        sub(12, 5),
-        sub(14, 6),
-        sub(15, 7),
-        sub(16, 8),
-        sub(17, 9),
-        sub(18, 9),
-        sub(13, 5),
-        sub(15, 6),
-        sub(17, 8),
-        sub(19, 10),
+        sub(396, 782),
+        sub(743, 172),
+        sub(983, 682),
+        sub(143, 259),
+        sub(238, 263),
+        sub(749, 260),
+        sub(154, 98),
+        sub(762, 871),
+        sub(954, 958),
+        sub(402, 678),
     ),
 )
 
@@ -407,16 +407,16 @@ LEVEL_18 = Level(
     name="Tangled Vines",
     level_type=LevelType.CHALLENGE,
     problems=(
-        sub(14, 6),
-        sub(16, 7),
-        sub(17, 8),
-        sub(18, 9),
-        sub(19, 10),
-        sub(20, 9),
-        sub(15, 6),
-        sub(18, 8),
-        sub(20, 10),
-        sub(21, 11),
+        sub(0, 20),
+        sub(-20, 90),
+        sub(-10, -5),
+        sub(-55, -70),
+        sub(-19, 10),
+        sub(20, -9),
+        sub(-15, 6),
+        sub(800, -100),
+        sub(0, -10),
+        sub(-21, -11),
     ),
 )
 
@@ -427,16 +427,16 @@ LEVEL_19 = Level(
     name="Swamp's Heart",
     level_type=LevelType.PREBOSS,
     problems=(
-        sub(16, 7),
-        sub(18, 9),
-        sub(19, 10),
-        sub(20, 11),
-        sub(21, 12),
-        sub(23, 11),
-        sub(17, 8),
-        sub(20, 9),
-        sub(22, 11),
-        sub(24, 12),
+        sub(750, 250),
+        sub(250, 500),
+        sub(1000, 500),
+        sub(800, 300),
+        sub(450, 150),
+        sub(450, 500),
+        sub(650, 450),
+        sub(50, 300),
+        sub(-100, 250),
+        sub(-500, 250),
     ),
 )
 
@@ -448,40 +448,40 @@ LEVEL_20 = Level(
     level_type=LevelType.BOSS,
     time_limit=90,  # 90 seconds for 10 problems
     problems=(
-        sub(15, 7),
-        sub(17, 8),
-        sub(18, 9),
-        sub(19, 10),
-        sub(20, 11),
-        sub(21, 12),
-        sub(22, 11),
-        sub(23, 12),
-        sub(24, 12),
-        sub(25, 13),
+        sub(654, -909),
+        sub(-712, 163),
+        sub(-587, -822),
+        sub(-218, 390),
+        sub(-14, 962),
+        sub(-682, -17),
+        sub(-68, -923),
+        sub(234, 599),
+        sub(709, 603),
+        sub(-490, -385),
     ),
 )
 
 # =============================================================================
-# WORLD 3: DIVISION DESERT (Levels 21-30)
+# WORLD 3: MULTIPLICATION MEADOWS (Levels 21-30)
 # =============================================================================
 
 LEVEL_21 = Level(
     number=21,
     world_number=3,
     level_in_world=1,
-    name="Oasis Gate",
+    name="Flower Field",
     level_type=LevelType.INTRO,
     problems=(
-        div(2, 1),
-        div(4, 2),
-        div(6, 2),
-        div(4, 1),
-        div(6, 3),
-        div(8, 2),
-        div(3, 1),
-        div(8, 4),
-        div(9, 3),
-        div(10, 2),
+        mul(1, 1),
+        mul(0, 2),
+        mul(3, 0),
+        mul(1, 4),
+        mul(4, 1),
+        mul(1, 6),
+        mul(1, 9),
+        mul(12, 1),
+        mul(120, 1),
+        mul(1, 17),
     ),
 )
 
@@ -489,230 +489,25 @@ LEVEL_22 = Level(
     number=22,
     world_number=3,
     level_in_world=2,
-    name="Sandy Trail",
+    name="Butterfly Path",
     level_type=LevelType.INTRO,
     problems=(
-        div(6, 2),
-        div(8, 2),
-        div(9, 3),
-        div(10, 2),
-        div(12, 3),
-        div(12, 4),
-        div(8, 4),
-        div(10, 5),
-        div(12, 2),
-        div(15, 3),
+        mul(2, 3),
+        mul(2, 6),
+        mul(2, 10),
+        mul(2, 7),
+        mul(2, 9),
+        mul(2, 2),
+        mul(2, 1),
+        mul(13, 2),
+        mul(5, 2),
+        mul(8, 2),
     ),
 )
 
 LEVEL_23 = Level(
     number=23,
     world_number=3,
-    level_in_world=3,
-    name="Dune Ridge",
-    level_type=LevelType.INTRO,
-    problems=(
-        div(8, 2),
-        div(10, 2),
-        div(12, 3),
-        div(12, 4),
-        div(14, 2),
-        div(16, 4),
-        div(9, 3),
-        div(15, 5),
-        div(16, 2),
-        div(18, 3),
-    ),
-)
-
-LEVEL_24 = Level(
-    number=24,
-    world_number=3,
-    level_in_world=4,
-    name="Scorpion Pass",
-    level_type=LevelType.BUILD,
-    problems=(
-        div(10, 2),
-        div(12, 3),
-        div(14, 2),
-        div(15, 3),
-        div(16, 4),
-        div(18, 2),
-        div(12, 4),
-        div(20, 4),
-        div(18, 3),
-        div(20, 5),
-    ),
-)
-
-LEVEL_25 = Level(
-    number=25,
-    world_number=3,
-    level_in_world=5,
-    name="Mirage Valley",
-    level_type=LevelType.BUILD,
-    problems=(
-        div(12, 3),
-        div(14, 2),
-        div(16, 4),
-        div(18, 3),
-        div(20, 4),
-        div(21, 3),
-        div(15, 5),
-        div(24, 4),
-        div(20, 5),
-        div(24, 3),
-    ),
-)
-
-LEVEL_26 = Level(
-    number=26,
-    world_number=3,
-    level_in_world=6,
-    name="Remainder's Rest",
-    level_type=LevelType.FRIEND,
-    problems=(
-        div(10, 2),
-        div(12, 3),
-        div(15, 3),
-        div(16, 4),
-        div(18, 2),
-        div(20, 4),
-        div(14, 2),
-        div(21, 3),
-        div(24, 4),
-        div(25, 5),
-    ),
-)
-
-LEVEL_27 = Level(
-    number=27,
-    world_number=3,
-    level_in_world=7,
-    name="Sandstorm",
-    level_type=LevelType.CHALLENGE,
-    problems=(
-        div(14, 2),
-        div(18, 3),
-        div(20, 4),
-        div(21, 3),
-        div(24, 4),
-        div(27, 3),
-        div(16, 4),
-        div(28, 4),
-        div(30, 5),
-        div(32, 4),
-    ),
-)
-
-LEVEL_28 = Level(
-    number=28,
-    world_number=3,
-    level_in_world=8,
-    name="Sunscorch",
-    level_type=LevelType.CHALLENGE,
-    problems=(
-        div(18, 3),
-        div(24, 4),
-        div(25, 5),
-        div(27, 3),
-        div(28, 4),
-        div(36, 4),
-        div(20, 4),
-        div(30, 5),
-        div(35, 5),
-        div(36, 6),
-    ),
-)
-
-LEVEL_29 = Level(
-    number=29,
-    world_number=3,
-    level_in_world=9,
-    name="Pyramid's Shadow",
-    level_type=LevelType.PREBOSS,
-    problems=(
-        div(24, 4),
-        div(27, 3),
-        div(30, 5),
-        div(32, 4),
-        div(35, 5),
-        div(42, 6),
-        div(28, 4),
-        div(36, 4),
-        div(40, 5),
-        div(45, 5),
-    ),
-)
-
-LEVEL_30 = Level(
-    number=30,
-    world_number=3,
-    level_in_world=10,
-    name="Sphinx's Riddles",
-    level_type=LevelType.BOSS,
-    time_limit=90,  # 90 seconds for 10 problems
-    problems=(
-        div(18, 3),
-        div(24, 4),
-        div(27, 3),
-        div(28, 4),
-        div(30, 5),
-        div(35, 5),
-        div(36, 4),
-        div(40, 5),
-        div(42, 6),
-        div(48, 6),
-    ),
-)
-
-# =============================================================================
-# WORLD 4: MULTIPLICATION MEADOWS (Levels 31-40)
-# =============================================================================
-
-LEVEL_31 = Level(
-    number=31,
-    world_number=4,
-    level_in_world=1,
-    name="Flower Field",
-    level_type=LevelType.INTRO,
-    problems=(
-        mul(2, 1),
-        mul(2, 2),
-        mul(3, 2),
-        mul(2, 3),
-        mul(2, 4),
-        mul(3, 3),
-        mul(2, 2),
-        mul(4, 2),
-        mul(3, 2),
-        mul(5, 2),
-    ),
-)
-
-LEVEL_32 = Level(
-    number=32,
-    world_number=4,
-    level_in_world=2,
-    name="Butterfly Path",
-    level_type=LevelType.INTRO,
-    problems=(
-        mul(2, 3),
-        mul(3, 3),
-        mul(4, 2),
-        mul(3, 4),
-        mul(5, 2),
-        mul(4, 3),
-        mul(2, 4),
-        mul(5, 3),
-        mul(4, 4),
-        mul(6, 2),
-    ),
-)
-
-LEVEL_33 = Level(
-    number=33,
-    world_number=4,
     level_in_world=3,
     name="Clover Patch",
     level_type=LevelType.INTRO,
@@ -730,9 +525,9 @@ LEVEL_33 = Level(
     ),
 )
 
-LEVEL_34 = Level(
-    number=34,
-    world_number=4,
+LEVEL_24 = Level(
+    number=24,
+    world_number=3,
     level_in_world=4,
     name="Honeybee Hive",
     level_type=LevelType.BUILD,
@@ -750,9 +545,9 @@ LEVEL_34 = Level(
     ),
 )
 
-LEVEL_35 = Level(
-    number=35,
-    world_number=4,
+LEVEL_25 = Level(
+    number=25,
+    world_number=3,
     level_in_world=5,
     name="Dandelion Dell",
     level_type=LevelType.BUILD,
@@ -770,9 +565,9 @@ LEVEL_35 = Level(
     ),
 )
 
-LEVEL_36 = Level(
-    number=36,
-    world_number=4,
+LEVEL_26 = Level(
+    number=26,
+    world_number=3,
     level_in_world=6,
     name="Times's Burrow",
     level_type=LevelType.FRIEND,
@@ -790,9 +585,9 @@ LEVEL_36 = Level(
     ),
 )
 
-LEVEL_37 = Level(
-    number=37,
-    world_number=4,
+LEVEL_27 = Level(
+    number=27,
+    world_number=3,
     level_in_world=7,
     name="Pollen Storm",
     level_type=LevelType.CHALLENGE,
@@ -810,9 +605,9 @@ LEVEL_37 = Level(
     ),
 )
 
-LEVEL_38 = Level(
-    number=38,
-    world_number=4,
+LEVEL_28 = Level(
+    number=28,
+    world_number=3,
     level_in_world=8,
     name="Rainbow Bridge",
     level_type=LevelType.CHALLENGE,
@@ -830,9 +625,9 @@ LEVEL_38 = Level(
     ),
 )
 
-LEVEL_39 = Level(
-    number=39,
-    world_number=4,
+LEVEL_29 = Level(
+    number=29,
+    world_number=3,
     level_in_world=9,
     name="Final Bloom",
     level_type=LevelType.PREBOSS,
@@ -850,9 +645,9 @@ LEVEL_39 = Level(
     ),
 )
 
-LEVEL_40 = Level(
-    number=40,
-    world_number=4,
+LEVEL_30 = Level(
+    number=30,
+    world_number=3,
     level_in_world=10,
     name="Calculata's Garden",
     level_type=LevelType.BOSS,
@@ -868,6 +663,211 @@ LEVEL_40 = Level(
         mul(9, 6),
         mul(8, 7),
         mul(9, 9),
+    ),
+)
+
+# =============================================================================
+# WORLD 4: DIVISION DESERT (Levels 31-40)
+# =============================================================================
+
+LEVEL_31 = Level(
+    number=31,
+    world_number=4,
+    level_in_world=1,
+    name="Oasis Gate",
+    level_type=LevelType.INTRO,
+    problems=(
+        div(2, 1),
+        div(4, 2),
+        div(6, 2),
+        div(4, 1),
+        div(6, 3),
+        div(8, 2),
+        div(3, 1),
+        div(8, 4),
+        div(9, 3),
+        div(10, 2),
+    ),
+)
+
+LEVEL_32 = Level(
+    number=32,
+    world_number=4,
+    level_in_world=2,
+    name="Sandy Trail",
+    level_type=LevelType.INTRO,
+    problems=(
+        div(6, 2),
+        div(8, 2),
+        div(9, 3),
+        div(10, 2),
+        div(12, 3),
+        div(12, 4),
+        div(8, 4),
+        div(10, 5),
+        div(12, 2),
+        div(15, 3),
+    ),
+)
+
+LEVEL_33 = Level(
+    number=33,
+    world_number=4,
+    level_in_world=3,
+    name="Dune Ridge",
+    level_type=LevelType.INTRO,
+    problems=(
+        div(8, 2),
+        div(10, 2),
+        div(12, 3),
+        div(12, 4),
+        div(14, 2),
+        div(16, 4),
+        div(9, 3),
+        div(15, 5),
+        div(16, 2),
+        div(18, 3),
+    ),
+)
+
+LEVEL_34 = Level(
+    number=34,
+    world_number=4,
+    level_in_world=4,
+    name="Scorpion Pass",
+    level_type=LevelType.BUILD,
+    problems=(
+        div(10, 2),
+        div(12, 3),
+        div(14, 2),
+        div(15, 3),
+        div(16, 4),
+        div(18, 2),
+        div(12, 4),
+        div(20, 4),
+        div(18, 3),
+        div(20, 5),
+    ),
+)
+
+LEVEL_35 = Level(
+    number=35,
+    world_number=4,
+    level_in_world=5,
+    name="Mirage Valley",
+    level_type=LevelType.BUILD,
+    problems=(
+        div(12, 3),
+        div(14, 2),
+        div(16, 4),
+        div(18, 3),
+        div(20, 4),
+        div(21, 3),
+        div(15, 5),
+        div(24, 4),
+        div(20, 5),
+        div(24, 3),
+    ),
+)
+
+LEVEL_36 = Level(
+    number=36,
+    world_number=4,
+    level_in_world=6,
+    name="Remainder's Rest",
+    level_type=LevelType.FRIEND,
+    problems=(
+        div(10, 2),
+        div(12, 3),
+        div(15, 3),
+        div(16, 4),
+        div(18, 2),
+        div(20, 4),
+        div(14, 2),
+        div(21, 3),
+        div(24, 4),
+        div(25, 5),
+    ),
+)
+
+LEVEL_37 = Level(
+    number=37,
+    world_number=4,
+    level_in_world=7,
+    name="Sandstorm",
+    level_type=LevelType.CHALLENGE,
+    problems=(
+        div(14, 2),
+        div(18, 3),
+        div(20, 4),
+        div(21, 3),
+        div(24, 4),
+        div(27, 3),
+        div(16, 4),
+        div(28, 4),
+        div(30, 5),
+        div(32, 4),
+    ),
+)
+
+LEVEL_38 = Level(
+    number=38,
+    world_number=4,
+    level_in_world=8,
+    name="Sunscorch",
+    level_type=LevelType.CHALLENGE,
+    problems=(
+        div(18, 3),
+        div(24, 4),
+        div(25, 5),
+        div(27, 3),
+        div(28, 4),
+        div(36, 4),
+        div(20, 4),
+        div(30, 5),
+        div(35, 5),
+        div(36, 6),
+    ),
+)
+
+LEVEL_39 = Level(
+    number=39,
+    world_number=4,
+    level_in_world=9,
+    name="Pyramid's Shadow",
+    level_type=LevelType.PREBOSS,
+    problems=(
+        div(24, 4),
+        div(27, 3),
+        div(30, 5),
+        div(32, 4),
+        div(35, 5),
+        div(42, 6),
+        div(28, 4),
+        div(36, 4),
+        div(40, 5),
+        div(45, 5),
+    ),
+)
+
+LEVEL_40 = Level(
+    number=40,
+    world_number=4,
+    level_in_world=10,
+    name="Sphinx's Riddles",
+    level_type=LevelType.BOSS,
+    time_limit=90,  # 90 seconds for 10 problems
+    problems=(
+        div(18, 3),
+        div(24, 4),
+        div(27, 3),
+        div(28, 4),
+        div(30, 5),
+        div(35, 5),
+        div(36, 4),
+        div(40, 5),
+        div(42, 6),
+        div(48, 6),
     ),
 )
 
@@ -895,7 +895,7 @@ LEVELS = [
     LEVEL_18,
     LEVEL_19,
     LEVEL_20,
-    # World 3: Division Desert
+    # World 3: Multiplication Meadows
     LEVEL_21,
     LEVEL_22,
     LEVEL_23,
@@ -906,7 +906,7 @@ LEVELS = [
     LEVEL_28,
     LEVEL_29,
     LEVEL_30,
-    # World 4: Multiplication Meadows
+    # World 4: Division Desert
     LEVEL_31,
     LEVEL_32,
     LEVEL_33,

@@ -181,6 +181,8 @@ def test_replay_with_lower_score_keeps_best(app_page: Page) -> None:
     # Press wrong number then enter
     app_page.keyboard.type("99999")
     app_page.keyboard.press("Enter")
+    # Wait for feedback to complete before using cheat
+    app_page.wait_for_timeout(100)
     # Use F9 to finish remaining problems
     app_page.keyboard.press("F9")
     app_page.wait_for_selector("#result-screen.active")
@@ -201,6 +203,8 @@ def test_replay_with_higher_score_updates_total(app_page: Page) -> None:
     app_page.wait_for_selector("#gameplay-screen.active")
     app_page.keyboard.type("99999")
     app_page.keyboard.press("Enter")
+    # Wait for feedback to complete before using cheat
+    app_page.wait_for_timeout(100)
     app_page.keyboard.press("F9")  # Finish rest with cheats
     app_page.wait_for_selector("#result-screen.active")
     app_page.get_by_role("button", name="Continue").click()

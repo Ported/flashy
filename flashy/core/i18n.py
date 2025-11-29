@@ -108,8 +108,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         # World names
         "world.1.name": "Addition Alps",
         "world.2.name": "Subtraction Swamp",
-        "world.3.name": "Division Desert",
-        "world.4.name": "Multiplication Meadows",
+        "world.3.name": "Multiplication Meadows",
+        "world.4.name": "Division Desert",
         # World intros
         "world.1.intro": (
             "Flashy woke up alone in the cold mountains.\n"
@@ -122,14 +122,14 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Flashy stepped carefully into the Subtraction Swamp..."
         ),
         "world.3.intro": (
-            "The heat hit Flashy like a wall.\n"
-            '"So hot... but I can see green meadows in the distance!"\n'
-            "The Division Desert stretched endlessly before..."
+            "Beautiful flowers swayed in the breeze.\n"
+            '"What a lovely place... but I must keep moving!"\n'
+            "The Multiplication Meadows bloomed with possibility..."
         ),
         "world.4.intro": (
-            "Beautiful flowers swayed in the breeze.\n"
-            '"I can almost smell home! It must be close!"\n'
-            "The Multiplication Meadows bloomed with possibility..."
+            "The heat hit Flashy like a wall.\n"
+            '"So hot... but I can almost smell home!"\n'
+            "The Division Desert stretched endlessly before..."
         ),
         # Friends
         "world.1.friend_name": "Carry",
@@ -146,19 +146,19 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             '"When you need to take away more than you have,"\n'
             '"just borrow from your neighbor. Works every time!"'
         ),
-        "world.3.friend_name": "Remainder",
+        "world.3.friend_name": "Times",
         "world.3.friend_intro": (
-            '"Ah, a traveler! I am Remainder the Camel."\n'
-            '"I carry what\'s left over from every division."\n'
-            '"Remember: divide means to share equally!"\n'
-            '"Split it up fair, and you\'ll find your answer."'
-        ),
-        "world.4.friend_name": "Times",
-        "world.4.friend_intro": (
             '"Oh my, oh my! A visitor!" *hops excitedly*\n'
             '"I\'m Times the Rabbit! I multiply EVERYTHING!"\n'
             '"One carrot becomes two, two become four!"\n'
             '"Multiplication is just fast addition, you know!"'
+        ),
+        "world.4.friend_name": "Remainder",
+        "world.4.friend_intro": (
+            '"Ah, a traveler! I am Remainder the Camel."\n'
+            '"I carry what\'s left over from every division."\n'
+            '"Remember: divide means to share equally!"\n'
+            '"Split it up fair, and you\'ll find your answer."'
         ),
         # Bosses
         "world.1.boss_name": "Summit",
@@ -180,29 +180,29 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         ),
         "world.2.boss_defeat": (
             '"RIBBIT... you\'ve bested me, small one."\n'
-            '"The desert lies ahead. Stay hydrated!"\n'
+            '"The meadows lie ahead. Enjoy the flowers!"\n'
             '"Hop along now!"'
         ),
-        "world.3.boss_name": "The Sphinx of Splits",
+        "world.3.boss_name": "Countess Calculata",
         "world.3.boss_intro": (
+            '"Well, well... the lost puppy arrives."\n'
+            '"I am Countess Calculata, master of multiplication!"\n'
+            '"Beat me, and the desert path shall open!"'
+        ),
+        "world.3.boss_defeat": (
+            '"Magnificent! You\'ve mastered multiplication!"\n'
+            '"The desert lies ahead. Stay hydrated!"\n'
+            '"Your home draws ever closer."'
+        ),
+        "world.4.boss_name": "The Sphinx of Splits",
+        "world.4.boss_intro": (
             '"HALT, wanderer! None pass without solving my riddles."\n'
             '"I am the Sphinx of Splits!"\n'
             '"Divide correctly, or be lost to the sands forever!"'
         ),
-        "world.3.boss_defeat": (
-            '"You have wisdom beyond your years, young pup."\n'
-            '"The meadows await. Your home draws near."\n'
-            '"Go forth with my blessing."'
-        ),
-        "world.4.boss_name": "Countess Calculata",
-        "world.4.boss_intro": (
-            '"Well, well... the lost puppy finally arrives."\n'
-            '"I am Countess Calculata, master of all operations!"\n'
-            '"Beat me, and you\'ll find your way home at last!"'
-        ),
         "world.4.boss_defeat": (
-            '"Magnificent! You\'ve mastered it all!"\n'
-            '"Look there, beyond the meadow..."\n'
+            '"You have wisdom beyond your years, young pup."\n'
+            '"Look there, beyond the dunes..."\n'
             '"Is that... your HOME?"'
         ),
         # Game complete
@@ -235,28 +235,28 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "level.18.name": "Tangled Vines",
         "level.19.name": "Swamp's Heart",
         "level.20.name": "Minus's Throne",
-        # Level names - World 3
-        "level.21.name": "Oasis Gate",
-        "level.22.name": "Sandy Trail",
-        "level.23.name": "Dune Ridge",
-        "level.24.name": "Scorpion Pass",
-        "level.25.name": "Mirage Valley",
-        "level.26.name": "Remainder's Rest",
-        "level.27.name": "Sandstorm",
-        "level.28.name": "Sunscorch",
-        "level.29.name": "Pyramid's Shadow",
-        "level.30.name": "Sphinx's Riddles",
-        # Level names - World 4
-        "level.31.name": "Flower Field",
-        "level.32.name": "Butterfly Path",
-        "level.33.name": "Clover Patch",
-        "level.34.name": "Honeybee Hive",
-        "level.35.name": "Dandelion Dell",
-        "level.36.name": "Times's Burrow",
-        "level.37.name": "Pollen Storm",
-        "level.38.name": "Rainbow Bridge",
-        "level.39.name": "Final Bloom",
-        "level.40.name": "Calculata's Garden",
+        # Level names - World 3 (Multiplication Meadows)
+        "level.21.name": "Flower Field",
+        "level.22.name": "Butterfly Path",
+        "level.23.name": "Clover Patch",
+        "level.24.name": "Honeybee Hive",
+        "level.25.name": "Dandelion Dell",
+        "level.26.name": "Times's Burrow",
+        "level.27.name": "Pollen Storm",
+        "level.28.name": "Rainbow Bridge",
+        "level.29.name": "Final Bloom",
+        "level.30.name": "Calculata's Garden",
+        # Level names - World 4 (Division Desert)
+        "level.31.name": "Oasis Gate",
+        "level.32.name": "Sandy Trail",
+        "level.33.name": "Dune Ridge",
+        "level.34.name": "Scorpion Pass",
+        "level.35.name": "Mirage Valley",
+        "level.36.name": "Remainder's Rest",
+        "level.37.name": "Sandstorm",
+        "level.38.name": "Sunscorch",
+        "level.39.name": "Pyramid's Shadow",
+        "level.40.name": "Sphinx's Riddles",
     },
     "sv": {
         # App title
@@ -324,8 +324,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         # World names
         "world.1.name": "Additions-Alperna",
         "world.2.name": "Subtraktions-Träsket",
-        "world.3.name": "Divisions-Öknen",
-        "world.4.name": "Multiplikations-Ängarna",
+        "world.3.name": "Multiplikations-Ängarna",
+        "world.4.name": "Divisions-Öknen",
         # World intros
         "world.1.intro": (
             "Flashy vaknade ensam i de kalla bergen.\n"
@@ -338,14 +338,14 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Flashy klev försiktigt in i Subtraktions-Träsket..."
         ),
         "world.3.intro": (
-            "Hettan träffade Flashy som en vägg.\n"
-            '"Så varmt... men jag kan se gröna ängar i fjärran!"\n'
-            "Divisions-Öknen sträckte sig oändligt framåt..."
+            "Vackra blommor vajade i vinden.\n"
+            '"Vilken fin plats... men jag måste fortsätta!"\n'
+            "Multiplikations-Ängarna blommade med möjligheter..."
         ),
         "world.4.intro": (
-            "Vackra blommor vajade i vinden.\n"
-            '"Jag kan nästan lukta hemmet! Det måste vara nära!"\n'
-            "Multiplikations-Ängarna blommade med möjligheter..."
+            "Hettan träffade Flashy som en vägg.\n"
+            '"Så varmt... men jag kan nästan lukta hemmet!"\n'
+            "Divisions-Öknen sträckte sig oändligt framåt..."
         ),
         # Friends
         "world.1.friend_name": "Carry",
@@ -362,19 +362,19 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             '"När du behöver ta bort mer än du har,"\n'
             '"låna från grannen. Fungerar varje gång!"'
         ),
-        "world.3.friend_name": "Rest",
+        "world.3.friend_name": "Gånger",
         "world.3.friend_intro": (
-            '"Ah, en resenär! Jag är Rest Kamelen."\n'
-            '"Jag bär det som blir över från varje division."\n'
-            '"Kom ihåg: dela betyder att fördela lika!"\n'
-            '"Dela rättvist, så hittar du svaret."'
-        ),
-        "world.4.friend_name": "Gånger",
-        "world.4.friend_intro": (
             '"Oj oj oj! En besökare!" *hoppar glatt*\n'
             '"Jag är Gånger Kaninen! Jag multiplicerar ALLT!"\n'
             '"En morot blir två, två blir fyra!"\n'
             '"Multiplikation är bara snabb addition!"'
+        ),
+        "world.4.friend_name": "Rest",
+        "world.4.friend_intro": (
+            '"Ah, en resenär! Jag är Rest Kamelen."\n'
+            '"Jag bär det som blir över från varje division."\n'
+            '"Kom ihåg: dela betyder att fördela lika!"\n'
+            '"Dela rättvist, så hittar du svaret."'
         ),
         # Bosses
         "world.1.boss_name": "Toppen",
@@ -396,29 +396,29 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         ),
         "world.2.boss_defeat": (
             '"KVACK... du har besegrat mig, liten."\n'
-            '"Öknen ligger framför dig. Håll dig hydrerad!"\n'
+            '"Ängarna ligger framför dig. Njut av blommorna!"\n'
             '"Hoppa vidare nu!"'
         ),
-        "world.3.boss_name": "Delnings-Sfinxen",
+        "world.3.boss_name": "Grevinnan Calculata",
         "world.3.boss_intro": (
+            '"Nåväl... den förlorade valpen anländer."\n'
+            '"Jag är Grevinnan Calculata, mästare av multiplikation!"\n'
+            '"Besegra mig, så öppnas ökenvägen!"'
+        ),
+        "world.3.boss_defeat": (
+            '"Magnifikt! Du har bemästrat multiplikation!"\n'
+            '"Öknen ligger framför dig. Håll dig hydrerad!"\n'
+            '"Ditt hem närmar sig."'
+        ),
+        "world.4.boss_name": "Delnings-Sfinxen",
+        "world.4.boss_intro": (
             '"STOPP, vandrare! Ingen passerar utan att lösa mina gåtor."\n'
             '"Jag är Delnings-Sfinxen!"\n'
             '"Dividera rätt, eller försvinn i sanden för alltid!"'
         ),
-        "world.3.boss_defeat": (
-            '"Du har visdom bortom dina år, lilla valpen."\n'
-            '"Ängarna väntar. Ditt hem närmar sig."\n'
-            '"Gå vidare med min välsignelse."'
-        ),
-        "world.4.boss_name": "Grevinnan Calculata",
-        "world.4.boss_intro": (
-            '"Nåväl... den förlorade valpen anländer äntligen."\n'
-            '"Jag är Grevinnan Calculata, mästare av alla räknesätt!"\n'
-            '"Besegra mig, så hittar du hem till slut!"'
-        ),
         "world.4.boss_defeat": (
-            '"Magnifikt! Du har bemästrat allt!"\n'
-            '"Titta där, bortom ängen..."\n'
+            '"Du har visdom bortom dina år, lilla valpen."\n'
+            '"Titta där, bortom dynerna..."\n'
             '"Är det... ditt HEM?"'
         ),
         # Game complete
@@ -451,27 +451,27 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "level.18.name": "Trassliga Rankor",
         "level.19.name": "Träskets Hjärta",
         "level.20.name": "Minus Tron",
-        # Level names - World 3
-        "level.21.name": "Oasporten",
-        "level.22.name": "Sandstigen",
-        "level.23.name": "Dynkammen",
-        "level.24.name": "Skorpionpasset",
-        "level.25.name": "Hägringsdalen",
-        "level.26.name": "Rests Vila",
-        "level.27.name": "Sandstormen",
-        "level.28.name": "Solbrännan",
-        "level.29.name": "Pyramidens Skugga",
-        "level.30.name": "Sfinxens Gåtor",
-        # Level names - World 4
-        "level.31.name": "Blomsterfältet",
-        "level.32.name": "Fjärilsstigen",
-        "level.33.name": "Klöverfläcken",
-        "level.34.name": "Bikupan",
-        "level.35.name": "Maskrosdalen",
-        "level.36.name": "Gångers Lya",
-        "level.37.name": "Pollenstormen",
-        "level.38.name": "Regnbågsbron",
-        "level.39.name": "Sista Blomningen",
-        "level.40.name": "Calculatas Trädgård",
+        # Level names - World 3 (Multiplikations-Ängarna)
+        "level.21.name": "Blomsterfältet",
+        "level.22.name": "Fjärilsstigen",
+        "level.23.name": "Klöverfläcken",
+        "level.24.name": "Bikupan",
+        "level.25.name": "Maskrosdalen",
+        "level.26.name": "Gångers Lya",
+        "level.27.name": "Pollenstormen",
+        "level.28.name": "Regnbågsbron",
+        "level.29.name": "Sista Blomningen",
+        "level.30.name": "Calculatas Trädgård",
+        # Level names - World 4 (Divisions-Öknen)
+        "level.31.name": "Oasporten",
+        "level.32.name": "Sandstigen",
+        "level.33.name": "Dynkammen",
+        "level.34.name": "Skorpionpasset",
+        "level.35.name": "Hägringsdalen",
+        "level.36.name": "Rests Vila",
+        "level.37.name": "Sandstormen",
+        "level.38.name": "Solbrännan",
+        "level.39.name": "Pyramidens Skugga",
+        "level.40.name": "Sfinxens Gåtor",
     },
 }

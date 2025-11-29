@@ -69,6 +69,17 @@
             background: #16213e;
         }
 
+        .screen.has-background {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Hide gradient overlay when world has custom background artwork */
+        .screen.has-background .path-background {
+            display: none;
+        }
+
         .screen.active {
             display: block;
         }
@@ -271,10 +282,9 @@
             z-index: 1;
         }
 
-        .world-1 .path-line path { stroke: #8899aa; }
-        .world-2 .path-line path { stroke: #556644; }
-        .world-3 .path-line path { stroke: #555566; }
-        .world-4 .path-line path { stroke: #aa9966; }
+        .path-line path {
+            stroke: var(--path-color, #8899aa);
+        }
 
         /* Level nodes on the path */
         .level-node {
@@ -304,9 +314,10 @@
 
         /* Unlocked but not completed (use 'available' to avoid regex collision with 'locked') */
         .level-node.available {
-            background: linear-gradient(135deg, #2a4a6a, #1a3a5a);
-            border-color: #0ff;
+            background: var(--node-color, #2a4a6a);
+            border-color: var(--node-glow, #0ff);
             color: #fff;
+            box-shadow: 0 0 10px var(--node-glow, #0ff);
         }
 
         /* Completed with stars */
@@ -324,8 +335,8 @@
 
         /* Locked */
         .level-node.locked {
-            background: linear-gradient(135deg, #3a3a3a, #2a2a2a);
-            border-color: #555;
+            background: rgba(40, 40, 40, 0.8);
+            border-color: rgba(80, 80, 80, 0.8);
             color: #666;
             cursor: not-allowed;
         }
@@ -358,6 +369,86 @@
 
         .level-node:hover .level-name {
             display: block;
+        }
+
+        /* Character emoji badge on friend/boss levels */
+        .level-node .level-character {
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%);
+            margin-left: 8px;
+            font-size: 50px;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
+        }
+
+        /* World map header styling - readable over busy backgrounds */
+        .world-map-header-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+            padding: 0 50px; /* Space for nav buttons */
+        }
+
+        .world-map-header {
+            background: rgba(20, 20, 40, 0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            min-width: 200px; /* Consistent minimum width */
+        }
+
+        .world-map-header h2 {
+            font-size: 18px; /* Slightly smaller to fit long names */
+            margin: 0;
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        .world-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(20, 20, 40, 0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .world-nav-btn:hover:not(:disabled) {
+            background: rgba(40, 40, 80, 0.85);
+        }
+
+        .world-nav-btn.hidden {
+            visibility: hidden;
+        }
+
+        .world-nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        #world-nav-prev {
+            left: 0;
+        }
+
+        #world-nav-next {
+            right: 0;
         }
 
         /* Back button positioning */
@@ -589,8 +680,22 @@
 
     <!-- World Map Screen -->
     <div id="world-map-screen" class="screen">
-        <h2 id="world-map-title" style="text-align: center; margin: 0 0 5px 0;"></h2>
-        <p id="world-map-player" style="text-align: center; color: #888; margin: 0 0 10px 0; font-size: 14px;"></p>
+        <div class="world-map-header-container">
+            <button id="world-nav-prev" class="world-nav-btn" onclick="navigateWorld(-1)">
+                <svg width="12" height="20" viewBox="0 0 12 20" fill="none">
+                    <path d="M10 2L2 10L10 18" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <div class="world-map-header">
+                <h2 id="world-map-title"></h2>
+                <p id="world-map-player" style="color: #aaa; margin: 2px 0 0 0; font-size: 14px;"></p>
+            </div>
+            <button id="world-nav-next" class="world-nav-btn" onclick="navigateWorld(1)">
+                <svg width="12" height="20" viewBox="0 0 12 20" fill="none">
+                    <path d="M2 2L10 10L2 18" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
         <div id="mountain-path" class="mountain-path">
             <div class="path-background"></div>
             <svg class="path-line" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -714,6 +819,12 @@
         let currentWorld = 1;
         let currentLevel = null;
 
+        // ============================================================
+        // Config (can be overridden via URL params for testing)
+        // ============================================================
+        const urlParams = new URLSearchParams(window.location.search);
+        const FEEDBACK_DELAY = parseInt(urlParams.get('feedbackDelay')) || 500;
+
         // Make functions available globally for onclick handlers
         window.showNewPlayerScreen = showNewPlayerScreen;
         window.createPlayer = createPlayer;
@@ -826,8 +937,16 @@
                     GameFlow()
                 `);
 
-                // Show player select
-                showPlayerSelectScreen();
+                // Restore session state or show player select
+                const savedPlayer = sessionStorage.getItem('flashy_player');
+                const savedWorld = sessionStorage.getItem('flashy_world');
+                if (savedPlayer) {
+                    currentPlayer = savedPlayer;
+                    currentWorld = savedWorld ? parseInt(savedWorld) : 1;
+                    showWorldMapScreen(currentPlayer);
+                } else {
+                    showPlayerSelectScreen();
+                }
 
             } catch (error) {
                 console.error('Init error:', error);
@@ -1148,24 +1267,57 @@
         // World Map Screen
         // ============================================================
 
-        // Positions for the 10 level nodes along the winding path (percentages)
-        // Starts at bottom (level 1) and winds up to top (level 10)
-        const LEVEL_POSITIONS = [
-            { x: 50, y: 90 },   // Level 1 - base
-            { x: 32, y: 80 },   // Level 2
-            { x: 28, y: 70 },   // Level 3
-            { x: 45, y: 62 },   // Level 4
-            { x: 68, y: 55 },   // Level 5
-            { x: 72, y: 45 },   // Level 6 - friend meet
-            { x: 55, y: 38 },   // Level 7
-            { x: 32, y: 32 },   // Level 8
-            { x: 28, y: 22 },   // Level 9
-            { x: 50, y: 8 },    // Level 10 - boss/summit
-        ];
+        // Convert waypoints to smooth SVG path using Catmull-Rom splines
+        function waypointsToSvgPath(waypointsStr) {
+            // Parse "x1,y1 x2,y2 x3,y3" into array of {x, y}
+            const points = waypointsStr.trim().split(/\s+/).map(p => {
+                const [x, y] = p.split(',').map(Number);
+                return { x, y };
+            });
+
+            if (points.length < 2) return '';
+
+            // Catmull-Rom to cubic Bezier conversion
+            // For each segment, we need p0, p1, p2, p3 (p1-p2 is the segment)
+            function catmullRomToBezier(p0, p1, p2, p3) {
+                // Tension factor (0.5 = centripetal, common choice)
+                const t = 0.5;
+                return {
+                    cp1: {
+                        x: p1.x + (p2.x - p0.x) * t / 3,
+                        y: p1.y + (p2.y - p0.y) * t / 3
+                    },
+                    cp2: {
+                        x: p2.x - (p3.x - p1.x) * t / 3,
+                        y: p2.y - (p3.y - p1.y) * t / 3
+                    }
+                };
+            }
+
+            // Build SVG path
+            let d = `M ${points[0].x} ${points[0].y}`;
+
+            for (let i = 0; i < points.length - 1; i++) {
+                // Get the 4 points needed for Catmull-Rom
+                const p0 = points[Math.max(0, i - 1)];
+                const p1 = points[i];
+                const p2 = points[i + 1];
+                const p3 = points[Math.min(points.length - 1, i + 2)];
+
+                const { cp1, cp2 } = catmullRomToBezier(p0, p1, p2, p3);
+                d += ` C ${cp1.x.toFixed(1)} ${cp1.y.toFixed(1)}, ${cp2.x.toFixed(1)} ${cp2.y.toFixed(1)}, ${p2.x} ${p2.y}`;
+            }
+
+            return d;
+        }
 
         function showWorldMapScreen(playerName, selectedLevel, worldNumber) {
             currentPlayer = playerName;
             currentWorld = worldNumber || currentWorld || 1;
+
+            // Save session state for refresh persistence
+            sessionStorage.setItem('flashy_player', currentPlayer);
+            sessionStorage.setItem('flashy_world', currentWorld.toString());
 
             const world = pyodide.runPython(`
                 from flashy.core.worlds import get_world
@@ -1181,6 +1333,33 @@
             const mountainPath = document.getElementById('mountain-path');
             mountainPath.className = `mountain-path world-${currentWorld}`;
 
+            // Set world background image and theme colors
+            const worldMapScreen = document.getElementById('world-map-screen');
+            if (world.background) {
+                worldMapScreen.style.backgroundImage = `url('assets/${world.background}')`;
+                worldMapScreen.classList.add('has-background');
+            }
+
+            // Apply world-specific colors via CSS custom properties
+            mountainPath.style.setProperty('--path-color', world.path_color);
+            mountainPath.style.setProperty('--node-color', world.node_color);
+            mountainPath.style.setProperty('--node-glow', world.node_glow);
+
+            // Convert waypoints to smooth SVG path and apply
+            const pathElement = mountainPath.querySelector('.path-line path');
+            const svgPath = waypointsToSvgPath(world.map_waypoints);
+            pathElement.setAttribute('d', svgPath);
+
+            // Calculate level positions along the path (evenly distributed)
+            const pathLength = pathElement.getTotalLength();
+            const levelPositions = [];
+            for (let i = 0; i < 10; i++) {
+                // Level 1 at start (0%), Level 10 at end (100%)
+                const distance = (i / 9) * pathLength;
+                const point = pathElement.getPointAtLength(distance);
+                levelPositions.push({ x: point.x, y: point.y });
+            }
+
             const progress = pyodide.runPython(`
                 from flashy.platforms.web.storage import WebStorage
                 WebStorage().load_progress("${playerName}")
@@ -1194,13 +1373,17 @@
             const nodesContainer = document.getElementById('level-nodes');
             nodesContainer.innerHTML = '';
 
+            // Get friend and boss emojis for this world
+            const friendEmoji = world.friend_emoji;
+            const bossEmoji = world.boss_emoji;
+
             // Render level nodes at their positions (in reverse DOM order for test compatibility)
             // Tests use .last to get level 1, so we render 10→1 in DOM but position visually 1→10
             [...levels].reverse().forEach((level) => {
                 const stars = progress.get_stars(level.number);
                 const unlocked = progress.is_unlocked(level.number);
                 const index = level.level_in_world - 1; // 0-based index for position
-                const pos = LEVEL_POSITIONS[index];
+                const pos = levelPositions[index];
 
                 const node = document.createElement('div');
                 node.className = 'level-node level-item'; // Keep level-item for E2E test compatibility
@@ -1224,10 +1407,20 @@
                 const levelNum = level.level_in_world;
                 const levelName = t(`level.${level.number}.name`);
                 const icon = !unlocked ? '🔒' : levelNum;
+
+                // Add character emoji for friend (level 6) and boss (level 10)
+                let characterEmoji = '';
+                if (levelNum === 6) {
+                    characterEmoji = `<span class="level-character">${friendEmoji}</span>`;
+                } else if (levelNum === 10) {
+                    characterEmoji = `<span class="level-character">${bossEmoji}</span>`;
+                }
+
                 node.innerHTML = `
                     <span>${icon}</span>
                     <span class="level-name">${levelName}</span>
                     ${unlocked && stars > 0 ? `<span class="level-stars">${'⭐'.repeat(stars)}</span>` : ''}
+                    ${characterEmoji}
                 `;
 
                 if (unlocked) {
@@ -1238,6 +1431,7 @@
             });
 
             showScreen('world-map-screen');
+            updateWorldNavButtons();
         }
 
         function selectLevel(levelNumber) {
@@ -1249,8 +1443,52 @@
         }
 
         function backToPlayerSelect() {
+            // Clear session state when switching players
+            sessionStorage.removeItem('flashy_player');
+            sessionStorage.removeItem('flashy_world');
             showPlayerSelectScreen();
         }
+
+        function navigateWorld(direction) {
+            // Get highest unlocked world for this player
+            const highestWorld = pyodide.runPython(`
+from flashy.platforms.web.storage import WebStorage
+progress = WebStorage().load_progress("${currentPlayer}")
+highest = progress.get_highest_unlocked()
+# Convert level to world (1-10 = world 1, 11-20 = world 2, etc.)
+min(4, (highest - 1) // 10 + 1)
+`);
+
+            const newWorld = currentWorld + direction;
+
+            // Can always go back, but can only go forward to unlocked worlds
+            if (newWorld < 1 || newWorld > 4) return;
+            if (newWorld > highestWorld) return;
+
+            currentWorld = newWorld;
+            showWorldMapScreen(currentPlayer, null, currentWorld);
+        }
+
+        function updateWorldNavButtons() {
+            const highestWorld = pyodide.runPython(`
+from flashy.platforms.web.storage import WebStorage
+progress = WebStorage().load_progress("${currentPlayer}")
+highest = progress.get_highest_unlocked()
+min(4, (highest - 1) // 10 + 1)
+`);
+
+            const prevBtn = document.getElementById('world-nav-prev');
+            const nextBtn = document.getElementById('world-nav-next');
+
+            // Left arrow: hidden on world 1 (no previous content)
+            prevBtn.classList.toggle('hidden', currentWorld <= 1);
+
+            // Right arrow: hidden on world 4 (no more content), disabled if next world locked
+            nextBtn.classList.toggle('hidden', currentWorld >= 4);
+            nextBtn.disabled = currentWorld >= highestWorld;
+        }
+
+        window.navigateWorld = navigateWorld;
 
         // ============================================================
         // Gameplay Screen
@@ -1374,7 +1612,7 @@
 
             setTimeout(() => {
                 showProblem();
-            }, 500);
+            }, FEEDBACK_DELAY);
         }
 
         function finishLevel() {
@@ -1721,6 +1959,50 @@ progress = storage.load_progress("${currentPlayer}")
         // Start
         // ============================================================
         init();
+
+        // ============================================================
+        // Global Cheat Codes (dev only)
+        // ============================================================
+        document.addEventListener('keydown', (event) => {
+            // F8 on world map: complete all levels in current world, advance to next
+            if (event.key === 'F8' && document.getElementById('world-map-screen').classList.contains('active')) {
+                event.preventDefault();
+                console.log('Cheat: completing all levels in world', currentWorld);
+
+                // Complete all levels in current world with 3 stars
+                pyodide.runPython(`
+from flashy.platforms.web.storage import WebStorage
+from flashy.core.levels import get_levels_for_world
+storage = WebStorage()
+progress = storage.load_progress("${currentPlayer}")
+for level in get_levels_for_world(${currentWorld}):
+    progress.stars[level.number] = 3
+    progress.best_scores[level.number] = 1000
+storage.save_progress("${currentPlayer}", progress)
+`);
+
+                // Move to next world (or stay on 4)
+                currentWorld = Math.min(currentWorld + 1, 4);
+                showWorldMapScreen(currentPlayer, null, currentWorld);
+            }
+        });
+
+        // ============================================================
+        // Live Reload (dev only)
+        // ============================================================
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+            const evtSource = new EventSource('http://localhost:35729');
+            evtSource.onmessage = (event) => {
+                if (event.data === 'reload') {
+                    console.log('Live reload triggered');
+                    location.reload();
+                }
+            };
+            evtSource.onerror = () => {
+                // Silent fail - watch server may not be running
+                evtSource.close();
+            };
+        }
     </script>
 </body>
 </html>

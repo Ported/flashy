@@ -16,11 +16,11 @@ class TestProblem:
 
     def test_display_multiplication(self) -> None:
         problem = Problem(6, 7, Operation.MULTIPLY, 42)
-        assert problem.display() == "6 x 7"
+        assert problem.display() == "6 × 7"
 
     def test_display_division(self) -> None:
         problem = Problem(20, 4, Operation.DIVIDE, 5)
-        assert problem.display() == "20 / 4"
+        assert problem.display() == "20 ÷ 4"
 
 
 class TestGenerateProblem:

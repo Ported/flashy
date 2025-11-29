@@ -21,6 +21,14 @@ class World:
     friend_text: str
     boss_intro: str
     boss_defeat: str
+    background: str  # Path relative to assets/ folder
+    # Visual theming for world map
+    path_color: str  # SVG path stroke color
+    node_color: str  # Level node background color
+    node_glow: str  # Level node glow/shadow color
+    # Map layout - list of waypoints the path passes through (0-100 coordinate space)
+    # Format: "x1,y1 x2,y2 x3,y3 ..." - the curve will smoothly pass through each point
+    map_waypoints: str
 
 
 # World definitions
@@ -54,6 +62,12 @@ WORLD_1 = World(
         '"The path ahead leads to the Subtraction Swamp."\n'
         '"May your numbers stay strong!"'
     ),
+    background="backgrounds/world-1-addition-alps.webp",
+    path_color="#4d350b",  # Warm cream trail
+    node_color="#2d5a3d",  # Forest green
+    node_glow="#4a8c5c",  # Lighter green glow
+    # Waypoints: start at bottom, zigzag up the mountain
+    map_waypoints="80,90 50,93 20,73 30,50 55,50 75,25 50,15",
 )
 
 WORLD_2 = World(
@@ -83,13 +97,55 @@ WORLD_2 = World(
     ),
     boss_defeat=(
         '"RIBBIT... you\'ve bested me, small one."\n'
-        '"The desert lies ahead. Stay hydrated!"\n'
+        '"The meadows lie ahead. Enjoy the flowers!"\n'
         '"Hop along now!"'
     ),
+    background="backgrounds/world-2-subtraction-swamp.webp",
+    path_color="#556644",  # Mossy green
+    node_color="#3a5a4a",  # Swamp green
+    node_glow="#5a7a6a",  # Murky glow
+    map_waypoints="30,90 55,85 80,70 85,45 40,70 40,45 75,30 50,15",
 )
 
 WORLD_3 = World(
     number=3,
+    name="Multiplication Meadows",
+    theme_emoji="🌸",
+    operation=Operation.MULTIPLY,
+    friend_name="Times",
+    friend_emoji="🐰",
+    boss_name="Countess Calculata",
+    boss_emoji="🦊",
+    intro_text=(
+        "Beautiful flowers swayed in the breeze.\n"
+        '"What a lovely place... but I must keep moving!"\n'
+        "The Multiplication Meadows bloomed with possibility..."
+    ),
+    friend_text=(
+        '"Oh my, oh my! A visitor!" *hops excitedly*\n'
+        '"I\'m Times the Rabbit! I multiply EVERYTHING!"\n'
+        '"One carrot becomes two, two become four!"\n'
+        '"Multiplication is just fast addition, you know!"'
+    ),
+    boss_intro=(
+        '"Well, well... the lost puppy arrives."\n'
+        '"I am Countess Calculata, master of multiplication!"\n'
+        '"Beat me, and the desert path shall open!"'
+    ),
+    boss_defeat=(
+        '"Magnificent! You\'ve mastered multiplication!"\n'
+        '"The desert lies ahead. Stay hydrated!"\n'
+        '"Your home draws ever closer."'
+    ),
+    background="backgrounds/world-3-multiplication-meadows.webp",
+    path_color="#e8c4d4",  # Soft pink
+    node_color="#7a4a6a",  # Meadow purple
+    node_glow="#b888a8",  # Floral glow
+    map_waypoints="90,90 60,90 30,80 30,70 50,60 80,40 30,20 50,15",
+)
+
+WORLD_4 = World(
+    number=4,
     name="Division Desert",
     theme_emoji="🏜️",
     operation=Operation.DIVIDE,
@@ -99,7 +155,7 @@ WORLD_3 = World(
     boss_emoji="🦁",
     intro_text=(
         "The heat hit Flashy like a wall.\n"
-        '"So hot... but I can see green meadows in the distance!"\n'
+        '"So hot... but I can almost smell home!"\n'
         "The Division Desert stretched endlessly before..."
     ),
     friend_text=(
@@ -115,41 +171,14 @@ WORLD_3 = World(
     ),
     boss_defeat=(
         '"You have wisdom beyond your years, young pup."\n'
-        '"The meadows await. Your home draws near."\n'
-        '"Go forth with my blessing."'
-    ),
-)
-
-WORLD_4 = World(
-    number=4,
-    name="Multiplication Meadows",
-    theme_emoji="🌸",
-    operation=Operation.MULTIPLY,
-    friend_name="Times",
-    friend_emoji="🐰",
-    boss_name="Countess Calculata",
-    boss_emoji="🦊",
-    intro_text=(
-        "Beautiful flowers swayed in the breeze.\n"
-        '"I can almost smell home! It must be close!"\n'
-        "The Multiplication Meadows bloomed with possibility..."
-    ),
-    friend_text=(
-        '"Oh my, oh my! A visitor!" *hops excitedly*\n'
-        '"I\'m Times the Rabbit! I multiply EVERYTHING!"\n'
-        '"One carrot becomes two, two become four!"\n'
-        '"Multiplication is just fast addition, you know!"'
-    ),
-    boss_intro=(
-        '"Well, well... the lost puppy finally arrives."\n'
-        '"I am Countess Calculata, master of all operations!"\n'
-        '"Beat me, and you\'ll find your way home at last!"'
-    ),
-    boss_defeat=(
-        '"Magnificent! You\'ve mastered it all!"\n'
-        '"Look there, beyond the meadow..."\n'
+        '"Look there, beyond the dunes..."\n'
         '"Is that... your HOME?"'
     ),
+    background="backgrounds/world-3-division-desert.webp",
+    path_color="#c9a86c",  # Sandy trail
+    node_color="#8b6914",  # Desert gold
+    node_glow="#d4a84b",  # Golden glow
+    map_waypoints="50,95 25,75 75,55 25,35 50,15",
 )
 
 WORLDS = [WORLD_1, WORLD_2, WORLD_3, WORLD_4]

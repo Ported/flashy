@@ -8,8 +8,8 @@ from enum import Enum
 class Operation(Enum):
     ADD = "+"
     SUBTRACT = "-"
-    MULTIPLY = "x"
-    DIVIDE = "/"
+    MULTIPLY = "×"
+    DIVIDE = "÷"
 
 
 @dataclass(frozen=True)
@@ -22,8 +22,13 @@ class Problem:
     answer: int
 
     def display(self) -> str:
-        """Return the problem as a string for display."""
-        return f"{self.operand1} {self.operation.value} {self.operand2}"
+        """Return the problem as a string for display.
+
+        Wraps negative second operand in parentheses for clarity.
+        e.g., "-1 - (-8)" instead of "-1 - -8"
+        """
+        op2 = f"({self.operand2})" if self.operand2 < 0 else str(self.operand2)
+        return f"{self.operand1} {self.operation.value} {op2}"
 
 
 def generate_problem(operation: Operation, min_val: int, max_val: int) -> Problem:

@@ -103,7 +103,8 @@ def web_server() -> Generator[str, None, None]:
     except Exception as e:
         print(f"Schema init warning: {e}")
 
-    yield url
+    # Add test mode parameter to speed up feedback delay (value is ms)
+    yield f"{url}?feedbackDelay=2"
 
     # Cleanup
     process.send_signal(signal.SIGTERM)

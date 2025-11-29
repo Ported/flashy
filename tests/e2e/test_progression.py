@@ -6,6 +6,75 @@ from conftest import generate_unique_name
 from playwright.sync_api import Page, expect
 
 
+def solve_problem(page: Page) -> None:
+    """Parse the displayed problem and type the correct answer.
+
+    Handles all operation types (+, -, x, /) and negative numbers.
+    """
+    problem_text = page.locator("#problem-display").inner_text()
+
+    # Parse problem like "-20 - (-8) = ?" or "5 + 3 = ?"
+    # Handles negative operands with optional parentheses
+    # Operators: + - × ÷
+    match = re.match(r"(-?\d+)\s*([+\-×÷])\s*\(?(-?\d+)\)?\s*=", problem_text)
+    if not match:
+        raise ValueError(f"Could not parse problem: {problem_text}")
+
+    operand1 = int(match.group(1))
+    op = match.group(2)
+    operand2 = int(match.group(3))
+
+    # Calculate answer
+    if op == "+":
+        answer = operand1 + operand2
+    elif op == "-":
+        answer = operand1 - operand2
+    elif op == "×":
+        answer = operand1 * operand2
+    elif op == "÷":
+        answer = operand1 // operand2
+    else:
+        raise ValueError(f"Unknown operator: {op}")
+
+    # Type the answer (handle negative by typing '-' first)
+    answer_str = str(answer)
+    for char in answer_str:
+        if char == "-":
+            page.keyboard.press("-")
+        else:
+            page.keyboard.press(char)
+    page.keyboard.press("Enter")
+
+
+def complete_level_by_solving(page: Page) -> None:
+    """Complete a level by solving all problems until result screen appears."""
+    while True:
+        # Wait for either next problem OR result screen (level complete)
+        page.wait_for_function(
+            """
+            () => {
+                // Check if result screen is showing (level complete)
+                const resultScreen = document.getElementById('result-screen');
+                if (resultScreen && resultScreen.classList.contains('active')) {
+                    return true;
+                }
+                // Check if next problem is ready
+                const problemEl = document.getElementById('problem-display');
+                return problemEl && problemEl.textContent.includes('= ?');
+            }
+            """,
+            timeout=10000,
+        )
+
+        # Check if level is complete
+        if page.locator("#result-screen.active").count() > 0:
+            break
+
+        solve_problem(page)
+        # Wait for feedback to show (delay is 100ms in test mode)
+        page.wait_for_timeout(150)
+
+
 def create_player_and_go_to_world_map(
     page: Page, player_name: str | None = None
 ) -> str:
@@ -164,7 +233,12 @@ def test_progress_persists_after_returning_to_player_select(app_page: Page) -> N
 
 
 def test_full_game_playthrough_to_completion(app_page: Page) -> None:
-    """Play through all 40 levels (4 worlds x 10 levels) to complete."""
+    """Play through all 40 levels (4 worlds x 10 levels) by solving every problem.
+
+    This test verifies that all problem types work correctly, including:
+    - Addition, subtraction, multiplication, division
+    - Negative numbers (e.g., -20 - 90, -10 - -5)
+    """
     create_player_and_go_to_world_map(app_page, "FullPlaythrough")
 
     # Play through all 4 worlds
@@ -183,9 +257,9 @@ def test_full_game_playthrough_to_completion(app_page: Page) -> None:
                 app_page.wait_for_selector("#boss-intro-screen.active")
                 app_page.locator("#boss-intro-screen").click()
 
-            # Play the level
+            # Play the level by solving all problems
             app_page.wait_for_selector("#gameplay-screen.active")
-            app_page.keyboard.press("F9")
+            complete_level_by_solving(app_page)
             app_page.wait_for_selector("#result-screen.active")
             app_page.get_by_role("button", name="Continue").click()
 

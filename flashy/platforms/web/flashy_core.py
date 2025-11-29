@@ -143,8 +143,8 @@ from enum import Enum
 class Operation(Enum):
     ADD = "+"
     SUBTRACT = "-"
-    MULTIPLY = "x"
-    DIVIDE = "/"
+    MULTIPLY = "×"
+    DIVIDE = "÷"
 
 
 @dataclass(frozen=True)
@@ -157,8 +157,13 @@ class Problem:
     answer: int
 
     def display(self) -> str:
-        \"\"\"Return the problem as a string for display.\"\"\"
-        return f"{self.operand1} {self.operation.value} {self.operand2}"
+        \"\"\"Return the problem as a string for display.
+
+        Wraps negative second operand in parentheses for clarity.
+        e.g., "-1 - (-8)" instead of "-1 - -8"
+        \"\"\"
+        op2 = f"({self.operand2})" if self.operand2 < 0 else str(self.operand2)
+        return f"{self.operand1} {self.operation.value} {op2}"
 
 
 def generate_problem(operation: Operation, min_val: int, max_val: int) -> Problem:
@@ -719,8 +724,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         # World names
         "world.1.name": "Addition Alps",
         "world.2.name": "Subtraction Swamp",
-        "world.3.name": "Division Desert",
-        "world.4.name": "Multiplication Meadows",
+        "world.3.name": "Multiplication Meadows",
+        "world.4.name": "Division Desert",
         # World intros
         "world.1.intro": (
             "Flashy woke up alone in the cold mountains.\\n"
@@ -733,14 +738,14 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Flashy stepped carefully into the Subtraction Swamp..."
         ),
         "world.3.intro": (
-            "The heat hit Flashy like a wall.\\n"
-            '"So hot... but I can see green meadows in the distance!"\\n'
-            "The Division Desert stretched endlessly before..."
+            "Beautiful flowers swayed in the breeze.\\n"
+            '"What a lovely place... but I must keep moving!"\\n'
+            "The Multiplication Meadows bloomed with possibility..."
         ),
         "world.4.intro": (
-            "Beautiful flowers swayed in the breeze.\\n"
-            '"I can almost smell home! It must be close!"\\n'
-            "The Multiplication Meadows bloomed with possibility..."
+            "The heat hit Flashy like a wall.\\n"
+            '"So hot... but I can almost smell home!"\\n'
+            "The Division Desert stretched endlessly before..."
         ),
         # Friends
         "world.1.friend_name": "Carry",
@@ -757,19 +762,19 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             '"When you need to take away more than you have,"\\n'
             '"just borrow from your neighbor. Works every time!"'
         ),
-        "world.3.friend_name": "Remainder",
+        "world.3.friend_name": "Times",
         "world.3.friend_intro": (
-            '"Ah, a traveler! I am Remainder the Camel."\\n'
-            '"I carry what\\'s left over from every division."\\n'
-            '"Remember: divide means to share equally!"\\n'
-            '"Split it up fair, and you\\'ll find your answer."'
-        ),
-        "world.4.friend_name": "Times",
-        "world.4.friend_intro": (
             '"Oh my, oh my! A visitor!" *hops excitedly*\\n'
             '"I\\'m Times the Rabbit! I multiply EVERYTHING!"\\n'
             '"One carrot becomes two, two become four!"\\n'
             '"Multiplication is just fast addition, you know!"'
+        ),
+        "world.4.friend_name": "Remainder",
+        "world.4.friend_intro": (
+            '"Ah, a traveler! I am Remainder the Camel."\\n'
+            '"I carry what\\'s left over from every division."\\n'
+            '"Remember: divide means to share equally!"\\n'
+            '"Split it up fair, and you\\'ll find your answer."'
         ),
         # Bosses
         "world.1.boss_name": "Summit",
@@ -791,29 +796,29 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         ),
         "world.2.boss_defeat": (
             '"RIBBIT... you\\'ve bested me, small one."\\n'
-            '"The desert lies ahead. Stay hydrated!"\\n'
+            '"The meadows lie ahead. Enjoy the flowers!"\\n'
             '"Hop along now!"'
         ),
-        "world.3.boss_name": "The Sphinx of Splits",
+        "world.3.boss_name": "Countess Calculata",
         "world.3.boss_intro": (
+            '"Well, well... the lost puppy arrives."\\n'
+            '"I am Countess Calculata, master of multiplication!"\\n'
+            '"Beat me, and the desert path shall open!"'
+        ),
+        "world.3.boss_defeat": (
+            '"Magnificent! You\\'ve mastered multiplication!"\\n'
+            '"The desert lies ahead. Stay hydrated!"\\n'
+            '"Your home draws ever closer."'
+        ),
+        "world.4.boss_name": "The Sphinx of Splits",
+        "world.4.boss_intro": (
             '"HALT, wanderer! None pass without solving my riddles."\\n'
             '"I am the Sphinx of Splits!"\\n'
             '"Divide correctly, or be lost to the sands forever!"'
         ),
-        "world.3.boss_defeat": (
-            '"You have wisdom beyond your years, young pup."\\n'
-            '"The meadows await. Your home draws near."\\n'
-            '"Go forth with my blessing."'
-        ),
-        "world.4.boss_name": "Countess Calculata",
-        "world.4.boss_intro": (
-            '"Well, well... the lost puppy finally arrives."\\n'
-            '"I am Countess Calculata, master of all operations!"\\n'
-            '"Beat me, and you\\'ll find your way home at last!"'
-        ),
         "world.4.boss_defeat": (
-            '"Magnificent! You\\'ve mastered it all!"\\n'
-            '"Look there, beyond the meadow..."\\n'
+            '"You have wisdom beyond your years, young pup."\\n'
+            '"Look there, beyond the dunes..."\\n'
             '"Is that... your HOME?"'
         ),
         # Game complete
@@ -846,28 +851,28 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "level.18.name": "Tangled Vines",
         "level.19.name": "Swamp's Heart",
         "level.20.name": "Minus's Throne",
-        # Level names - World 3
-        "level.21.name": "Oasis Gate",
-        "level.22.name": "Sandy Trail",
-        "level.23.name": "Dune Ridge",
-        "level.24.name": "Scorpion Pass",
-        "level.25.name": "Mirage Valley",
-        "level.26.name": "Remainder's Rest",
-        "level.27.name": "Sandstorm",
-        "level.28.name": "Sunscorch",
-        "level.29.name": "Pyramid's Shadow",
-        "level.30.name": "Sphinx's Riddles",
-        # Level names - World 4
-        "level.31.name": "Flower Field",
-        "level.32.name": "Butterfly Path",
-        "level.33.name": "Clover Patch",
-        "level.34.name": "Honeybee Hive",
-        "level.35.name": "Dandelion Dell",
-        "level.36.name": "Times's Burrow",
-        "level.37.name": "Pollen Storm",
-        "level.38.name": "Rainbow Bridge",
-        "level.39.name": "Final Bloom",
-        "level.40.name": "Calculata's Garden",
+        # Level names - World 3 (Multiplication Meadows)
+        "level.21.name": "Flower Field",
+        "level.22.name": "Butterfly Path",
+        "level.23.name": "Clover Patch",
+        "level.24.name": "Honeybee Hive",
+        "level.25.name": "Dandelion Dell",
+        "level.26.name": "Times's Burrow",
+        "level.27.name": "Pollen Storm",
+        "level.28.name": "Rainbow Bridge",
+        "level.29.name": "Final Bloom",
+        "level.30.name": "Calculata's Garden",
+        # Level names - World 4 (Division Desert)
+        "level.31.name": "Oasis Gate",
+        "level.32.name": "Sandy Trail",
+        "level.33.name": "Dune Ridge",
+        "level.34.name": "Scorpion Pass",
+        "level.35.name": "Mirage Valley",
+        "level.36.name": "Remainder's Rest",
+        "level.37.name": "Sandstorm",
+        "level.38.name": "Sunscorch",
+        "level.39.name": "Pyramid's Shadow",
+        "level.40.name": "Sphinx's Riddles",
     },
     "sv": {
         # App title
@@ -935,8 +940,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         # World names
         "world.1.name": "Additions-Alperna",
         "world.2.name": "Subtraktions-Träsket",
-        "world.3.name": "Divisions-Öknen",
-        "world.4.name": "Multiplikations-Ängarna",
+        "world.3.name": "Multiplikations-Ängarna",
+        "world.4.name": "Divisions-Öknen",
         # World intros
         "world.1.intro": (
             "Flashy vaknade ensam i de kalla bergen.\\n"
@@ -949,14 +954,14 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Flashy klev försiktigt in i Subtraktions-Träsket..."
         ),
         "world.3.intro": (
-            "Hettan träffade Flashy som en vägg.\\n"
-            '"Så varmt... men jag kan se gröna ängar i fjärran!"\\n'
-            "Divisions-Öknen sträckte sig oändligt framåt..."
+            "Vackra blommor vajade i vinden.\\n"
+            '"Vilken fin plats... men jag måste fortsätta!"\\n'
+            "Multiplikations-Ängarna blommade med möjligheter..."
         ),
         "world.4.intro": (
-            "Vackra blommor vajade i vinden.\\n"
-            '"Jag kan nästan lukta hemmet! Det måste vara nära!"\\n'
-            "Multiplikations-Ängarna blommade med möjligheter..."
+            "Hettan träffade Flashy som en vägg.\\n"
+            '"Så varmt... men jag kan nästan lukta hemmet!"\\n'
+            "Divisions-Öknen sträckte sig oändligt framåt..."
         ),
         # Friends
         "world.1.friend_name": "Carry",
@@ -973,19 +978,19 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             '"När du behöver ta bort mer än du har,"\\n'
             '"låna från grannen. Fungerar varje gång!"'
         ),
-        "world.3.friend_name": "Rest",
+        "world.3.friend_name": "Gånger",
         "world.3.friend_intro": (
-            '"Ah, en resenär! Jag är Rest Kamelen."\\n'
-            '"Jag bär det som blir över från varje division."\\n'
-            '"Kom ihåg: dela betyder att fördela lika!"\\n'
-            '"Dela rättvist, så hittar du svaret."'
-        ),
-        "world.4.friend_name": "Gånger",
-        "world.4.friend_intro": (
             '"Oj oj oj! En besökare!" *hoppar glatt*\\n'
             '"Jag är Gånger Kaninen! Jag multiplicerar ALLT!"\\n'
             '"En morot blir två, två blir fyra!"\\n'
             '"Multiplikation är bara snabb addition!"'
+        ),
+        "world.4.friend_name": "Rest",
+        "world.4.friend_intro": (
+            '"Ah, en resenär! Jag är Rest Kamelen."\\n'
+            '"Jag bär det som blir över från varje division."\\n'
+            '"Kom ihåg: dela betyder att fördela lika!"\\n'
+            '"Dela rättvist, så hittar du svaret."'
         ),
         # Bosses
         "world.1.boss_name": "Toppen",
@@ -1007,29 +1012,29 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         ),
         "world.2.boss_defeat": (
             '"KVACK... du har besegrat mig, liten."\\n'
-            '"Öknen ligger framför dig. Håll dig hydrerad!"\\n'
+            '"Ängarna ligger framför dig. Njut av blommorna!"\\n'
             '"Hoppa vidare nu!"'
         ),
-        "world.3.boss_name": "Delnings-Sfinxen",
+        "world.3.boss_name": "Grevinnan Calculata",
         "world.3.boss_intro": (
+            '"Nåväl... den förlorade valpen anländer."\\n'
+            '"Jag är Grevinnan Calculata, mästare av multiplikation!"\\n'
+            '"Besegra mig, så öppnas ökenvägen!"'
+        ),
+        "world.3.boss_defeat": (
+            '"Magnifikt! Du har bemästrat multiplikation!"\\n'
+            '"Öknen ligger framför dig. Håll dig hydrerad!"\\n'
+            '"Ditt hem närmar sig."'
+        ),
+        "world.4.boss_name": "Delnings-Sfinxen",
+        "world.4.boss_intro": (
             '"STOPP, vandrare! Ingen passerar utan att lösa mina gåtor."\\n'
             '"Jag är Delnings-Sfinxen!"\\n'
             '"Dividera rätt, eller försvinn i sanden för alltid!"'
         ),
-        "world.3.boss_defeat": (
-            '"Du har visdom bortom dina år, lilla valpen."\\n'
-            '"Ängarna väntar. Ditt hem närmar sig."\\n'
-            '"Gå vidare med min välsignelse."'
-        ),
-        "world.4.boss_name": "Grevinnan Calculata",
-        "world.4.boss_intro": (
-            '"Nåväl... den förlorade valpen anländer äntligen."\\n'
-            '"Jag är Grevinnan Calculata, mästare av alla räknesätt!"\\n'
-            '"Besegra mig, så hittar du hem till slut!"'
-        ),
         "world.4.boss_defeat": (
-            '"Magnifikt! Du har bemästrat allt!"\\n'
-            '"Titta där, bortom ängen..."\\n'
+            '"Du har visdom bortom dina år, lilla valpen."\\n'
+            '"Titta där, bortom dynerna..."\\n'
             '"Är det... ditt HEM?"'
         ),
         # Game complete
@@ -1062,28 +1067,28 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "level.18.name": "Trassliga Rankor",
         "level.19.name": "Träskets Hjärta",
         "level.20.name": "Minus Tron",
-        # Level names - World 3
-        "level.21.name": "Oasporten",
-        "level.22.name": "Sandstigen",
-        "level.23.name": "Dynkammen",
-        "level.24.name": "Skorpionpasset",
-        "level.25.name": "Hägringsdalen",
-        "level.26.name": "Rests Vila",
-        "level.27.name": "Sandstormen",
-        "level.28.name": "Solbrännan",
-        "level.29.name": "Pyramidens Skugga",
-        "level.30.name": "Sfinxens Gåtor",
-        # Level names - World 4
-        "level.31.name": "Blomsterfältet",
-        "level.32.name": "Fjärilsstigen",
-        "level.33.name": "Klöverfläcken",
-        "level.34.name": "Bikupan",
-        "level.35.name": "Maskrosdalen",
-        "level.36.name": "Gångers Lya",
-        "level.37.name": "Pollenstormen",
-        "level.38.name": "Regnbågsbron",
-        "level.39.name": "Sista Blomningen",
-        "level.40.name": "Calculatas Trädgård",
+        # Level names - World 3 (Multiplikations-Ängarna)
+        "level.21.name": "Blomsterfältet",
+        "level.22.name": "Fjärilsstigen",
+        "level.23.name": "Klöverfläcken",
+        "level.24.name": "Bikupan",
+        "level.25.name": "Maskrosdalen",
+        "level.26.name": "Gångers Lya",
+        "level.27.name": "Pollenstormen",
+        "level.28.name": "Regnbågsbron",
+        "level.29.name": "Sista Blomningen",
+        "level.30.name": "Calculatas Trädgård",
+        # Level names - World 4 (Divisions-Öknen)
+        "level.31.name": "Oasporten",
+        "level.32.name": "Sandstigen",
+        "level.33.name": "Dynkammen",
+        "level.34.name": "Skorpionpasset",
+        "level.35.name": "Hägringsdalen",
+        "level.36.name": "Rests Vila",
+        "level.37.name": "Sandstormen",
+        "level.38.name": "Solbrännan",
+        "level.39.name": "Pyramidens Skugga",
+        "level.40.name": "Sfinxens Gåtor",
     },
 }
 
@@ -1122,6 +1127,14 @@ class World:
     friend_text: str
     boss_intro: str
     boss_defeat: str
+    background: str  # Path relative to assets/ folder
+    # Visual theming for world map
+    path_color: str  # SVG path stroke color
+    node_color: str  # Level node background color
+    node_glow: str  # Level node glow/shadow color
+    # Map layout - list of waypoints the path passes through (0-100 coordinate space)
+    # Format: "x1,y1 x2,y2 x3,y3 ..." - the curve will smoothly pass through each point
+    map_waypoints: str
 
 
 # World definitions
@@ -1155,6 +1168,12 @@ WORLD_1 = World(
         '"The path ahead leads to the Subtraction Swamp."\\n'
         '"May your numbers stay strong!"'
     ),
+    background="backgrounds/world-1-addition-alps.webp",
+    path_color="#4d350b",  # Warm cream trail
+    node_color="#2d5a3d",  # Forest green
+    node_glow="#4a8c5c",  # Lighter green glow
+    # Waypoints: start at bottom, zigzag up the mountain
+    map_waypoints="80,90 50,93 20,73 30,50 55,50 75,25 50,15",
 )
 
 WORLD_2 = World(
@@ -1184,13 +1203,55 @@ WORLD_2 = World(
     ),
     boss_defeat=(
         '"RIBBIT... you\\'ve bested me, small one."\\n'
-        '"The desert lies ahead. Stay hydrated!"\\n'
+        '"The meadows lie ahead. Enjoy the flowers!"\\n'
         '"Hop along now!"'
     ),
+    background="backgrounds/world-2-subtraction-swamp.webp",
+    path_color="#556644",  # Mossy green
+    node_color="#3a5a4a",  # Swamp green
+    node_glow="#5a7a6a",  # Murky glow
+    map_waypoints="30,90 55,85 80,70 85,45 40,70 40,45 75,30 50,15",
 )
 
 WORLD_3 = World(
     number=3,
+    name="Multiplication Meadows",
+    theme_emoji="🌸",
+    operation=Operation.MULTIPLY,
+    friend_name="Times",
+    friend_emoji="🐰",
+    boss_name="Countess Calculata",
+    boss_emoji="🦊",
+    intro_text=(
+        "Beautiful flowers swayed in the breeze.\\n"
+        '"What a lovely place... but I must keep moving!"\\n'
+        "The Multiplication Meadows bloomed with possibility..."
+    ),
+    friend_text=(
+        '"Oh my, oh my! A visitor!" *hops excitedly*\\n'
+        '"I\\'m Times the Rabbit! I multiply EVERYTHING!"\\n'
+        '"One carrot becomes two, two become four!"\\n'
+        '"Multiplication is just fast addition, you know!"'
+    ),
+    boss_intro=(
+        '"Well, well... the lost puppy arrives."\\n'
+        '"I am Countess Calculata, master of multiplication!"\\n'
+        '"Beat me, and the desert path shall open!"'
+    ),
+    boss_defeat=(
+        '"Magnificent! You\\'ve mastered multiplication!"\\n'
+        '"The desert lies ahead. Stay hydrated!"\\n'
+        '"Your home draws ever closer."'
+    ),
+    background="backgrounds/world-3-multiplication-meadows.webp",
+    path_color="#e8c4d4",  # Soft pink
+    node_color="#7a4a6a",  # Meadow purple
+    node_glow="#b888a8",  # Floral glow
+    map_waypoints="90,90 60,90 30,80 30,70 50,60 80,40 30,20 50,15",
+)
+
+WORLD_4 = World(
+    number=4,
     name="Division Desert",
     theme_emoji="🏜️",
     operation=Operation.DIVIDE,
@@ -1200,7 +1261,7 @@ WORLD_3 = World(
     boss_emoji="🦁",
     intro_text=(
         "The heat hit Flashy like a wall.\\n"
-        '"So hot... but I can see green meadows in the distance!"\\n'
+        '"So hot... but I can almost smell home!"\\n'
         "The Division Desert stretched endlessly before..."
     ),
     friend_text=(
@@ -1216,41 +1277,14 @@ WORLD_3 = World(
     ),
     boss_defeat=(
         '"You have wisdom beyond your years, young pup."\\n'
-        '"The meadows await. Your home draws near."\\n'
-        '"Go forth with my blessing."'
-    ),
-)
-
-WORLD_4 = World(
-    number=4,
-    name="Multiplication Meadows",
-    theme_emoji="🌸",
-    operation=Operation.MULTIPLY,
-    friend_name="Times",
-    friend_emoji="🐰",
-    boss_name="Countess Calculata",
-    boss_emoji="🦊",
-    intro_text=(
-        "Beautiful flowers swayed in the breeze.\\n"
-        '"I can almost smell home! It must be close!"\\n'
-        "The Multiplication Meadows bloomed with possibility..."
-    ),
-    friend_text=(
-        '"Oh my, oh my! A visitor!" *hops excitedly*\\n'
-        '"I\\'m Times the Rabbit! I multiply EVERYTHING!"\\n'
-        '"One carrot becomes two, two become four!"\\n'
-        '"Multiplication is just fast addition, you know!"'
-    ),
-    boss_intro=(
-        '"Well, well... the lost puppy finally arrives."\\n'
-        '"I am Countess Calculata, master of all operations!"\\n'
-        '"Beat me, and you\\'ll find your way home at last!"'
-    ),
-    boss_defeat=(
-        '"Magnificent! You\\'ve mastered it all!"\\n'
-        '"Look there, beyond the meadow..."\\n'
+        '"Look there, beyond the dunes..."\\n'
         '"Is that... your HOME?"'
     ),
+    background="backgrounds/world-3-division-desert.webp",
+    path_color="#c9a86c",  # Sandy trail
+    node_color="#8b6914",  # Desert gold
+    node_glow="#d4a84b",  # Golden glow
+    map_waypoints="50,95 25,75 75,55 25,35 50,15",
 )
 
 WORLDS = [WORLD_1, WORLD_2, WORLD_3, WORLD_4]
@@ -1624,16 +1658,16 @@ LEVEL_15 = Level(
     name="Cypress Grove",
     level_type=LevelType.BUILD,
     problems=(
-        sub(10, 4),
-        sub(11, 5),
-        sub(12, 6),
-        sub(13, 7),
-        sub(14, 8),
-        sub(15, 7),
-        sub(12, 5),
-        sub(14, 6),
-        sub(16, 8),
-        sub(17, 9),
+        sub(200, 100),
+        sub(500, 250),
+        sub(120, 50),
+        sub(750, 500),
+        sub(500, 800),
+        sub(30, 70),
+        sub(900, 901),
+        sub(250, 260),
+        sub(600, 900),
+        sub(80, 80),
     ),
 )
 
@@ -1644,16 +1678,16 @@ LEVEL_16 = Level(
     name="Borrow's Hollow",
     level_type=LevelType.FRIEND,
     problems=(
-        sub(10, 5),
-        sub(11, 6),
-        sub(12, 7),
-        sub(13, 8),
-        sub(11, 4),
-        sub(14, 7),
-        sub(12, 6),
-        sub(15, 8),
-        sub(13, 6),
-        sub(16, 8),
+        sub(50, 15),
+        sub(40, 24),
+        sub(17, 8),
+        sub(8, 17),
+        sub(0, 867),
+        sub(0, 42),
+        sub(25, 25),
+        sub(100, 234),
+        sub(764, 523),
+        sub(834, 398),
     ),
 )
 
@@ -1664,16 +1698,16 @@ LEVEL_17 = Level(
     name="Murky Depths",
     level_type=LevelType.CHALLENGE,
     problems=(
-        sub(12, 5),
-        sub(14, 6),
-        sub(15, 7),
-        sub(16, 8),
-        sub(17, 9),
-        sub(18, 9),
-        sub(13, 5),
-        sub(15, 6),
-        sub(17, 8),
-        sub(19, 10),
+        sub(396, 782),
+        sub(743, 172),
+        sub(983, 682),
+        sub(143, 259),
+        sub(238, 263),
+        sub(749, 260),
+        sub(154, 98),
+        sub(762, 871),
+        sub(954, 958),
+        sub(402, 678),
     ),
 )
 
@@ -1684,16 +1718,16 @@ LEVEL_18 = Level(
     name="Tangled Vines",
     level_type=LevelType.CHALLENGE,
     problems=(
-        sub(14, 6),
-        sub(16, 7),
-        sub(17, 8),
-        sub(18, 9),
-        sub(19, 10),
-        sub(20, 9),
-        sub(15, 6),
-        sub(18, 8),
-        sub(20, 10),
-        sub(21, 11),
+        sub(0, 20),
+        sub(-20, 90),
+        sub(-10, -5),
+        sub(-55, -70),
+        sub(-19, 10),
+        sub(20, -9),
+        sub(-15, 6),
+        sub(800, -100),
+        sub(0, -10),
+        sub(-21, -11),
     ),
 )
 
@@ -1704,16 +1738,16 @@ LEVEL_19 = Level(
     name="Swamp's Heart",
     level_type=LevelType.PREBOSS,
     problems=(
-        sub(16, 7),
-        sub(18, 9),
-        sub(19, 10),
-        sub(20, 11),
-        sub(21, 12),
-        sub(23, 11),
-        sub(17, 8),
-        sub(20, 9),
-        sub(22, 11),
-        sub(24, 12),
+        sub(750, 250),
+        sub(250, 500),
+        sub(1000, 500),
+        sub(800, 300),
+        sub(450, 150),
+        sub(450, 500),
+        sub(650, 450),
+        sub(50, 300),
+        sub(-100, 250),
+        sub(-500, 250),
     ),
 )
 
@@ -1725,40 +1759,40 @@ LEVEL_20 = Level(
     level_type=LevelType.BOSS,
     time_limit=90,  # 90 seconds for 10 problems
     problems=(
-        sub(15, 7),
-        sub(17, 8),
-        sub(18, 9),
-        sub(19, 10),
-        sub(20, 11),
-        sub(21, 12),
-        sub(22, 11),
-        sub(23, 12),
-        sub(24, 12),
-        sub(25, 13),
+        sub(654, -909),
+        sub(-712, 163),
+        sub(-587, -822),
+        sub(-218, 390),
+        sub(-14, 962),
+        sub(-682, -17),
+        sub(-68, -923),
+        sub(234, 599),
+        sub(709, 603),
+        sub(-490, -385),
     ),
 )
 
 # =============================================================================
-# WORLD 3: DIVISION DESERT (Levels 21-30)
+# WORLD 3: MULTIPLICATION MEADOWS (Levels 21-30)
 # =============================================================================
 
 LEVEL_21 = Level(
     number=21,
     world_number=3,
     level_in_world=1,
-    name="Oasis Gate",
+    name="Flower Field",
     level_type=LevelType.INTRO,
     problems=(
-        div(2, 1),
-        div(4, 2),
-        div(6, 2),
-        div(4, 1),
-        div(6, 3),
-        div(8, 2),
-        div(3, 1),
-        div(8, 4),
-        div(9, 3),
-        div(10, 2),
+        mul(1, 1),
+        mul(0, 2),
+        mul(3, 0),
+        mul(1, 4),
+        mul(4, 1),
+        mul(1, 6),
+        mul(1, 9),
+        mul(12, 1),
+        mul(120, 1),
+        mul(1, 17),
     ),
 )
 
@@ -1766,230 +1800,25 @@ LEVEL_22 = Level(
     number=22,
     world_number=3,
     level_in_world=2,
-    name="Sandy Trail",
+    name="Butterfly Path",
     level_type=LevelType.INTRO,
     problems=(
-        div(6, 2),
-        div(8, 2),
-        div(9, 3),
-        div(10, 2),
-        div(12, 3),
-        div(12, 4),
-        div(8, 4),
-        div(10, 5),
-        div(12, 2),
-        div(15, 3),
+        mul(2, 3),
+        mul(2, 6),
+        mul(2, 10),
+        mul(2, 7),
+        mul(2, 9),
+        mul(2, 2),
+        mul(2, 1),
+        mul(13, 2),
+        mul(5, 2),
+        mul(8, 2),
     ),
 )
 
 LEVEL_23 = Level(
     number=23,
     world_number=3,
-    level_in_world=3,
-    name="Dune Ridge",
-    level_type=LevelType.INTRO,
-    problems=(
-        div(8, 2),
-        div(10, 2),
-        div(12, 3),
-        div(12, 4),
-        div(14, 2),
-        div(16, 4),
-        div(9, 3),
-        div(15, 5),
-        div(16, 2),
-        div(18, 3),
-    ),
-)
-
-LEVEL_24 = Level(
-    number=24,
-    world_number=3,
-    level_in_world=4,
-    name="Scorpion Pass",
-    level_type=LevelType.BUILD,
-    problems=(
-        div(10, 2),
-        div(12, 3),
-        div(14, 2),
-        div(15, 3),
-        div(16, 4),
-        div(18, 2),
-        div(12, 4),
-        div(20, 4),
-        div(18, 3),
-        div(20, 5),
-    ),
-)
-
-LEVEL_25 = Level(
-    number=25,
-    world_number=3,
-    level_in_world=5,
-    name="Mirage Valley",
-    level_type=LevelType.BUILD,
-    problems=(
-        div(12, 3),
-        div(14, 2),
-        div(16, 4),
-        div(18, 3),
-        div(20, 4),
-        div(21, 3),
-        div(15, 5),
-        div(24, 4),
-        div(20, 5),
-        div(24, 3),
-    ),
-)
-
-LEVEL_26 = Level(
-    number=26,
-    world_number=3,
-    level_in_world=6,
-    name="Remainder's Rest",
-    level_type=LevelType.FRIEND,
-    problems=(
-        div(10, 2),
-        div(12, 3),
-        div(15, 3),
-        div(16, 4),
-        div(18, 2),
-        div(20, 4),
-        div(14, 2),
-        div(21, 3),
-        div(24, 4),
-        div(25, 5),
-    ),
-)
-
-LEVEL_27 = Level(
-    number=27,
-    world_number=3,
-    level_in_world=7,
-    name="Sandstorm",
-    level_type=LevelType.CHALLENGE,
-    problems=(
-        div(14, 2),
-        div(18, 3),
-        div(20, 4),
-        div(21, 3),
-        div(24, 4),
-        div(27, 3),
-        div(16, 4),
-        div(28, 4),
-        div(30, 5),
-        div(32, 4),
-    ),
-)
-
-LEVEL_28 = Level(
-    number=28,
-    world_number=3,
-    level_in_world=8,
-    name="Sunscorch",
-    level_type=LevelType.CHALLENGE,
-    problems=(
-        div(18, 3),
-        div(24, 4),
-        div(25, 5),
-        div(27, 3),
-        div(28, 4),
-        div(36, 4),
-        div(20, 4),
-        div(30, 5),
-        div(35, 5),
-        div(36, 6),
-    ),
-)
-
-LEVEL_29 = Level(
-    number=29,
-    world_number=3,
-    level_in_world=9,
-    name="Pyramid's Shadow",
-    level_type=LevelType.PREBOSS,
-    problems=(
-        div(24, 4),
-        div(27, 3),
-        div(30, 5),
-        div(32, 4),
-        div(35, 5),
-        div(42, 6),
-        div(28, 4),
-        div(36, 4),
-        div(40, 5),
-        div(45, 5),
-    ),
-)
-
-LEVEL_30 = Level(
-    number=30,
-    world_number=3,
-    level_in_world=10,
-    name="Sphinx's Riddles",
-    level_type=LevelType.BOSS,
-    time_limit=90,  # 90 seconds for 10 problems
-    problems=(
-        div(18, 3),
-        div(24, 4),
-        div(27, 3),
-        div(28, 4),
-        div(30, 5),
-        div(35, 5),
-        div(36, 4),
-        div(40, 5),
-        div(42, 6),
-        div(48, 6),
-    ),
-)
-
-# =============================================================================
-# WORLD 4: MULTIPLICATION MEADOWS (Levels 31-40)
-# =============================================================================
-
-LEVEL_31 = Level(
-    number=31,
-    world_number=4,
-    level_in_world=1,
-    name="Flower Field",
-    level_type=LevelType.INTRO,
-    problems=(
-        mul(2, 1),
-        mul(2, 2),
-        mul(3, 2),
-        mul(2, 3),
-        mul(2, 4),
-        mul(3, 3),
-        mul(2, 2),
-        mul(4, 2),
-        mul(3, 2),
-        mul(5, 2),
-    ),
-)
-
-LEVEL_32 = Level(
-    number=32,
-    world_number=4,
-    level_in_world=2,
-    name="Butterfly Path",
-    level_type=LevelType.INTRO,
-    problems=(
-        mul(2, 3),
-        mul(3, 3),
-        mul(4, 2),
-        mul(3, 4),
-        mul(5, 2),
-        mul(4, 3),
-        mul(2, 4),
-        mul(5, 3),
-        mul(4, 4),
-        mul(6, 2),
-    ),
-)
-
-LEVEL_33 = Level(
-    number=33,
-    world_number=4,
     level_in_world=3,
     name="Clover Patch",
     level_type=LevelType.INTRO,
@@ -2007,9 +1836,9 @@ LEVEL_33 = Level(
     ),
 )
 
-LEVEL_34 = Level(
-    number=34,
-    world_number=4,
+LEVEL_24 = Level(
+    number=24,
+    world_number=3,
     level_in_world=4,
     name="Honeybee Hive",
     level_type=LevelType.BUILD,
@@ -2027,9 +1856,9 @@ LEVEL_34 = Level(
     ),
 )
 
-LEVEL_35 = Level(
-    number=35,
-    world_number=4,
+LEVEL_25 = Level(
+    number=25,
+    world_number=3,
     level_in_world=5,
     name="Dandelion Dell",
     level_type=LevelType.BUILD,
@@ -2047,9 +1876,9 @@ LEVEL_35 = Level(
     ),
 )
 
-LEVEL_36 = Level(
-    number=36,
-    world_number=4,
+LEVEL_26 = Level(
+    number=26,
+    world_number=3,
     level_in_world=6,
     name="Times's Burrow",
     level_type=LevelType.FRIEND,
@@ -2067,9 +1896,9 @@ LEVEL_36 = Level(
     ),
 )
 
-LEVEL_37 = Level(
-    number=37,
-    world_number=4,
+LEVEL_27 = Level(
+    number=27,
+    world_number=3,
     level_in_world=7,
     name="Pollen Storm",
     level_type=LevelType.CHALLENGE,
@@ -2087,9 +1916,9 @@ LEVEL_37 = Level(
     ),
 )
 
-LEVEL_38 = Level(
-    number=38,
-    world_number=4,
+LEVEL_28 = Level(
+    number=28,
+    world_number=3,
     level_in_world=8,
     name="Rainbow Bridge",
     level_type=LevelType.CHALLENGE,
@@ -2107,9 +1936,9 @@ LEVEL_38 = Level(
     ),
 )
 
-LEVEL_39 = Level(
-    number=39,
-    world_number=4,
+LEVEL_29 = Level(
+    number=29,
+    world_number=3,
     level_in_world=9,
     name="Final Bloom",
     level_type=LevelType.PREBOSS,
@@ -2127,9 +1956,9 @@ LEVEL_39 = Level(
     ),
 )
 
-LEVEL_40 = Level(
-    number=40,
-    world_number=4,
+LEVEL_30 = Level(
+    number=30,
+    world_number=3,
     level_in_world=10,
     name="Calculata's Garden",
     level_type=LevelType.BOSS,
@@ -2145,6 +1974,211 @@ LEVEL_40 = Level(
         mul(9, 6),
         mul(8, 7),
         mul(9, 9),
+    ),
+)
+
+# =============================================================================
+# WORLD 4: DIVISION DESERT (Levels 31-40)
+# =============================================================================
+
+LEVEL_31 = Level(
+    number=31,
+    world_number=4,
+    level_in_world=1,
+    name="Oasis Gate",
+    level_type=LevelType.INTRO,
+    problems=(
+        div(2, 1),
+        div(4, 2),
+        div(6, 2),
+        div(4, 1),
+        div(6, 3),
+        div(8, 2),
+        div(3, 1),
+        div(8, 4),
+        div(9, 3),
+        div(10, 2),
+    ),
+)
+
+LEVEL_32 = Level(
+    number=32,
+    world_number=4,
+    level_in_world=2,
+    name="Sandy Trail",
+    level_type=LevelType.INTRO,
+    problems=(
+        div(6, 2),
+        div(8, 2),
+        div(9, 3),
+        div(10, 2),
+        div(12, 3),
+        div(12, 4),
+        div(8, 4),
+        div(10, 5),
+        div(12, 2),
+        div(15, 3),
+    ),
+)
+
+LEVEL_33 = Level(
+    number=33,
+    world_number=4,
+    level_in_world=3,
+    name="Dune Ridge",
+    level_type=LevelType.INTRO,
+    problems=(
+        div(8, 2),
+        div(10, 2),
+        div(12, 3),
+        div(12, 4),
+        div(14, 2),
+        div(16, 4),
+        div(9, 3),
+        div(15, 5),
+        div(16, 2),
+        div(18, 3),
+    ),
+)
+
+LEVEL_34 = Level(
+    number=34,
+    world_number=4,
+    level_in_world=4,
+    name="Scorpion Pass",
+    level_type=LevelType.BUILD,
+    problems=(
+        div(10, 2),
+        div(12, 3),
+        div(14, 2),
+        div(15, 3),
+        div(16, 4),
+        div(18, 2),
+        div(12, 4),
+        div(20, 4),
+        div(18, 3),
+        div(20, 5),
+    ),
+)
+
+LEVEL_35 = Level(
+    number=35,
+    world_number=4,
+    level_in_world=5,
+    name="Mirage Valley",
+    level_type=LevelType.BUILD,
+    problems=(
+        div(12, 3),
+        div(14, 2),
+        div(16, 4),
+        div(18, 3),
+        div(20, 4),
+        div(21, 3),
+        div(15, 5),
+        div(24, 4),
+        div(20, 5),
+        div(24, 3),
+    ),
+)
+
+LEVEL_36 = Level(
+    number=36,
+    world_number=4,
+    level_in_world=6,
+    name="Remainder's Rest",
+    level_type=LevelType.FRIEND,
+    problems=(
+        div(10, 2),
+        div(12, 3),
+        div(15, 3),
+        div(16, 4),
+        div(18, 2),
+        div(20, 4),
+        div(14, 2),
+        div(21, 3),
+        div(24, 4),
+        div(25, 5),
+    ),
+)
+
+LEVEL_37 = Level(
+    number=37,
+    world_number=4,
+    level_in_world=7,
+    name="Sandstorm",
+    level_type=LevelType.CHALLENGE,
+    problems=(
+        div(14, 2),
+        div(18, 3),
+        div(20, 4),
+        div(21, 3),
+        div(24, 4),
+        div(27, 3),
+        div(16, 4),
+        div(28, 4),
+        div(30, 5),
+        div(32, 4),
+    ),
+)
+
+LEVEL_38 = Level(
+    number=38,
+    world_number=4,
+    level_in_world=8,
+    name="Sunscorch",
+    level_type=LevelType.CHALLENGE,
+    problems=(
+        div(18, 3),
+        div(24, 4),
+        div(25, 5),
+        div(27, 3),
+        div(28, 4),
+        div(36, 4),
+        div(20, 4),
+        div(30, 5),
+        div(35, 5),
+        div(36, 6),
+    ),
+)
+
+LEVEL_39 = Level(
+    number=39,
+    world_number=4,
+    level_in_world=9,
+    name="Pyramid's Shadow",
+    level_type=LevelType.PREBOSS,
+    problems=(
+        div(24, 4),
+        div(27, 3),
+        div(30, 5),
+        div(32, 4),
+        div(35, 5),
+        div(42, 6),
+        div(28, 4),
+        div(36, 4),
+        div(40, 5),
+        div(45, 5),
+    ),
+)
+
+LEVEL_40 = Level(
+    number=40,
+    world_number=4,
+    level_in_world=10,
+    name="Sphinx's Riddles",
+    level_type=LevelType.BOSS,
+    time_limit=90,  # 90 seconds for 10 problems
+    problems=(
+        div(18, 3),
+        div(24, 4),
+        div(27, 3),
+        div(28, 4),
+        div(30, 5),
+        div(35, 5),
+        div(36, 4),
+        div(40, 5),
+        div(42, 6),
+        div(48, 6),
     ),
 )
 
@@ -2172,7 +2206,7 @@ LEVELS = [
     LEVEL_18,
     LEVEL_19,
     LEVEL_20,
-    # World 3: Division Desert
+    # World 3: Multiplication Meadows
     LEVEL_21,
     LEVEL_22,
     LEVEL_23,
@@ -2183,7 +2217,7 @@ LEVELS = [
     LEVEL_28,
     LEVEL_29,
     LEVEL_30,
-    # World 4: Multiplication Meadows
+    # World 4: Division Desert
     LEVEL_31,
     LEVEL_32,
     LEVEL_33,
