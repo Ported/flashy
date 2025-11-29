@@ -17,9 +17,9 @@ PROJECT_ROOT = Path(__file__).parent.parent
 
 def run_command(name: str, cmd: list[str]) -> bool:
     """Run a command and return True if successful."""
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"Running: {name}")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     result = subprocess.run(cmd, cwd=PROJECT_ROOT)
     if result.returncode != 0:
         print(f"\n{name} FAILED")
@@ -36,6 +36,7 @@ def main() -> int:
     args = parser.parse_args()
 
     checks = [
+        ("Ruff (formatting)", ["poetry", "run", "ruff", "format", "."]),
         ("Ruff (linting)", ["poetry", "run", "ruff", "check", "."]),
         ("Pyright (type checking)", ["poetry", "run", "pyright"]),
         ("i18n check", ["poetry", "run", "python", "scripts/check_i18n.py"]),
@@ -55,7 +56,7 @@ def main() -> int:
         if not run_command(name, cmd):
             failed.append(name)
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     if failed:
         print(f"FAILED: {', '.join(failed)}")
         return 1

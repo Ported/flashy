@@ -113,10 +113,14 @@ def main() -> int:
 
     # Find all world background originals (case-insensitive extensions)
     patterns = [
-        "world-*.png", "world-*.PNG",
-        "world-*.jpg", "world-*.JPG",
-        "world-*.jpeg", "world-*.JPEG",
-        "world-*.heic", "world-*.HEIC",
+        "world-*.png",
+        "world-*.PNG",
+        "world-*.jpg",
+        "world-*.JPG",
+        "world-*.jpeg",
+        "world-*.JPEG",
+        "world-*.heic",
+        "world-*.HEIC",
     ]
     originals: list[Path] = []
     for pattern in patterns:
