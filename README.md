@@ -4,7 +4,7 @@ A math game for kids featuring addition, subtraction, multiplication, and divisi
 
 ## Play Online
 
-Visit [flashycards.pages.dev](https://flashycards.pages.dev)
+Visit [flashycards.pages.dev](https://flashycards.org)
 
 ## Development
 
