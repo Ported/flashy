@@ -156,6 +156,10 @@ def check_file(filepath: Path) -> list[tuple[int, str, str]]:
             if "${" in s or "{{" in s or s.startswith("from ") or "=" in s:
                 continue
 
+            # Skip SVG path data (e.g., "M10 2L2 10L10 18")
+            if re.match(r"^M[\d\s.MLHVCSQTAZ,-]+$", s, re.IGNORECASE):
+                continue
+
             # Check if it looks like user-facing English text
             # Has spaces and starts with capital letter
             if " " in s and s[0].isupper() and len(s) > 15:
