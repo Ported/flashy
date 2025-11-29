@@ -125,6 +125,76 @@
             background: #0ff3;
         }
 
+        /* Footer links on player select */
+        .footer-links {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .footer-links a {
+            color: #888;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: #0ff;
+        }
+
+        .footer-sep {
+            color: #444;
+            margin: 0 10px;
+        }
+
+        /* Info screens (About, Privacy) */
+        .info-screen {
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .info-screen h2 {
+            text-align: center;
+            color: #0ff;
+            margin-bottom: 20px;
+        }
+
+        .info-screen h3 {
+            color: #0ff;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .info-content {
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .info-content p {
+            margin: 10px 0;
+        }
+
+        .info-content ul {
+            margin: 10px 0 10px 20px;
+        }
+
+        .info-content li {
+            margin: 5px 0;
+        }
+
+        .info-content a {
+            color: #0ff;
+        }
+
+        .info-content a:hover {
+            text-decoration: underline;
+        }
+
         .btn {
             background: #0ff;
             color: #1a1a2e;
@@ -631,6 +701,65 @@
         <ul id="player-list" class="player-list"></ul>
         <div style="text-align: center;">
             <button id="btn-new-player" class="btn" onclick="showNewPlayerScreen()">New Player</button>
+        </div>
+        <div class="footer-links">
+            <a href="#" onclick="showScreen('about-screen'); return false;">About</a>
+            <span class="footer-sep">|</span>
+            <a href="#" onclick="showScreen('privacy-screen'); return false;">Privacy</a>
+        </div>
+    </div>
+
+    <!-- About Screen -->
+    <div id="about-screen" class="screen info-screen">
+        <h2>About Flashy</h2>
+        <div class="info-content">
+            <p><strong>Flashy</strong> is a free, open-source math game designed to help kids practice arithmetic in a fun, engaging way.</p>
+            <p>Players guide Flashy the dog through 4 worlds, each focusing on a different operation:</p>
+            <ul>
+                <li>Addition Alps</li>
+                <li>Subtraction Swamp</li>
+                <li>Multiplication Meadows</li>
+                <li>Division Desert</li>
+            </ul>
+            <p>The game features 40 levels of increasing difficulty, friendly characters to meet, and boss battles to conquer!</p>
+            <h3>Open Source</h3>
+            <p>Flashy is released under the MIT License. The source code is available on GitHub:</p>
+            <p><a href="https://github.com/Ported/flashy" target="_blank" rel="noopener">github.com/Ported/flashy</a></p>
+            <p>Contributions, bug reports, and feedback are welcome!</p>
+            <h3>Technology</h3>
+            <p>Built with Python and <a href="https://pyodide.org" target="_blank" rel="noopener">Pyodide</a>, running entirely in your browser. Hosted on <a href="https://pages.cloudflare.com" target="_blank" rel="noopener">Cloudflare Pages</a>.</p>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn" onclick="showScreen('player-select-screen')">Back</button>
+        </div>
+    </div>
+
+    <!-- Privacy Screen -->
+    <div id="privacy-screen" class="screen info-screen">
+        <h2>Privacy Policy</h2>
+        <div class="info-content">
+            <p><em>Last updated: November 2025</em></p>
+            <h3>What We Collect</h3>
+            <p>Flashy collects <strong>only your chosen player name</strong> for the leaderboard. That's it.</p>
+            <ul>
+                <li>No email addresses</li>
+                <li>No personal information</li>
+                <li>No tracking or analytics</li>
+                <li>No cookies</li>
+            </ul>
+            <h3>Local Storage</h3>
+            <p>Your game progress is stored locally in your browser using localStorage.</p>
+            <h3>Leaderboard</h3>
+            <p>When you create a player, your chosen name and score are stored on our server (Cloudflare D1) and displayed on the public leaderboard. No other data is collected.</p>
+            <h3>No Commercial Use</h3>
+            <p>Flashy is a non-commercial, open-source educational project. We don't sell data, show ads, or have any commercial objectives.</p>
+            <h3>No Warranty</h3>
+            <p>This software is provided "as is", without warranty of any kind. See the <a href="https://github.com/Ported/flashy/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> for full terms.</p>
+            <h3>Contact</h3>
+            <p>Questions? Open an issue on <a href="https://github.com/Ported/flashy/issues" target="_blank" rel="noopener">GitHub</a>.</p>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn" onclick="showScreen('player-select-screen')">Back</button>
         </div>
     </div>
 
