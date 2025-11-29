@@ -174,11 +174,11 @@ WORLD_4 = World(
         '"Look there, beyond the dunes..."\n'
         '"Is that... your HOME?"'
     ),
-    background="backgrounds/world-3-division-desert.webp",
+    background="backgrounds/world-4-division-desert.webp",
     path_color="#c9a86c",  # Sandy trail
     node_color="#8b6914",  # Desert gold
     node_glow="#d4a84b",  # Golden glow
-    map_waypoints="50,95 25,75 75,55 25,35 50,15",
+    map_waypoints="80,90 40,90 40,80 75,70 75,55 35,55 50,15",
 )
 
 WORLDS = [WORLD_1, WORLD_2, WORLD_3, WORLD_4]
