@@ -75,14 +75,28 @@ def test_enter_submits_answer(app_page: Page) -> None:
     """Pressing Enter should submit the answer and show feedback."""
     navigate_to_level(app_page)
 
+    # Set up observer to catch the brief feedback class (feedback is only 2ms in tests)
+    app_page.evaluate("window.sawFeedback = false")
+    app_page.evaluate("""
+        const observer = new MutationObserver(() => {
+            const el = document.getElementById('problem-display');
+            if (el.classList.contains('correct') || el.classList.contains('incorrect')) {
+                window.sawFeedback = true;
+            }
+        });
+        observer.observe(document.getElementById('problem-display'), {attributes: true});
+    """)
+
     # Type an answer and submit
     app_page.keyboard.press("5")
     app_page.keyboard.press("Enter")
 
-    # Feedback should appear in problem display (either correct or incorrect class)
-    problem_display = app_page.locator("#problem-display")
-    # Should have either correct or incorrect class after submission
-    expect(problem_display).to_have_class(re.compile("correct|incorrect"))
+    # Wait a moment for feedback to appear and be observed
+    app_page.wait_for_timeout(50)
+
+    # Verify the observer caught some feedback
+    saw_feedback = app_page.evaluate("window.sawFeedback")
+    assert saw_feedback, "Expected 'correct' or 'incorrect' class to appear on problem-display"
 
 
 def test_correct_answer_shows_green_feedback(app_page: Page) -> None:
@@ -96,19 +110,45 @@ def test_correct_answer_shows_green_feedback(app_page: Page) -> None:
     match = re.match(r"(\d+)\s*\+\s*(\d+)\s*=", problem_text)
     if match:
         correct = int(match.group(1)) + int(match.group(2))
+
+        # Set up observer to catch the brief "correct" class (feedback is only 2ms in tests)
+        app_page.evaluate("window.sawCorrectFeedback = false")
+        app_page.evaluate("""
+            const observer = new MutationObserver(() => {
+                if (document.getElementById('problem-display').classList.contains('correct')) {
+                    window.sawCorrectFeedback = true;
+                }
+            });
+            observer.observe(document.getElementById('problem-display'), {attributes: true});
+        """)
+
         # Type the correct answer
         for digit in str(correct):
             app_page.keyboard.press(digit)
         app_page.keyboard.press("Enter")
 
-        # Feedback shown in problem display with correct class
-        problem_display = app_page.locator("#problem-display")
-        expect(problem_display).to_have_class(re.compile("correct"))
+        # Wait a moment for feedback to appear and be observed
+        app_page.wait_for_timeout(50)
+
+        # Verify the observer caught the correct feedback
+        saw_feedback = app_page.evaluate("window.sawCorrectFeedback")
+        assert saw_feedback, "Expected 'correct' class to appear on problem-display"
 
 
 def test_wrong_answer_shows_red_feedback(app_page: Page) -> None:
     """Wrong answer should show red feedback."""
     navigate_to_level(app_page)
+
+    # Set up observer to catch the brief "incorrect" class (feedback is only 2ms in tests)
+    app_page.evaluate("window.sawIncorrectFeedback = false")
+    app_page.evaluate("""
+        const observer = new MutationObserver(() => {
+            if (document.getElementById('problem-display').classList.contains('incorrect')) {
+                window.sawIncorrectFeedback = true;
+            }
+        });
+        observer.observe(document.getElementById('problem-display'), {attributes: true});
+    """)
 
     # Type obviously wrong answer (999)
     app_page.keyboard.press("9")
@@ -116,9 +156,12 @@ def test_wrong_answer_shows_red_feedback(app_page: Page) -> None:
     app_page.keyboard.press("9")
     app_page.keyboard.press("Enter")
 
-    # Feedback shown in problem display with incorrect class
-    problem_display = app_page.locator("#problem-display")
-    expect(problem_display).to_have_class(re.compile("incorrect"))
+    # Wait a moment for feedback to appear and be observed
+    app_page.wait_for_timeout(50)
+
+    # Verify the observer caught the incorrect feedback
+    saw_feedback = app_page.evaluate("window.sawIncorrectFeedback")
+    assert saw_feedback, "Expected 'incorrect' class to appear on problem-display"
 
 
 def test_progress_dots_update_after_answer(app_page: Page) -> None:
