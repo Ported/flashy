@@ -82,4 +82,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy flashy/platforms/web --project-name=flashycards
+          workingDirectory: flashy/platforms/web
+          command: pages deploy . --project-name=flashycards
