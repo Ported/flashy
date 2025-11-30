@@ -3,12 +3,40 @@
  * POST: Register a new player name (reserves it on the leaderboard)
  */
 
+import { BLOCKED_WORDS } from "./blocklist";
+
 interface Env {
   DB: D1Database;
 }
 
 interface RegisterRequest {
   player_name: string;
+}
+
+/**
+ * Check if a name contains blocked words.
+ * Normalizes common letter substitutions (l33t speak).
+ */
+export function containsBlockedWord(name: string): boolean {
+  // Normalize: lowercase and common substitutions
+  const normalized = name
+    .toLowerCase()
+    .replace(/0/g, "o")
+    .replace(/1/g, "i")
+    .replace(/3/g, "e")
+    .replace(/4/g, "a")
+    .replace(/5/g, "s")
+    .replace(/@/g, "a")
+    .replace(/\$/g, "s")
+    .replace(/[_\-\s]/g, ""); // Remove separators
+
+  // Check if any blocked word appears as a substring
+  for (const word of BLOCKED_WORDS) {
+    if (normalized.includes(word)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // POST /api/register - Reserve a player name
@@ -33,6 +61,14 @@ export async function onRequestPost(context: {
 
     if (safeName.length > 20) {
       return Response.json({ error: "Name too long (max 20 characters)" }, { status: 400 });
+    }
+
+    // Check for inappropriate names (return same error as "taken" to not reveal filtering)
+    if (containsBlockedWord(safeName)) {
+      return Response.json(
+        { error: "Name already taken", available: false },
+        { status: 409 }
+      );
     }
 
     // Generate a token for this player
@@ -78,6 +114,11 @@ export async function onRequestGet(context: {
 
     if (!name) {
       return Response.json({ error: "Name parameter required" }, { status: 400 });
+    }
+
+    // Check blocklist first (report as unavailable, same as taken)
+    if (containsBlockedWord(name)) {
+      return Response.json({ available: false, player_name: name });
     }
 
     const { results } = await context.env.DB.prepare(

@@ -75,12 +75,12 @@ jobs:
         run: poetry install --no-interaction
 
       - name: Build web app
-        run: poetry run python flashy/platforms/web/build.py
+        run: ./flashy/platforms/web/deploy.sh --build-only
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: flashy/platforms/web
+          workingDirectory: flashy/platforms/web/dist
           command: pages deploy . --project-name=flashycards
