@@ -6,14 +6,12 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <title>Flashy - Math Adventure</title>
     <style>
-        /* Language toggle in header */
+        /* Language toggle on welcome screen */
         .language-toggle {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            z-index: 100;
             display: flex;
+            justify-content: flex-end;
             gap: 5px;
+            margin-bottom: 10px;
         }
 
         .lang-btn {
@@ -48,7 +46,8 @@
             color: #eee;
             margin: 0;
             padding: 20px;
-            min-height: 100vh;
+            min-height: 100vh; /* Fallback for older browsers */
+            min-height: 100dvh; /* Dynamic viewport height for iOS Safari */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -63,25 +62,30 @@
             display: none;
             width: 100%;
             max-width: 500px;
+            height: calc(100dvh - 40px); /* Full viewport minus body padding */
+            height: calc(100vh - 40px); /* Fallback */
             padding: 20px;
             border: 2px solid #0ff;
             border-radius: 10px;
             background: #16213e;
+            overflow-y: auto;
+            box-sizing: border-box;
         }
 
-        .screen.has-background {
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+        @supports (height: 100dvh) {
+            .screen {
+                height: calc(100dvh - 40px);
+            }
         }
 
-        /* Hide gradient overlay when world has custom background artwork */
-        .screen.has-background .path-background {
-            display: none;
-        }
 
         .screen.active {
             display: block;
+        }
+
+        #welcome-screen.active {
+            display: flex;
+            flex-direction: column;
         }
 
         .loading-screen {
@@ -125,14 +129,12 @@
             background: #0ff3;
         }
 
-        /* Footer links on player select */
+        /* Footer links on welcome screen */
         .footer-links {
-            position: absolute;
-            bottom: 20px;
-            left: 0;
-            right: 0;
             text-align: center;
             font-size: 14px;
+            margin-top: auto;
+            padding-top: 20px;
         }
 
         .footer-links a {
@@ -222,20 +224,23 @@
         .problem-display {
             font-size: 48px;
             text-align: center;
-            padding: 20px;
+            padding: 10px;
+            margin: 5px 0;
             color: #fff;
         }
 
         .score-bar {
             text-align: center;
             color: #ff0;
-            padding: 10px;
+            padding: 2px;
+            margin: 0;
         }
 
         .progress-dots {
             text-align: center;
-            font-size: 20px;
-            padding: 10px;
+            font-size: 18px;
+            padding: 2px;
+            margin: 0;
         }
 
         .progress-dots .correct { color: #0f0; }
@@ -256,17 +261,25 @@
             min-height: 24px;
         }
 
+        .answer-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin: 5px 0;
+        }
+
         .answer-box {
             background: #1a1a2e;
             border: 2px solid #0ff;
             border-radius: 8px;
-            padding: 15px 30px;
+            padding: 10px 25px;
             font-size: 32px;
             text-align: center;
             color: #fff;
             min-width: 120px;
             min-height: 50px;
-            margin: 10px auto;
+            margin: 0;
             display: inline-block;
         }
 
@@ -275,10 +288,31 @@
             background: #1a2e1a;
         }
 
+        .enter-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 15px 25px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            min-height: 50px;
+        }
+
+        .enter-btn:hover {
+            background: #45a049;
+        }
+
+        .enter-btn:active {
+            background: #3d8b40;
+        }
+
         .answer-hint {
             font-size: 14px;
             color: #888;
             margin-top: 5px;
+            text-align: center;
         }
 
         .problem-display.correct { color: #0f0; }
@@ -293,53 +327,19 @@
         .mountain-path {
             position: relative;
             width: 100%;
-            height: 420px;
+            max-width: 500px;
+            margin: 0 auto;
+            aspect-ratio: 1;
             overflow: hidden;
-        }
-
-        .path-background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 0;
-        }
-
-        /* World 1: Addition Alps - snowy mountain gradient */
-        .world-1 .path-background {
-            background: linear-gradient(180deg,
-                #1a1a3e 0%,      /* dark sky */
-                #2a3a5e 30%,     /* mountain top */
-                #4a5a7e 60%,     /* mid mountain */
-                #3a4a3e 100%);   /* forest base */
-        }
-
-        /* World 2: Subtraction Swamp - murky gradient */
-        .world-2 .path-background {
-            background: linear-gradient(180deg,
-                #1a2a1a 0%,
-                #2a3a2a 40%,
-                #1a3a2a 70%,
-                #0a2a1a 100%);
-        }
-
-        /* World 3: Multiplication Metropolis - city gradient */
-        .world-3 .path-background {
-            background: linear-gradient(180deg,
-                #0a0a1a 0%,
-                #1a1a3a 40%,
-                #2a2a4a 70%,
-                #1a1a2a 100%);
-        }
-
-        /* World 4: Division Desert - sandy gradient */
-        .world-4 .path-background {
-            background: linear-gradient(180deg,
-                #3a2a1a 0%,
-                #5a4a2a 40%,
-                #6a5a3a 70%,
-                #4a3a2a 100%);
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            /* Wooden frame border */
+            border: 6px solid #5a3d2b;
+            border-radius: 8px;
+            box-shadow:
+                inset 0 0 0 2px #8b6914,
+                0 4px 12px rgba(0, 0, 0, 0.4);
         }
 
         /* The winding path SVG */
@@ -588,9 +588,9 @@
         }
 
         .numpad-btn {
-            width: 60px;
-            height: 50px;
-            font-size: 24px;
+            width: 75px;
+            height: 58px;
+            font-size: 26px;
             border: 2px solid #0ff;
             border-radius: 8px;
             background: #1a1a2e;
@@ -606,16 +606,6 @@
         .numpad-btn:active {
             background: #0ff5;
             transform: scale(0.95);
-        }
-
-        .numpad-enter {
-            width: 100%;
-            background: #0a3;
-            border-color: #0f0;
-        }
-
-        .numpad-enter:hover {
-            background: #0c4;
         }
 
         /* Leaderboard styles */
@@ -672,40 +662,122 @@
             font-size: 18px;
             margin: 10px 0;
         }
+
+        /* Responsive: Mobile landscape (short screens) */
+        @media (max-height: 500px) {
+            body {
+                padding: 5px;
+            }
+
+            .screen {
+                padding: 10px;
+                height: calc(100dvh - 10px); /* Smaller body padding on mobile */
+            }
+
+            #gameplay-screen h3 {
+                font-size: 14px;
+                margin: 2px 0;
+            }
+
+            .score-bar {
+                padding: 3px;
+                font-size: 12px;
+            }
+
+            .progress-dots {
+                font-size: 14px;
+                padding: 3px;
+            }
+
+            .problem-display {
+                font-size: 28px;
+                padding: 8px;
+            }
+
+            .answer-box {
+                font-size: 20px;
+                padding: 8px 15px;
+                min-height: 30px;
+                margin: 5px auto;
+            }
+
+            .numpad {
+                gap: 3px;
+                margin-top: 5px;
+            }
+
+            .numpad-row {
+                gap: 3px;
+            }
+
+            .numpad-btn {
+                width: 58px;
+                height: 44px;
+                font-size: 18px;
+            }
+
+            .enter-btn {
+                padding: 10px 15px;
+                font-size: 16px;
+                min-height: 36px;
+            }
+        }
+
+        /* Responsive: Small mobile portrait */
+        @media (max-width: 400px) {
+            body {
+                padding: 10px;
+            }
+
+            .problem-display {
+                font-size: 36px;
+            }
+
+            .numpad-btn {
+                width: 70px;
+                height: 54px;
+                font-size: 24px;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Language Toggle -->
-    <div class="language-toggle">
-        <button id="lang-en" class="lang-btn active" onclick="setLanguage('en')">EN</button>
-        <button id="lang-sv" class="lang-btn" onclick="setLanguage('sv')">SV</button>
-    </div>
-
-    <h1 id="app-title">Flashy - Math Adventure</h1>
-
     <!-- Loading Screen -->
     <div id="loading-screen" class="screen active loading-screen">
         <div class="spinner">*</div>
         <p id="loading-status">Loading Pyodide...</p>
     </div>
 
-    <!-- Player Select Screen -->
-    <div id="player-select-screen" class="screen">
+    <!-- Welcome/Title Screen -->
+    <div id="welcome-screen" class="screen">
+        <div class="language-toggle">
+            <button id="lang-en" class="lang-btn active" onclick="setLanguage('en')">EN</button>
+            <button id="lang-sv" class="lang-btn" onclick="setLanguage('sv')">SV</button>
+        </div>
         <div class="ascii-art">
     /\_/\
    ( o.o )
     > ^ <
    /|   |\
         </div>
-        <h2 id="player-who-playing" style="text-align: center;">Who's playing today?</h2>
-        <ul id="player-list" class="player-list"></ul>
+        <h1 id="welcome-title" style="color: #0ff; text-align: center; margin: 20px 0;">Flashy's Math Adventure</h1>
+        <p id="welcome-tagline" style="text-align: center; color: #aaa; margin-bottom: 30px;">Help Flashy find the way home!</p>
         <div style="text-align: center;">
-            <button id="btn-new-player" class="btn" onclick="showNewPlayerScreen()">New Player</button>
+            <button class="btn" onclick="showScreen('player-select-screen')" style="font-size: 20px; padding: 15px 40px;">Play</button>
         </div>
         <div class="footer-links">
             <a href="#" onclick="showScreen('about-screen'); return false;">About</a>
             <span class="footer-sep">|</span>
             <a href="#" onclick="showScreen('privacy-screen'); return false;">Privacy</a>
+        </div>
+    </div>
+
+    <!-- Player Select Screen -->
+    <div id="player-select-screen" class="screen">
+        <h2 id="player-who-playing" style="text-align: center;">Who's playing today?</h2>
+        <ul id="player-list" class="player-list"></ul>
+        <div style="text-align: center;">
+            <button id="btn-new-player" class="btn" onclick="showNewPlayerScreen()">New Player</button>
         </div>
     </div>
 
@@ -730,7 +802,7 @@
             <p>Built with Python and <a href="https://pyodide.org" target="_blank" rel="noopener">Pyodide</a>, running entirely in your browser. Hosted on <a href="https://pages.cloudflare.com" target="_blank" rel="noopener">Cloudflare Pages</a>.</p>
         </div>
         <div style="text-align: center; margin-top: 20px;">
-            <button class="btn" onclick="showScreen('player-select-screen')">Back</button>
+            <button class="btn" onclick="showScreen('welcome-screen')">Back</button>
         </div>
     </div>
 
@@ -759,7 +831,7 @@
             <p>Questions? Open an issue on <a href="https://github.com/Ported/flashy/issues" target="_blank" rel="noopener">GitHub</a>.</p>
         </div>
         <div style="text-align: center; margin-top: 20px;">
-            <button class="btn" onclick="showScreen('player-select-screen')">Back</button>
+            <button class="btn" onclick="showScreen('welcome-screen')">Back</button>
         </div>
     </div>
 
@@ -827,7 +899,6 @@
             </button>
         </div>
         <div id="mountain-path" class="mountain-path">
-            <div class="path-background"></div>
             <svg class="path-line" viewBox="0 0 100 100" preserveAspectRatio="none">
                 <path d="M 50 95
                          Q 25 85, 30 75
@@ -854,10 +925,11 @@
         <div id="score-bar" class="score-bar">Score: 0</div>
         <div id="progress-dots" class="progress-dots"></div>
         <div id="problem-display" class="problem-display"></div>
-        <div style="text-align: center;">
+        <div class="answer-row">
             <div id="answer-box" class="answer-box">&nbsp;</div>
-            <div id="voice-status" class="answer-hint">Type answer + Enter</div>
+            <button class="enter-btn" onclick="numpadEnter()">Enter</button>
         </div>
+        <div id="voice-status" class="answer-hint">Type answer + Enter</div>
         <div id="numpad" class="numpad">
             <div class="numpad-row">
                 <button class="numpad-btn" onclick="numpadInput('1')">1</button>
@@ -878,9 +950,6 @@
                 <button class="numpad-btn" onclick="numpadInput('-')">-</button>
                 <button class="numpad-btn" onclick="numpadInput('0')">0</button>
                 <button class="numpad-btn" onclick="numpadBackspace()">⌫</button>
-            </div>
-            <div class="numpad-row">
-                <button class="numpad-btn numpad-enter" onclick="numpadEnter()">Enter</button>
             </div>
         </div>
     </div>
@@ -1013,7 +1082,8 @@
 
         function updateAllTranslations() {
             // Update all static UI elements with translations
-            document.getElementById('app-title').textContent = t('app.title');
+            document.getElementById('welcome-title').textContent = t('app.title');
+            document.getElementById('welcome-tagline').textContent = t('app.tagline');
             document.getElementById('player-who-playing').textContent = t('player.who_playing');
             document.getElementById('btn-new-player').textContent = t('player.new_player');
             document.getElementById('new-player-title').textContent = t('player.new_title');
@@ -1067,7 +1137,7 @@
                     GameFlow()
                 `);
 
-                // Restore session state or show player select
+                // Restore session state or show welcome screen
                 const savedPlayer = sessionStorage.getItem('flashy_player');
                 const savedWorld = sessionStorage.getItem('flashy_world');
                 if (savedPlayer) {
@@ -1075,7 +1145,8 @@
                     currentWorld = savedWorld ? parseInt(savedWorld) : 1;
                     showWorldMapScreen(currentPlayer);
                 } else {
-                    showPlayerSelectScreen();
+                    // First time load - show welcome screen
+                    showScreen('welcome-screen');
                 }
 
             } catch (error) {
@@ -1463,12 +1534,8 @@
             const mountainPath = document.getElementById('mountain-path');
             mountainPath.className = `mountain-path world-${currentWorld}`;
 
-            // Set world background image and theme colors
-            const worldMapScreen = document.getElementById('world-map-screen');
-            if (world.background) {
-                worldMapScreen.style.backgroundImage = `url('assets/${world.background}')`;
-                worldMapScreen.classList.add('has-background');
-            }
+            // Set world background image on mountain-path (so path and background scale together)
+            mountainPath.style.backgroundImage = `url('assets/${world.background}')`;
 
             // Apply world-specific colors via CSS custom properties
             mountainPath.style.setProperty('--path-color', world.path_color);

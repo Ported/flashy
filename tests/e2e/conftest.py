@@ -18,6 +18,13 @@ def generate_unique_name(base: str = "Player") -> str:
     return f"{base}_{uuid.uuid4().hex[:8]}"
 
 
+def navigate_to_player_select(page) -> None:
+    """Navigate from welcome screen to player select screen."""
+    page.wait_for_selector("#welcome-screen.active", timeout=60000)
+    page.click("text=Play")
+    page.wait_for_selector("#player-select-screen.active", timeout=5000)
+
+
 # Path to web platform files
 WEB_DIR = Path(__file__).parent.parent.parent / "flashy" / "platforms" / "web"
 BUILD_SCRIPT = WEB_DIR / "build.py"
@@ -152,7 +159,10 @@ def shared_context(
     # Warm up the cache by loading the app once
     page = context.new_page()
     page.goto(web_server)
-    page.wait_for_selector("#player-select-screen.active", timeout=120000)
+    # Wait for welcome screen and click through to player select
+    page.wait_for_selector("#welcome-screen.active", timeout=120000)
+    page.click("text=Play")
+    page.wait_for_selector("#player-select-screen.active", timeout=5000)
     page.close()
 
     yield context
@@ -171,13 +181,14 @@ def app_page(
     page = shared_context.new_page()
     page.goto(web_server)
 
-    # Clear localStorage for test isolation (but keep browser cache!)
-    page.evaluate("localStorage.clear()")
+    # Clear localStorage and sessionStorage for test isolation (but keep browser cache!)
+    page.evaluate("localStorage.clear(); sessionStorage.clear()")
     page.reload()
 
-    # Wait for app to be ready (loading screen disappears)
-    # Should be fast now since Pyodide is cached
-    page.wait_for_selector("#player-select-screen.active", timeout=60000)
+    # Wait for welcome screen and click through to player select
+    page.wait_for_selector("#welcome-screen.active", timeout=60000)
+    page.click("text=Play")
+    page.wait_for_selector("#player-select-screen.active", timeout=5000)
 
     yield page
 
@@ -193,12 +204,14 @@ def mobile_page(
     page.set_viewport_size({"width": 375, "height": 667})
     page.goto(web_server)
 
-    # Clear localStorage for test isolation
-    page.evaluate("localStorage.clear()")
+    # Clear localStorage and sessionStorage for test isolation
+    page.evaluate("localStorage.clear(); sessionStorage.clear()")
     page.reload()
 
-    # Wait for app to be ready
-    page.wait_for_selector("#player-select-screen.active", timeout=60000)
+    # Wait for welcome screen and click through to player select
+    page.wait_for_selector("#welcome-screen.active", timeout=60000)
+    page.click("text=Play")
+    page.wait_for_selector("#player-select-screen.active", timeout=5000)
 
     yield page
 

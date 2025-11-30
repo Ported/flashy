@@ -35,3 +35,6 @@ node_modules/
 
 *.af~lock~
 *.af
+
+screenshots
+.playwright-mcp

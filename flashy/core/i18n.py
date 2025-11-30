@@ -45,6 +45,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     "en": {
         # App title
         "app.title": "Flashy's Math Adventure",
+        "app.tagline": "Help Flashy find the way home!",
         # Loading
         "loading.pyodide": "Loading Pyodide...",
         "loading.python": "Setting up Python environment...",
@@ -78,7 +79,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "gameplay.listening": "Listening...",
         "gameplay.mic_request": "Requesting microphone...",
         "gameplay.correct": "Correct!",
-        "gameplay.wrong": "Wrong! Answer: {answer}",
+        "gameplay.wrong": "Wrong!",
         "gameplay.enter": "Enter",
         # Result screen
         "result.complete": "Level Complete!",
@@ -261,6 +262,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     "sv": {
         # App title
         "app.title": "Flashy's Matematikäventyr",
+        "app.tagline": "Hjälp Flashy att hitta hem!",
         # Loading
         "loading.pyodide": "Laddar Pyodide...",
         "loading.python": "Förbereder Python...",
@@ -294,7 +296,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "gameplay.listening": "Lyssnar...",
         "gameplay.mic_request": "Ber om mikrofon...",
         "gameplay.correct": "Rätt!",
-        "gameplay.wrong": "Fel! Svaret är: {answer}",
+        "gameplay.wrong": "Fel!",
         "gameplay.enter": "Enter",
         # Result screen
         "result.complete": "Nivå klar!",

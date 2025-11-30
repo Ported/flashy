@@ -199,7 +199,7 @@ def test_numpad_input_works_on_mobile(mobile_page: Page) -> None:
 
     # Tap more digits and enter
     mobile_page.locator("#numpad .numpad-btn", has_text=re.compile("^0$")).click()
-    mobile_page.locator("#numpad .numpad-enter").click()
+    mobile_page.locator(".enter-btn").click()
 
     # Feedback should appear in problem display (we submitted an answer)
     problem_display = mobile_page.locator("#problem-display")

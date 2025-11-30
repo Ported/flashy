@@ -2,6 +2,7 @@
 
 import re
 
+from conftest import navigate_to_player_select
 from playwright.sync_api import Page, expect
 
 
@@ -52,7 +53,7 @@ def test_duplicate_name_rejected(app_page: Page) -> None:
     app_page.wait_for_selector("#player-select-screen.active")
     app_page.evaluate("localStorage.clear()")
     app_page.reload()
-    app_page.wait_for_selector("#player-select-screen.active")
+    navigate_to_player_select(app_page)
 
     # Try to create player with same name (already registered on leaderboard)
     app_page.get_by_role("button", name="New Player").click()

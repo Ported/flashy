@@ -67,7 +67,7 @@ WORLD_1 = World(
     node_color="#2d5a3d",  # Forest green
     node_glow="#4a8c5c",  # Lighter green glow
     # Waypoints: start at bottom, zigzag up the mountain
-    map_waypoints="80,90 50,93 20,73 30,50 55,50 75,25 50,15",
+    map_waypoints="75,82 50,82 22,70 33,45 50,65 65,65 75,47 65,25 52,15",
 )
 
 WORLD_2 = World(
@@ -101,10 +101,10 @@ WORLD_2 = World(
         '"Hop along now!"'
     ),
     background="backgrounds/world-2-subtraction-swamp.webp",
-    path_color="#556644",  # Mossy green
-    node_color="#3a5a4a",  # Swamp green
-    node_glow="#5a7a6a",  # Murky glow
-    map_waypoints="30,90 55,85 80,70 85,45 40,70 40,45 75,30 50,15",
+    path_color="#C4D95C",  # Mossy green
+    node_color="#6c5e0f",  # Swamp green
+    node_glow="#d3a769",  # Murky glow
+    map_waypoints="30,90 55,85 80,70 85,45 40,70 40,50 75,40 50,15",
 )
 
 WORLD_3 = World(
@@ -141,7 +141,7 @@ WORLD_3 = World(
     path_color="#e8c4d4",  # Soft pink
     node_color="#7a4a6a",  # Meadow purple
     node_glow="#b888a8",  # Floral glow
-    map_waypoints="90,90 60,90 30,80 30,70 50,60 80,40 30,20 50,15",
+    map_waypoints="90,80 50,80 20,90 10,68 50,60 65,60 72,45 40,35 10,40",
 )
 
 WORLD_4 = World(
@@ -175,10 +175,10 @@ WORLD_4 = World(
         '"Is that... your HOME?"'
     ),
     background="backgrounds/world-4-division-desert.webp",
-    path_color="#c9a86c",  # Sandy trail
-    node_color="#8b6914",  # Desert gold
-    node_glow="#d4a84b",  # Golden glow
-    map_waypoints="80,90 40,90 40,80 75,70 75,55 35,55 50,15",
+    path_color="#d3c749",  # Sandy trail
+    node_color="#d17109",  # Desert gold
+    node_glow="#fcb519",  # Golden glow
+    map_waypoints="80,90 40,90 40,80 70,70 65,55 35,55 40,35 80,40 65,15",
 )
 
 WORLDS = [WORLD_1, WORLD_2, WORLD_3, WORLD_4]
