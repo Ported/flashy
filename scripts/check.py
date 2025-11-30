@@ -51,18 +51,16 @@ def main() -> int:
             ("Pytest (unit tests)", ["poetry", "run", "pytest", "tests/unit"])
         )
 
-    failed = []
     for name, cmd in checks:
         if not run_command(name, cmd):
-            failed.append(name)
+            print(f"\n{'=' * 60}")
+            print(f"FAILED: {name}")
+            print("Stopping checks early due to failure.")
+            return 1
 
     print(f"\n{'=' * 60}")
-    if failed:
-        print(f"FAILED: {', '.join(failed)}")
-        return 1
-    else:
-        print("All checks passed!")
-        return 0
+    print("All checks passed!")
+    return 0
 
 
 if __name__ == "__main__":

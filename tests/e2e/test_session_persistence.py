@@ -2,7 +2,7 @@
 
 import re
 
-from conftest import generate_unique_name, navigate_to_player_select
+from conftest import generate_unique_name
 from playwright.sync_api import BrowserContext, Page, expect
 
 
