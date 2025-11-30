@@ -8,7 +8,12 @@ storage.py
 __init__.py
 __pycache__/
 
-# Development files
+# Development/build files
 schema.sql
 wrangler.toml
 deploy.sh
+package.json
+package-lock.json
+
+# Original high-res assets (only deploy optimized webp)
+assets/originals/
