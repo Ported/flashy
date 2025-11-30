@@ -763,7 +763,7 @@
         <h1 id="welcome-title" style="color: #0ff; text-align: center; margin: 20px 0;">Flashy's Math Adventure</h1>
         <p id="welcome-tagline" style="text-align: center; color: #aaa; margin-bottom: 30px;">Help Flashy find the way home!</p>
         <div style="text-align: center;">
-            <button class="btn" onclick="showScreen('player-select-screen')" style="font-size: 20px; padding: 15px 40px;">Play</button>
+            <button class="btn" onclick="showPlayerSelectScreen()" style="font-size: 20px; padding: 15px 40px;">Play</button>
         </div>
         <div class="footer-links">
             <a href="#" onclick="showScreen('about-screen'); return false;">About</a>
@@ -1028,6 +1028,7 @@
         window.showNewPlayerScreen = showNewPlayerScreen;
         window.createPlayer = createPlayer;
         window.showScreen = showScreen;
+        window.showPlayerSelectScreen = showPlayerSelectScreen;
         window.selectPlayer = selectPlayer;
         window.selectLevel = selectLevel;
         window.backToPlayerSelect = backToPlayerSelect;
@@ -1137,15 +1138,25 @@
                     GameFlow()
                 `);
 
+                // Sync players from tokens (recovers accounts if progress was cleared)
+                syncPlayersFromTokens();
+
                 // Restore session state or show welcome screen
-                const savedPlayer = sessionStorage.getItem('flashy_player');
-                const savedWorld = sessionStorage.getItem('flashy_world');
-                if (savedPlayer) {
+                const savedPlayer = localStorage.getItem('flashy_current_player');
+                const savedWorld = localStorage.getItem('flashy_current_world');
+
+                // Verify saved player still has a token (hasn't been logged out)
+                const hasToken = savedPlayer && localStorage.getItem(`flashy_token_${savedPlayer}`);
+
+                if (hasToken) {
                     currentPlayer = savedPlayer;
                     currentWorld = savedWorld ? parseInt(savedWorld) : 1;
                     showWorldMapScreen(currentPlayer);
                 } else {
-                    // First time load - show welcome screen
+                    // Clear stale session data
+                    localStorage.removeItem('flashy_current_player');
+                    localStorage.removeItem('flashy_current_world');
+                    // Show welcome screen
                     showScreen('welcome-screen');
                 }
 
@@ -1165,6 +1176,44 @@
             const coreCode = await response.text();
 
             pyodide.runPython(coreCode);
+        }
+
+        // ============================================================
+        // Session Persistence
+        // ============================================================
+
+        /**
+         * Get all player names that have tokens stored in localStorage.
+         * This is the source of truth for "registered" players on this device.
+         */
+        function getPlayersWithTokens() {
+            const players = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('flashy_token_')) {
+                    const name = key.replace('flashy_token_', '');
+                    players.push(name);
+                }
+            }
+            return players;
+        }
+
+        /**
+         * Ensure all players with tokens are in the Python storage player list.
+         * This recovers accounts if localStorage progress was cleared but token remains.
+         */
+        function syncPlayersFromTokens() {
+            const tokenPlayers = getPlayersWithTokens();
+            for (const name of tokenPlayers) {
+                // Ensure player exists in Python storage (creates with empty progress if missing)
+                pyodide.runPython(`
+from flashy.platforms.web.storage import WebStorage
+storage = WebStorage()
+if not storage.player_exists("${name}"):
+    from flashy.core.models import PlayerProgress
+    storage.save_progress("${name}", PlayerProgress())
+`);
+            }
         }
 
         // ============================================================
@@ -1516,9 +1565,9 @@
             currentPlayer = playerName;
             currentWorld = worldNumber || currentWorld || 1;
 
-            // Save session state for refresh persistence
-            sessionStorage.setItem('flashy_player', currentPlayer);
-            sessionStorage.setItem('flashy_world', currentWorld.toString());
+            // Save session state for persistence across browser restarts
+            localStorage.setItem('flashy_current_player', currentPlayer);
+            localStorage.setItem('flashy_current_world', currentWorld.toString());
 
             const world = pyodide.runPython(`
                 from flashy.core.worlds import get_world
@@ -1640,9 +1689,9 @@
         }
 
         function backToPlayerSelect() {
-            // Clear session state when switching players
-            sessionStorage.removeItem('flashy_player');
-            sessionStorage.removeItem('flashy_world');
+            // Clear current player when switching (but keep tokens for all players)
+            localStorage.removeItem('flashy_current_player');
+            localStorage.removeItem('flashy_current_world');
             showPlayerSelectScreen();
         }
 
