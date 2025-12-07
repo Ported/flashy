@@ -19,10 +19,17 @@ class GameState extends ChangeNotifier {
 
   /// Get the API base URL based on environment.
   static String _getApiBaseUrl() {
+    // Check for build-time override (used for staging deployments)
+    const apiBaseUrl = String.fromEnvironment('FLASHY_API_BASE_URL');
+    if (apiBaseUrl.isNotEmpty) {
+      return apiBaseUrl;
+    }
+
     // In debug mode, use local dev server
     if (kDebugMode) {
       return 'http://localhost:8765';
     }
+
     // In release, use relative URLs (same origin)
     return '';
   }

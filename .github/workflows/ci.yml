@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 jobs:
   test:
@@ -51,36 +51,79 @@ jobs:
       - name: Run all checks (lint, typecheck, tests, e2e)
         run: poetry run python scripts/check.py --e2e
 
-  deploy:
-    needs: test
+  test-flutter:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
-          python-version: "3.11"
+          flutter-version: '3.24.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Install Flutter dependencies
+        working-directory: flutter
+        run: flutter pub get
+
+      - name: Run Flutter tests
+        working-directory: flutter
+        run: flutter test
+
+      - name: Run Flutter analyze
+        working-directory: flutter
+        run: flutter analyze
+
+  deploy:
+    needs: [test, test-flutter]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+          cache: true
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
+      - name: Install wrangler
+        run: npm install -g wrangler
 
-      - name: Install dependencies
-        run: poetry install --no-interaction
+      - name: Install Flutter dependencies
+        working-directory: flutter
+        run: flutter pub get
 
-      - name: Build web app
-        run: ./flashy/platforms/web/deploy.sh --build-only
+      - name: Build Flutter web (staging)
+        if: github.ref == 'refs/heads/develop'
+        working-directory: flutter
+        run: flutter build web --release --dart-define=FLASHY_API_BASE_URL=https://flashycards.org
+
+      - name: Build Flutter web (production)
+        if: github.ref == 'refs/heads/main'
+        working-directory: flutter
+        run: flutter build web --release
+
+      - name: Copy API functions and config to build
+        run: |
+          mkdir -p flutter/build/web/functions/api
+          cp flashy/platforms/web/functions/_middleware.ts flutter/build/web/functions/ 2>/dev/null || true
+          cp flashy/platforms/web/functions/api/*.ts flutter/build/web/functions/api/ 2>/dev/null || true
+          rm -f flutter/build/web/functions/api/*.test.ts 2>/dev/null || true
+          cp flashy/platforms/web/_headers flutter/build/web/ 2>/dev/null || true
+          cp flashy/platforms/web/wrangler.toml flutter/build/web/ 2>/dev/null || true
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: flashy/platforms/web/dist
+          workingDirectory: flutter/build/web
           command: pages deploy . --project-name=flashycards
