@@ -1,5 +1,6 @@
 name = "flashycards"
 compatibility_date = "2024-01-01"
+pages_build_output_dir = "."
 
 # D1 Database binding for leaderboard
 # After creating the database with `wrangler d1 create flashy-leaderboard`,
