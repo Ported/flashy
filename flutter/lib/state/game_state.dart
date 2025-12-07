@@ -5,7 +5,7 @@ import '../core/flow.dart';
 import '../core/game.dart';
 import '../core/models.dart';
 import '../core/storage.dart';
-import '../storage/prefs_storage.dart';
+import '../storage/storage_factory.dart';
 
 /// Central game state management.
 ///
@@ -59,22 +59,19 @@ class GameState extends ChangeNotifier {
   Future<void> initialize() async {
     if (_isInitialized) return;
 
-    _storage ??= await PrefsStorageBackend.create();
+    _storage ??= await createStorageBackend();
     _isInitialized = true;
 
     // Restore session if saved
-    if (_storage is PrefsStorageBackend) {
-      final prefsStorage = _storage as PrefsStorageBackend;
-      final players = await prefsStorage.listPlayers();
+    final players = await _storage!.listPlayers();
 
-      // Check for saved current player
-      // For now, if there's exactly one player and they have a token, restore them
-      // In the future, we could save/restore current player preference
-      if (players.length == 1) {
-        final token = await prefsStorage.loadToken(players.first);
-        if (token != null) {
-          await selectPlayer(players.first);
-        }
+    // Check for saved current player
+    // For now, if there's exactly one player and they have a token, restore them
+    // In the future, we could save/restore current player preference
+    if (players.length == 1) {
+      final token = await _storage!.loadToken(players.first);
+      if (token != null) {
+        await selectPlayer(players.first);
       }
     }
 
@@ -131,8 +128,8 @@ class GameState extends ChangeNotifier {
     }
 
     // Save token and create local player
-    if (_storage is PrefsStorageBackend && result.token != null) {
-      await (_storage as PrefsStorageBackend).saveToken(safeName, result.token!);
+    if (result.token != null) {
+      await _storage?.saveToken(safeName, result.token!);
     }
 
     _progress = PlayerProgress();
@@ -209,10 +206,7 @@ class GameState extends ChangeNotifier {
   Future<int?> _syncScore() async {
     if (_currentPlayer == null || _progress == null) return null;
 
-    String? token;
-    if (_storage is PrefsStorageBackend) {
-      token = await (_storage as PrefsStorageBackend).loadToken(_currentPlayer!);
-    }
+    final token = await _storage?.loadToken(_currentPlayer!);
     if (token == null) return null;
 
     final result = await _api.syncScore(

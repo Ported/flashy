@@ -1,35 +1,23 @@
-// SharedPreferences storage backend for web and mobile.
+// Web-specific storage backend using raw localStorage.
 //
-// Uses the same localStorage keys as the Python web version for data
-// continuity when migrating from Python to Flutter on web.
-import 'dart:convert';
+// Uses the same localStorage keys as the Python web version for seamless
+// data migration. This bypasses SharedPreferences to avoid encoding issues.
 
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:web/web.dart' as web;
 
 import '../core/models.dart';
 import '../core/storage.dart';
 
-/// Storage backend using SharedPreferences.
+/// Storage backend using raw localStorage for web.
 ///
-/// On web, SharedPreferences uses localStorage with the same keys as the
-/// Python implementation, allowing seamless data migration.
-///
-/// Data is stored with the following keys:
-/// - flashy_players: List of player names (JSON array)
-/// - flashy_player_{name}: Player progress (JSON object)
-/// - flashy_token_{name}: Player token for API authentication
-/// - flashy_history: Array of session log entries (JSON array)
-class PrefsStorageBackend implements StorageBackend {
-  PrefsStorageBackend._(this._prefs);
+/// This implementation directly accesses localStorage without any prefix
+/// or encoding, making it fully compatible with the Python web app.
+class WebStorageBackend implements StorageBackend {
+  WebStorageBackend._();
 
-  final SharedPreferences _prefs;
-
-  /// Create a PrefsStorageBackend instance.
-  ///
-  /// Must be awaited since SharedPreferences.getInstance() is async.
-  static Future<PrefsStorageBackend> create() async {
-    final prefs = await SharedPreferences.getInstance();
-    return PrefsStorageBackend._(prefs);
+  static Future<WebStorageBackend> create() async {
+    return WebStorageBackend._();
   }
 
   // Storage keys (matching Python web implementation)
@@ -38,9 +26,21 @@ class PrefsStorageBackend implements StorageBackend {
   static String _tokenKey(String name) => 'flashy_token_$name';
   static const _historyKey = 'flashy_history';
 
+  String? _getItem(String key) {
+    return web.window.localStorage.getItem(key);
+  }
+
+  void _setItem(String key, String value) {
+    web.window.localStorage.setItem(key, value);
+  }
+
+  void _removeItem(String key) {
+    web.window.localStorage.removeItem(key);
+  }
+
   @override
   Future<PlayerProgress?> loadProgress(String playerName) async {
-    final dataStr = _prefs.getString(_playerKey(playerName));
+    final dataStr = _getItem(_playerKey(playerName));
     if (dataStr == null) {
       return null;
     }
@@ -75,7 +75,7 @@ class PrefsStorageBackend implements StorageBackend {
     final players = await listPlayers();
     if (!players.contains(playerName)) {
       final updatedPlayers = [...players, playerName];
-      await _prefs.setString(_playersKey, json.encode(updatedPlayers));
+      _setItem(_playersKey, json.encode(updatedPlayers));
     }
 
     // Convert int keys to string keys for JSON
@@ -94,12 +94,12 @@ class PrefsStorageBackend implements StorageBackend {
       'best_scores': scoresJson,
     };
 
-    await _prefs.setString(_playerKey(playerName), json.encode(data));
+    _setItem(_playerKey(playerName), json.encode(data));
   }
 
   @override
   Future<List<String>> listPlayers() async {
-    final playersStr = _prefs.getString(_playersKey);
+    final playersStr = _getItem(_playersKey);
     if (playersStr == null) {
       return [];
     }
@@ -117,16 +117,16 @@ class PrefsStorageBackend implements StorageBackend {
     // Remove from players list
     final players = await listPlayers();
     players.remove(playerName);
-    await _prefs.setString(_playersKey, json.encode(players));
+    _setItem(_playersKey, json.encode(players));
 
     // Remove player data
-    await _prefs.remove(_playerKey(playerName));
-    await _prefs.remove(_tokenKey(playerName));
+    _removeItem(_playerKey(playerName));
+    _removeItem(_tokenKey(playerName));
   }
 
   @override
   Future<void> logSession(LevelResult result) async {
-    final historyStr = _prefs.getString(_historyKey) ?? '[]';
+    final historyStr = _getItem(_historyKey) ?? '[]';
     List<dynamic> history;
     try {
       history = json.decode(historyStr) as List<dynamic>;
@@ -147,12 +147,12 @@ class PrefsStorageBackend implements StorageBackend {
     };
 
     history.add(entry);
-    await _prefs.setString(_historyKey, json.encode(history));
+    _setItem(_historyKey, json.encode(history));
   }
 
   /// Load session history.
   Future<List<Map<String, dynamic>>> loadHistory() async {
-    final historyStr = _prefs.getString(_historyKey) ?? '[]';
+    final historyStr = _getItem(_historyKey) ?? '[]';
     try {
       final list = json.decode(historyStr) as List<dynamic>;
       return list.cast<Map<String, dynamic>>();
@@ -163,12 +163,12 @@ class PrefsStorageBackend implements StorageBackend {
 
   @override
   Future<void> saveToken(String playerName, String token) async {
-    await _prefs.setString(_tokenKey(playerName), token);
+    _setItem(_tokenKey(playerName), token);
   }
 
   @override
   Future<String?> loadToken(String playerName) async {
-    return _prefs.getString(_tokenKey(playerName));
+    return _getItem(_tokenKey(playerName));
   }
 
   /// Check if a player exists locally.
@@ -177,8 +177,20 @@ class PrefsStorageBackend implements StorageBackend {
     return players.contains(playerName);
   }
 
-  /// Clear all storage (for testing/debugging).
+  /// Clear all flashy-related storage.
   Future<void> clearAll() async {
-    await _prefs.clear();
+    final storage = web.window.localStorage;
+    final keysToRemove = <String>[];
+
+    for (var i = 0; i < storage.length; i++) {
+      final key = storage.key(i);
+      if (key != null && key.startsWith('flashy_')) {
+        keysToRemove.add(key);
+      }
+    }
+
+    for (final key in keysToRemove) {
+      storage.removeItem(key);
+    }
   }
 }

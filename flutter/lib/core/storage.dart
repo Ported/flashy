@@ -27,11 +27,18 @@ abstract class StorageBackend {
   /// Default implementation does nothing. Subclasses can override
   /// to log session history for analytics or debugging.
   Future<void> logSession(LevelResult result) async {}
+
+  /// Save a player's authentication token.
+  Future<void> saveToken(String playerName, String token);
+
+  /// Load a player's authentication token.
+  Future<String?> loadToken(String playerName);
 }
 
 /// In-memory storage backend for testing.
 class MemoryStorageBackend implements StorageBackend {
   final Map<String, PlayerProgress> _players = {};
+  final Map<String, String> _tokens = {};
   final List<LevelResult> _sessions = [];
 
   @override
@@ -62,9 +69,20 @@ class MemoryStorageBackend implements StorageBackend {
   /// Get all logged sessions (for testing).
   List<LevelResult> get sessions => List.unmodifiable(_sessions);
 
+  @override
+  Future<void> saveToken(String playerName, String token) async {
+    _tokens[playerName] = token;
+  }
+
+  @override
+  Future<String?> loadToken(String playerName) async {
+    return _tokens[playerName];
+  }
+
   /// Clear all data (for testing).
   void clear() {
     _players.clear();
+    _tokens.clear();
     _sessions.clear();
   }
 }
