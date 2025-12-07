@@ -1,0 +1,192 @@
+{
+  "@@locale": "en",
+  "appTitle": "Flashy's Math Adventure",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "appTagline": "Help Flashy find the way home!",
+  "loadingPyodide": "Loading Pyodide...",
+  "loadingPython": "Setting up Python environment...",
+  "loadingSpeech": "Loading speech model...",
+  "loadingReady": "Ready!",
+  "playerWhoPlaying": "Who's playing today?",
+  "playerNoPlayers": "No players yet!",
+  "playerNewPlayer": "New Player",
+  "playerLevel": "Level",
+  "playerNewTitle": "New Player",
+  "playerEnterName": "Enter your name...",
+  "playerCreate": "Create",
+  "playerCancel": "Cancel",
+  "playerErrorEmpty": "Please enter a name",
+  "playerErrorInvalid": "Please use letters and numbers only",
+  "playerErrorExists": "'{name}' already exists!",
+  "@playerErrorExists": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "playerErrorTooLong": "Name too long (max 20 characters)",
+  "playerErrorTaken": "Name already taken on leaderboard. Choose another!",
+  "playerErrorRegistration": "Registration failed",
+  "playerErrorConnection": "Could not connect to leaderboard. Try again.",
+  "playerRegistering": "Registering...",
+  "navBack": "Back",
+  "navContinue": "Continue",
+  "navReplay": "Replay",
+  "gameplayScore": "Score: {score}",
+  "@gameplayScore": {
+    "placeholders": {
+      "score": {"type": "int"}
+    }
+  },
+  "gameplayTypeAnswer": "Type answer + Enter",
+  "gameplayListening": "Listening...",
+  "gameplayMicRequest": "Requesting microphone...",
+  "gameplayCorrect": "Correct!",
+  "gameplayWrong": "Wrong!",
+  "gameplayEnter": "Enter",
+  "resultComplete": "Level Complete!",
+  "resultFailed": "Keep Practicing!",
+  "resultNewBest": "NEW BEST!",
+  "resultCorrect": "{correct}/{total} correct",
+  "@resultCorrect": {
+    "placeholders": {
+      "correct": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "resultScore": "Score: {score}",
+  "@resultScore": {
+    "placeholders": {
+      "score": {"type": "int"}
+    }
+  },
+  "resultTime": "Time: {time}",
+  "@resultTime": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "resultUpdating": "Updating leaderboard...",
+  "leaderboardTitle": "Leaderboard",
+  "victoryTitle": "VICTORY!",
+  "gameCompleteTitle": "HOME AT LAST!",
+  "gameCompleteHint": "Click anywhere to return to menu...",
+  "introFlashy": "FLASHY",
+  "introStory": "\"Oh no! Where am I?\"\n\n\"I chased that butterfly too far...\"\n\n\"I need to find my way home!\"",
+  "introHint": "Click anywhere to continue...",
+  "inputVoice": "Voice",
+  "inputKeyboard": "Keyboard",
+  "world1Name": "Addition Alps",
+  "world2Name": "Subtraction Swamp",
+  "world3Name": "Multiplication Meadows",
+  "world4Name": "Division Desert",
+  "world1Intro": "Flashy woke up alone in the cold mountains.\n\"Where am I? I need to find my way home!\"\nThe only way forward is up through the Addition Alps...",
+  "world2Intro": "The mountains gave way to murky wetlands.\n\"It's so foggy here... but I must keep going!\"\nFlashy stepped carefully into the Subtraction Swamp...",
+  "world3Intro": "Beautiful flowers swayed in the breeze.\n\"What a lovely place... but I must keep moving!\"\nThe Multiplication Meadows bloomed with possibility...",
+  "world4Intro": "The heat hit Flashy like a wall.\n\"So hot... but I can almost smell home!\"\nThe Division Desert stretched endlessly before...",
+  "world1FriendName": "Carry",
+  "world1FriendIntro": "\"Hoo-hoo! I'm Carry the Owl!\"\n\"I've watched many travelers climb these peaks.\"\n\"Remember: when numbers get big, just carry on!\"\n\"Let me help you on your journey home.\"",
+  "world2FriendName": "Borrow",
+  "world2FriendIntro": "\"Slow down there, young pup!\"\n\"I'm Borrow the Turtle. I've lived here for centuries.\"\n\"When you need to take away more than you have,\"\n\"just borrow from your neighbor. Works every time!\"",
+  "world3FriendName": "Times",
+  "world3FriendIntro": "\"Oh my, oh my! A visitor!\" *hops excitedly*\n\"I'm Times the Rabbit! I multiply EVERYTHING!\"\n\"One carrot becomes two, two become four!\"\n\"Multiplication is just fast addition, you know!\"",
+  "world4FriendName": "Remainder",
+  "world4FriendIntro": "\"Ah, a traveler! I am Remainder the Camel.\"\n\"I carry what's left over from every division.\"\n\"Remember: divide means to share equally!\"\n\"Split it up fair, and you'll find your answer.\"",
+  "world1BossName": "Summit",
+  "world1BossIntro": "\"So, little pup, you think you can cross MY mountain?\"\n\"I am Summit, guardian of the Alps!\"\n\"Prove your addition skills... if you can keep up!\"",
+  "world1BossDefeat": "\"Impressive, little one! You've earned passage.\"\n\"The path ahead leads to the Subtraction Swamp.\"\n\"May your numbers stay strong!\"",
+  "world2BossName": "Minus",
+  "world2BossIntro": "\"RIBBIT! Who dares enter my swamp?\"\n\"I am Minus, the Frog King!\"\n\"Let's see if you can subtract as fast as I can jump!\"",
+  "world2BossDefeat": "\"RIBBIT... you've bested me, small one.\"\n\"The meadows lie ahead. Enjoy the flowers!\"\n\"Hop along now!\"",
+  "world3BossName": "Countess Calculata",
+  "world3BossIntro": "\"Well, well... the lost puppy arrives.\"\n\"I am Countess Calculata, master of multiplication!\"\n\"Beat me, and the desert path shall open!\"",
+  "world3BossDefeat": "\"Magnificent! You've mastered multiplication!\"\n\"The desert lies ahead. Stay hydrated!\"\n\"Your home draws ever closer.\"",
+  "world4BossName": "The Sphinx of Splits",
+  "world4BossIntro": "\"HALT, wanderer! None pass without solving my riddles.\"\n\"I am the Sphinx of Splits!\"\n\"Divide correctly, or be lost to the sands forever!\"",
+  "world4BossDefeat": "\"You have wisdom beyond your years, young pup.\"\n\"Look there, beyond the dunes...\"\n\"Is that... your HOME?\"",
+  "gameCompleteStory": "\"I'm home! I'm finally home!\"\n\nFlashy's family rushed out to greet the little pup.\n\n\"We were so worried! Where did you go?\"\n\n\"I went on the most amazing adventure...\"\n\n\"And I learned SO much math along the way!\"",
+  "level1Name": "Trailhead",
+  "level2Name": "Foothills",
+  "level3Name": "Snowy Path",
+  "level4Name": "Alpine Meadow",
+  "level5Name": "Mountain Trail",
+  "level6Name": "Carry's Roost",
+  "level7Name": "Rocky Pass",
+  "level8Name": "Steep Cliffs",
+  "level9Name": "Final Ascent",
+  "level10Name": "Summit's Challenge",
+  "level11Name": "Marsh Edge",
+  "level12Name": "Muddy Waters",
+  "level13Name": "Foggy Path",
+  "level14Name": "Lily Pads",
+  "level15Name": "Cypress Grove",
+  "level16Name": "Borrow's Hollow",
+  "level17Name": "Murky Depths",
+  "level18Name": "Tangled Vines",
+  "level19Name": "Swamp's Heart",
+  "level20Name": "Minus's Throne",
+  "level21Name": "Flower Field",
+  "level22Name": "Butterfly Path",
+  "level23Name": "Clover Patch",
+  "level24Name": "Honeybee Hive",
+  "level25Name": "Dandelion Dell",
+  "level26Name": "Times's Burrow",
+  "level27Name": "Pollen Storm",
+  "level28Name": "Rainbow Bridge",
+  "level29Name": "Final Bloom",
+  "level30Name": "Calculata's Garden",
+  "level31Name": "Oasis Gate",
+  "level32Name": "Sandy Trail",
+  "level33Name": "Dune Ridge",
+  "level34Name": "Scorpion Pass",
+  "level35Name": "Mirage Valley",
+  "level36Name": "Remainder's Rest",
+  "level37Name": "Sandstorm",
+  "level38Name": "Sunscorch",
+  "level39Name": "Pyramid's Shadow",
+  "level40Name": "Sphinx's Riddles",
+  "navPlay": "Play",
+  "navAbout": "About",
+  "navPrivacy": "Privacy",
+  "leaderboardError": "Failed to load leaderboard",
+  "leaderboardEmpty": "No scores yet. Be the first!",
+  "resultBestStreak": "Best Streak: {streak}",
+  "@resultBestStreak": {
+    "placeholders": {
+      "streak": {"type": "int"}
+    }
+  },
+  "resultCorrectCount": "{correct} / {total}",
+  "@resultCorrectCount": {
+    "placeholders": {
+      "correct": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "gameplayBossLevel": "BOSS: Level {level}",
+  "@gameplayBossLevel": {
+    "placeholders": {
+      "level": {"type": "int"}
+    }
+  },
+  "gameplayLevel": "Level {level}",
+  "@gameplayLevel": {
+    "placeholders": {
+      "level": {"type": "int"}
+    }
+  },
+  "gameplayPointsEarned": "Correct! +{points}",
+  "@gameplayPointsEarned": {
+    "placeholders": {
+      "points": {"type": "int"}
+    }
+  },
+  "gameplayStreak": "Score: {score} | {streak} streak!",
+  "@gameplayStreak": {
+    "placeholders": {
+      "score": {"type": "int"},
+      "streak": {"type": "int"}
+    }
+  }
+}
