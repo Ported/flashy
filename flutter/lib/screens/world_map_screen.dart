@@ -1,6 +1,7 @@
 import 'dart:math' show sqrt;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../core/levels.dart';
@@ -9,6 +10,7 @@ import '../core/worlds.dart';
 import '../l10n/app_localizations.dart';
 import '../state/game_state.dart';
 import '../theme/app_theme.dart';
+import '../widgets/animated_button.dart';
 import '../widgets/level_node.dart';
 import '../widgets/responsive_container.dart';
 import 'boss_intro_screen.dart';
@@ -18,8 +20,32 @@ import 'leaderboard_screen.dart';
 import 'player_select_screen.dart';
 
 /// World map screen showing level progression.
-class WorldMapScreen extends StatelessWidget {
+class WorldMapScreen extends StatefulWidget {
   const WorldMapScreen({super.key});
+
+  @override
+  State<WorldMapScreen> createState() => _WorldMapScreenState();
+}
+
+class _WorldMapScreenState extends State<WorldMapScreen> {
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _handleKeyEvent(KeyEvent event) {
+    if (event is! KeyDownEvent) return;
+
+    final key = event.logicalKey;
+
+    // F8 - Cheat: Complete current world
+    if (key == LogicalKeyboardKey.f8) {
+      context.read<GameState>().cheatCompleteWorld();
+    }
+  }
 
   void _selectLevel(BuildContext context, int levelNumber) {
     final level = getLevel(levelNumber);
@@ -74,8 +100,12 @@ class WorldMapScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      body: SafeArea(
-        child: Center(
+      body: KeyboardListener(
+        focusNode: _focusNode,
+        autofocus: true,
+        onKeyEvent: _handleKeyEvent,
+        child: SafeArea(
+          child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: BaseScreenConfig.maxWidth),
             child: Container(
@@ -120,14 +150,22 @@ class WorldMapScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
 
-                  // Map with level nodes
+                  // Map with level nodes - constrained to be square
                   Expanded(
-                    child: _WorldMap(
-                      world: world,
-                      levels: levels,
-                      progress: progress,
-                      onLevelTap: (levelNumber) =>
-                          _selectLevel(context, levelNumber),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: constraints.maxWidth,
+                          maxHeight: constraints.maxWidth, // Force square by using width as max height
+                        ),
+                        child: _WorldMap(
+                          world: world,
+                          levels: levels,
+                          progress: progress,
+                          onLevelTap: (levelNumber) =>
+                              _selectLevel(context, levelNumber),
+                        ),
+                      ),
                     ),
                   ),
 
@@ -140,7 +178,7 @@ class WorldMapScreen extends StatelessWidget {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          ElevatedButton(
+                          AnimatedElevatedButton(
                             onPressed: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
@@ -154,7 +192,7 @@ class WorldMapScreen extends StatelessWidget {
                             child: Text(l10n.leaderboardTitle),
                           ),
                           const SizedBox(width: 10),
-                          ElevatedButton(
+                          AnimatedElevatedButton(
                             onPressed: () {
                               gameState.logout();
                               Navigator.of(context).pushAndRemoveUntil(
@@ -179,6 +217,7 @@ class WorldMapScreen extends StatelessWidget {
       ),
             ),
           ),
+        ),
         ),
       ),
       ),
@@ -367,6 +406,7 @@ class _WorldMap extends StatelessWidget {
           width: nodeSize,
           height: nodeSize,
           child: LevelNode(
+            levelNumber: level.number,
             levelInWorld: level.levelInWorld,
             stars: stars,
             isUnlocked: unlocked,

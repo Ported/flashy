@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../main.dart';
 import '../theme/app_theme.dart';
+import '../widgets/animated_button.dart';
 import '../widgets/responsive_container.dart';
 import 'about_screen.dart';
 import 'player_select_screen.dart';
@@ -77,7 +78,7 @@ class WelcomeScreen extends StatelessWidget {
               const SizedBox(height: 40),
 
               // Play button
-              ElevatedButton(
+              AnimatedElevatedButton(
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -102,7 +103,7 @@ class WelcomeScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  TextButton(
+                  AnimatedTextButton(
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -119,7 +120,7 @@ class WelcomeScreen extends StatelessWidget {
                     '|',
                     style: TextStyle(color: AppColors.textSecondary),
                   ),
-                  TextButton(
+                  AnimatedTextButton(
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(

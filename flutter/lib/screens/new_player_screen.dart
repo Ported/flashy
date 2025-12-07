@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../state/game_state.dart';
 import '../theme/app_theme.dart';
+import '../widgets/animated_button.dart';
 import '../widgets/responsive_container.dart';
 import 'intro_screen.dart';
 
@@ -99,12 +100,12 @@ class _NewPlayerScreenState extends State<NewPlayerScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton(
+                    AnimatedElevatedButton(
                       onPressed: _createPlayer,
                       child: Text(l10n.playerCreate),
                     ),
                     const SizedBox(width: 10),
-                    ElevatedButton(
+                    AnimatedElevatedButton(
                       onPressed: () => Navigator.of(context).pop(false),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.dangerRed,

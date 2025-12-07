@@ -234,6 +234,23 @@ class GameState extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Cheat: Complete all levels in the current world with 3 stars.
+  Future<void> cheatCompleteWorld() async {
+    if (_currentPlayer == null || _progress == null) return;
+
+    final startLevel = (_currentWorld - 1) * 10 + 1;
+    final endLevel = _currentWorld * 10;
+
+    for (var level = startLevel; level <= endLevel; level++) {
+      _progress!.setStars(level, 3);
+      _progress!.setBestScore(level, 1000); // Good score for each level
+    }
+
+    await _storage?.saveProgress(_currentPlayer!, _progress!);
+    await _syncScore();
+    notifyListeners();
+  }
+
   /// Handle a game flow event and return the next screen request.
   ScreenRequest handleEvent(GameEvent event) {
     return _flow.handle(event, _progress);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 /// App color palette - matching web CSS.
 class AppColors {
@@ -20,10 +21,16 @@ class AppTheme {
   AppTheme._();
 
   static ThemeData get darkTheme {
+    // Base text theme with Fredoka font
+    final baseTextTheme = GoogleFonts.fredokaTextTheme(
+      ThemeData.dark().textTheme,
+    );
+
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
       scaffoldBackgroundColor: AppColors.darkBackground,
+      fontFamily: GoogleFonts.fredoka().fontFamily,
       colorScheme: const ColorScheme.dark(
         primary: AppColors.accentCyan,
         secondary: AppColors.accentCyan,
@@ -43,32 +50,125 @@ class AppTheme {
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.accentCyan,
-          foregroundColor: AppColors.darkBackground,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) {
+              return AppColors.accentCyan.withValues(alpha: 0.8);
+            }
+            if (states.contains(WidgetState.hovered)) {
+              return AppColors.accentCyan;
+            }
+            return AppColors.accentCyan;
+          }),
+          foregroundColor: WidgetStateProperty.all(AppColors.darkBackground),
+          padding: WidgetStateProperty.all(
+            const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           ),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
+          textStyle: WidgetStateProperty.all(
+            GoogleFonts.fredoka(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          elevation: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) {
+              return 1;
+            }
+            if (states.contains(WidgetState.hovered)) {
+              return 8;
+            }
+            return 4;
+          }),
+          shadowColor: WidgetStateProperty.all(
+            AppColors.accentCyan.withValues(alpha: 0.5),
+          ),
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) {
+              return Colors.white.withValues(alpha: 0.2);
+            }
+            if (states.contains(WidgetState.hovered)) {
+              return Colors.white.withValues(alpha: 0.1);
+            }
+            return null;
+          }),
+          animationDuration: const Duration(milliseconds: 100),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.accentCyan,
-          side: const BorderSide(color: AppColors.accentCyan, width: 2),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
+        style: ButtonStyle(
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) {
+              return AppColors.accentCyan.withValues(alpha: 0.8);
+            }
+            return AppColors.accentCyan;
+          }),
+          side: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.hovered)) {
+              return const BorderSide(color: AppColors.accentCyan, width: 3);
+            }
+            return const BorderSide(color: AppColors.accentCyan, width: 2);
+          }),
+          padding: WidgetStateProperty.all(
+            const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           ),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          textStyle: WidgetStateProperty.all(
+            GoogleFonts.fredoka(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) {
+              return AppColors.accentCyan.withValues(alpha: 0.2);
+            }
+            if (states.contains(WidgetState.hovered)) {
+              return AppColors.accentCyan.withValues(alpha: 0.1);
+            }
+            return null;
+          }),
+          animationDuration: const Duration(milliseconds: 100),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          foregroundColor: AppColors.accentCyan,
+        style: ButtonStyle(
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) {
+              return AppColors.accentCyan.withValues(alpha: 0.7);
+            }
+            if (states.contains(WidgetState.hovered)) {
+              return AppColors.accentCyan;
+            }
+            return AppColors.textSecondary;
+          }),
+          padding: WidgetStateProperty.all(
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          ),
+          textStyle: WidgetStateProperty.all(
+            GoogleFonts.fredoka(
+              fontSize: 18,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) {
+              return AppColors.accentCyan.withValues(alpha: 0.15);
+            }
+            if (states.contains(WidgetState.hovered)) {
+              return AppColors.accentCyan.withValues(alpha: 0.08);
+            }
+            return null;
+          }),
+          animationDuration: const Duration(milliseconds: 100),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -89,31 +189,31 @@ class AppTheme {
         labelStyle: const TextStyle(color: AppColors.textSecondary),
         hintStyle: const TextStyle(color: AppColors.textSecondary),
       ),
-      textTheme: const TextTheme(
-        headlineLarge: TextStyle(
+      textTheme: baseTextTheme.copyWith(
+        headlineLarge: baseTextTheme.headlineLarge?.copyWith(
           color: AppColors.accentCyan,
           fontSize: 32,
           fontWeight: FontWeight.bold,
         ),
-        headlineMedium: TextStyle(
+        headlineMedium: baseTextTheme.headlineMedium?.copyWith(
           color: AppColors.accentCyan,
           fontSize: 24,
           fontWeight: FontWeight.bold,
         ),
-        headlineSmall: TextStyle(
+        headlineSmall: baseTextTheme.headlineSmall?.copyWith(
           color: AppColors.accentCyan,
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
-        bodyLarge: TextStyle(
+        bodyLarge: baseTextTheme.bodyLarge?.copyWith(
           color: AppColors.textPrimary,
           fontSize: 16,
         ),
-        bodyMedium: TextStyle(
+        bodyMedium: baseTextTheme.bodyMedium?.copyWith(
           color: AppColors.textPrimary,
           fontSize: 14,
         ),
-        bodySmall: TextStyle(
+        bodySmall: baseTextTheme.bodySmall?.copyWith(
           color: AppColors.textSecondary,
           fontSize: 12,
         ),

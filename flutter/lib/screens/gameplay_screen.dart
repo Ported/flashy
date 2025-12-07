@@ -8,6 +8,8 @@ import '../core/game.dart';
 import '../l10n/app_localizations.dart';
 import '../state/game_state.dart';
 import '../theme/app_theme.dart';
+import '../widgets/animated_button.dart';
+import '../widgets/level_node.dart';
 import '../widgets/numpad.dart';
 import '../widgets/progress_dots.dart';
 import '../widgets/responsive_container.dart';
@@ -241,13 +243,11 @@ class _GameplayScreenState extends State<GameplayScreen> {
                       padding: BaseScreenConfig.padding,
                       child: Column(
                         children: [
-                // Title
+                // Title with level name
                 Text(
-                  isBoss
-                      ? l10n.gameplayBossLevel(widget.levelNumber)
-                      : l10n.gameplayLevel(widget.levelNumber),
+                  '${l10n.gameplayLevel(widget.levelNumber)}: ${getLevelNameL10n(l10n, widget.levelNumber)}',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: isBoss
                         ? AppColors.incorrectRed
@@ -296,7 +296,7 @@ class _GameplayScreenState extends State<GameplayScreen> {
                       hasInput: _currentAnswer.isNotEmpty,
                     ),
                     const SizedBox(width: 10),
-                    ElevatedButton(
+                    AnimatedElevatedButton(
                       onPressed: _submitAnswer,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.correctGreen,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../theme/app_theme.dart';
+import '../widgets/animated_button.dart';
 import '../widgets/responsive_container.dart';
 
 /// Privacy policy screen.
@@ -188,7 +189,7 @@ class PrivacyScreen extends StatelessWidget {
 
               // Back button
               Center(
-                child: ElevatedButton(
+                child: AnimatedElevatedButton(
                   onPressed: () => Navigator.of(context).pop(),
                   child: const Text('Back'),
                 ),

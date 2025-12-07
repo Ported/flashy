@@ -5,6 +5,7 @@ import '../api/flashy_api.dart';
 import '../l10n/app_localizations.dart';
 import '../state/game_state.dart';
 import '../theme/app_theme.dart';
+import '../widgets/animated_button.dart';
 import '../widgets/responsive_container.dart';
 
 /// Leaderboard screen showing top players.
@@ -96,7 +97,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               ),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
+              AnimatedElevatedButton(
                 onPressed: () => Navigator.of(context).pop(),
                 child: Text(l10n.navBack),
               ),

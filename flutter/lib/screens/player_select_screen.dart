@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../state/game_state.dart';
 import '../theme/app_theme.dart';
+import '../widgets/animated_button.dart';
 import '../widgets/responsive_container.dart';
 import 'intro_screen.dart';
 import 'new_player_screen.dart';
@@ -72,7 +73,8 @@ class _PlayerSelectScreenState extends State<PlayerSelectScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return BaseScreen(
-      child: Column(
+      child: SizedBox.expand(
+        child: Column(
             children: [
               Text(
                 l10n.playerWhoPlaying,
@@ -84,42 +86,67 @@ class _PlayerSelectScreenState extends State<PlayerSelectScreen> {
                 child: _loading
                     ? const Center(child: CircularProgressIndicator())
                     : _players.isEmpty
-                        ? Center(
-                            child: Text(
-                              l10n.playerNoPlayers,
-                              style: TextStyle(
-                                color: AppColors.textSecondary,
-                                fontSize: 16,
+                        ? Column(
+                            children: [
+                              Text(
+                                l10n.playerNoPlayers,
+                                style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 16,
+                                ),
                               ),
-                            ),
+                              const SizedBox(height: 20),
+                              AnimatedElevatedButton(
+                                onPressed: () async {
+                                  final result = await Navigator.of(context).push<bool>(
+                                    MaterialPageRoute(builder: (_) => const NewPlayerScreen()),
+                                  );
+                                  if (result == true) {
+                                    _loadPlayers();
+                                  }
+                                },
+                                child: Text(l10n.playerNewPlayer),
+                              ),
+                            ],
                           )
-                        : ListView.builder(
-                            itemCount: _players.length,
-                            itemBuilder: (context, index) {
-                              final name = _players[index];
-                              final level = _playerLevels[name] ?? 1;
-                              return _PlayerTile(
-                                name: name,
-                                levelText: '${l10n.playerLevel} $level',
-                                onTap: () => _selectPlayer(name),
-                              );
-                            },
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              // Player list (shrink-wrapped, not expanded)
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: _players.length,
+                                itemBuilder: (context, index) {
+                                  final name = _players[index];
+                                  final level = _playerLevels[name] ?? 1;
+                                  return _PlayerTile(
+                                    name: name,
+                                    levelText: '${l10n.playerLevel} $level',
+                                    onTap: () => _selectPlayer(name),
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 20),
+                              // New Player button right below list
+                              Center(
+                                child: AnimatedElevatedButton(
+                                  onPressed: () async {
+                                    final result = await Navigator.of(context).push<bool>(
+                                      MaterialPageRoute(builder: (_) => const NewPlayerScreen()),
+                                    );
+                                    if (result == true) {
+                                      _loadPlayers();
+                                    }
+                                  },
+                                  child: Text(l10n.playerNewPlayer),
+                                ),
+                              ),
+                            ],
                           ),
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  final result = await Navigator.of(context).push<bool>(
-                    MaterialPageRoute(builder: (_) => const NewPlayerScreen()),
-                  );
-                  if (result == true) {
-                    _loadPlayers();
-                  }
-                },
-                child: Text(l10n.playerNewPlayer),
-              ),
               const SizedBox(height: 10),
-              TextButton(
+              AnimatedTextButton(
                 onPressed: () {
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (_) => const WelcomeScreen()),
@@ -130,12 +157,13 @@ class _PlayerSelectScreenState extends State<PlayerSelectScreen> {
               ),
             ],
           ),
+        ),
     );
   }
 }
 
-/// Player list tile.
-class _PlayerTile extends StatelessWidget {
+/// Player list tile with hover effect.
+class _PlayerTile extends StatefulWidget {
   const _PlayerTile({
     required this.name,
     required this.levelText,
@@ -147,34 +175,48 @@ class _PlayerTile extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
+  State<_PlayerTile> createState() => _PlayerTileState();
+}
+
+class _PlayerTileState extends State<_PlayerTile> {
+  bool _isHovered = false;
+
+  @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(15),
-        margin: const EdgeInsets.symmetric(vertical: 5),
-        decoration: BoxDecoration(
-          color: AppColors.darkBackground,
-          borderRadius: BorderRadius.circular(5),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              name,
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppColors.textPrimary,
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Container(
+          padding: const EdgeInsets.all(15),
+          margin: const EdgeInsets.symmetric(vertical: 5),
+          decoration: BoxDecoration(
+            color: _isHovered
+                ? AppColors.accentCyan.withValues(alpha: 0.2)
+                : AppColors.darkBackground,
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                widget.name,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: AppColors.textPrimary,
+                ),
               ),
-            ),
-            Text(
-              levelText,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
+              Text(
+                widget.levelText,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

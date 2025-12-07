@@ -5,6 +5,7 @@ import '../core/levels.dart';
 import '../l10n/app_localizations.dart';
 import '../state/game_state.dart';
 import '../theme/app_theme.dart';
+import '../widgets/animated_button.dart';
 import '../widgets/responsive_container.dart';
 import 'boss_victory_screen.dart';
 import 'gameplay_screen.dart';
@@ -128,12 +129,12 @@ class ResultScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton(
+                  AnimatedElevatedButton(
                     onPressed: () => _continue(context),
                     child: Text(l10n.navContinue),
                   ),
                   const SizedBox(width: 10),
-                  ElevatedButton(
+                  AnimatedElevatedButton(
                     onPressed: () => _replay(context),
                     child: Text(l10n.navReplay),
                   ),
