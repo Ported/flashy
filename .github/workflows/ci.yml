@@ -57,13 +57,7 @@ jobs:
         working-directory: flutter
         run: flutter pub get
 
-      - name: Build Flutter web (staging)
-        if: github.ref == 'refs/heads/develop'
-        working-directory: flutter
-        run: flutter build web --release --dart-define=FLASHY_API_BASE_URL=https://flashycards.org
-
-      - name: Build Flutter web (production)
-        if: github.ref == 'refs/heads/main'
+      - name: Build Flutter web
         working-directory: flutter
         run: flutter build web --release
 
