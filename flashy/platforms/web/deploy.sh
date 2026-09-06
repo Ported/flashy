@@ -31,6 +31,9 @@ cp _headers "$DEPLOY_DIR/"
 # Copy optimized assets (not originals)
 cp assets/backgrounds/*.webp "$DEPLOY_DIR/assets/backgrounds/"
 
+# Ordskatt (iOS app) landing, support and privacy pages
+cp -R ordskatt "$DEPLOY_DIR/ordskatt"
+
 # Copy Functions for API (only .ts files, not tests or node_modules)
 cp functions/api/*.ts "$DEPLOY_DIR/functions/api/" 2>/dev/null || true
 # Remove test files from deploy
